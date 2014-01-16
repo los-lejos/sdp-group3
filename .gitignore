@@ -1,6 +1,6 @@
 # Lejos
-*.ndx
-*.ndj
+*.nxd
+*.nxj
 
 # Directories #
 /build/
