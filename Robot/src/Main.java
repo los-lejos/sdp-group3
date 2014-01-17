@@ -1,33 +1,4 @@
-package uk.ac.ed.inf.sdp;
-//import lejos.nxt.*;
-//
-//public class Main {
-//	public static void main (String[] args) {
-////		LightSensor light = new LightSensor(SensorPort.S1);
-////		light.calibrateLow();
-////		
-//		Motor.A.setSpeed(720);
-//		Motor.C.setSpeed(720);
-//	  	Motor.A.forward();
-//	  	Motor.C.forward();
-//	  	
-//	  	UltrasonicSensor ultra = new UltrasonicSensor(SensorPort.S1);
-//		ultra.continuous();
-//
-//		while(Button.readButtons() == 0 && 
-//				ultra.getDistance() < 15);
-//				//light.getLightValue() < 30);
-//		
-//		Motor.A.stop();
-//		Motor.C.stop();
-//		
-////		while(Button.readButtons() == 0) {
-////			System.out.println();
-////		} // > 15 looks good for ball
-//		
-//		Button.waitForAnyPress();
-//	}
-//}
+
 
 import lejos.nxt.*;
 
