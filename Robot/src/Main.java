@@ -1,37 +1,26 @@
-
-
 import lejos.nxt.*;
 
 public class Main {
 	public static void main (String[] args) {
-		LightSensor light = new LightSensor(SensorPort.S1);
-		light.calibrateLow();
-		
-		Motor.A.setSpeed(360);
-		Motor.C.setSpeed(360);
-	  	Motor.A.forward();
-		Motor.C.forward();
-
-		int turns = 0;
+		// Test for kicking the ball
+		UltrasonicSensor ultra = new UltrasonicSensor(SensorPort.S1);
 
 		while(Button.readButtons() == 0) {
+			System.out.println(ultra.getDistance());
+			
+			if(ultra.getDistance() >= 10) {
+				Motor.A.setSpeed(400);
+				Motor.A.rotate(40);
+				
+				while(Motor.A.isMoving());
+				
+				Motor.A.setSpeed(800);
+				Motor.A.rotate(-40);
 
-            // drive until there is some white
-            while(Button.readButtons() == 0 && 
-                    light.getLightValue() < 30);
-            
-            Motor.A.backward();
+			}
+		}
 
-            // turn until there is no white
-            while(Button.readButtons() == 0 && 
-                    light.getLightValue() > 30);
-
-            Motor.A.forward();
-
-            turns++;
-        }
-            
-        Button.waitForAnyPress();
+		Button.ESCAPE.waitForPressAndRelease();
 	}
 }
 

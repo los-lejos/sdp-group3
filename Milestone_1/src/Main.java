@@ -43,13 +43,13 @@ public class Main {
 
                 if (leftLight.getLightValue() >= LightCutoff) {
                     System.out.println("Turning right.");
-                    currentState == State.TURNING_RIGHT;
+                    currentState = State.TURNING_RIGHT;
                     rightMotor.setSpeed(RobotTurnSpeed);
                     leftMotor.setSpeed(RobotTurnSpeed);
                     rightMotor.forward();
                 } else if (rightLight.getLightValue() >= LightCutoff) {
                     System.out.println("Turning left.");
-                    currentState == State.TURNING_LEFT;
+                    currentState = State.TURNING_LEFT;
                     rightMotor.setSpeed(RobotTurnSpeed);
                     leftMotor.setSpeed(RobotTurnSpeed);
                     leftMotor.forward();
@@ -60,7 +60,7 @@ public class Main {
                 if (leftLight.getLightValue() < LightCutoff &&
                     rightLight.getLightValue() < LightCutoff) {
                     System.out.println("Going forward.");
-                    currentState == State.FORWARD;
+                    currentState = State.FORWARD;
                     rightMotor.setSpeed(RobotMoveSpeed);
                     leftMotor.setSpeed(RobotMoveSpeed);
                     rightMotor.backward();
@@ -71,7 +71,7 @@ public class Main {
                 if (rightLight.getLightValue() < LightCutoff &&
                 	leftLight.getLightValue() < LightCutoff) {
                     System.out.println("Going forward.");
-                    currentState == State.FORWARD;
+                    currentState = State.FORWARD;
                     rightMotor.setSpeed(RobotMoveSpeed);
                     leftMotor.setSpeed(RobotMoveSpeed);
                     leftMotor.backward();
