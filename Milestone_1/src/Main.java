@@ -1,7 +1,5 @@
 import lejos.nxt.*;
 
-// remember that reverse is forward and vice versa due
-// to the motor orientations!
 public class Main {
 	
 	public enum State {
@@ -15,29 +13,53 @@ public class Main {
     public static State currentState = State.FORWARD;
     
     private static final int LightCutoff = 40;
-    private static final int RobotMoveSpeed = 720;
-    private static final int RobotTurnSpeed = 400;
-    private static final long ReverseTime = 2000;
-    
-	
+    private static final int RobotMoveSpeed = 200;
+    private static final int RobotTurnSpeed = 50;
+
 	public static void main (String[] args) {
 		LightSensor leftLight = new LightSensor(SensorPort.S1);
         LightSensor rightLight = new LightSensor(SensorPort.S4);
-        
-		//System.out.println("Press a button for a great time!");
-        //Button.waitForAnyPress();
 
         // start moving to begin with
         rightMotor.setSpeed(RobotMoveSpeed);
         leftMotor.setSpeed(RobotMoveSpeed);
         leftMotor.backward();
         rightMotor.backward();
+        
+		  // Busy wait for a sensor to hit the white ground
+		  while(leftLight.getLightValue() < LightCutoff &&
+		          rightLight.getLightValue() < LightCutoff);
+
+		  State greenDirection;
+		  
+		  if(leftLight.getLightValue() >= LightCutoff) {
+		  	greenDirection = State.TURNING_RIGHT;
+		  }
+		  else {
+		  	greenDirection = State.TURNING_LEFT;
+		  }
 
         // begin main loop
         boolean running = true;
         while (running) {
-
-            // System.out.println(leftLight.getLightValue());
+        	if(leftLight.getLightValue() >= LightCutoff && rightLight.getLightValue() >= LightCutoff) {
+        		// Prefer the direction in which we started walking around the pitch
+        		if(greenDirection == State.TURNING_LEFT) {
+        			System.out.println("Turning left.");
+                    currentState = State.TURNING_LEFT;
+                    rightMotor.setSpeed(RobotTurnSpeed);
+                    leftMotor.setSpeed(RobotTurnSpeed);
+                    leftMotor.forward();	
+                    rightMotor.backward();
+        		} else {
+        			System.out.println("Turning right.");
+                    currentState = State.TURNING_RIGHT;
+                    rightMotor.setSpeed(RobotTurnSpeed);
+                    leftMotor.setSpeed(RobotTurnSpeed);
+                    rightMotor.forward();
+                    leftMotor.backward();
+        		}
+        	}
             
             if (currentState == State.FORWARD) {
 
