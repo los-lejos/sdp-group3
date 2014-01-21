@@ -1,5 +1,7 @@
 import lejos.nxt.*;
+import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.navigation.Pose;
 
 public class Main {
 	
@@ -24,6 +26,10 @@ public class Main {
         LightSensor rightLight = new LightSensor(SensorPort.S4);
         
         DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
+        
+        // tracker provides a Pose updated every time pilot performs a move
+        OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
+        
         pilot.setTravelSpeed(RobotMoveSpeed);
         pilot.setRotateSpeed(RobotTurnSpeed);
         
@@ -33,6 +39,9 @@ public class Main {
 		// Busy wait for a sensor to hit the white ground
 		while(leftLight.getLightValue() < LightCutoff &&
 		      rightLight.getLightValue() < LightCutoff);
+		
+		// we will need to return here later
+		Pose startPose = tracker.getPose();
 
 		State greenDirection;
 		if(leftLight.getLightValue() >= LightCutoff) {
@@ -85,6 +94,14 @@ public class Main {
         }
 
 		pilot.stop();
+		
+		/*
+		 * TODO: Do something to get back to startPose here?
+		 * 
+		 * float startAngle = startPose.getHeading()
+		 * Point startCoords = startPose.getLocation()
+		 */
+		
 		
         Button.waitForAnyPress();
 	}
