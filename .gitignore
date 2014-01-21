@@ -35,7 +35,7 @@ Desktop.ini
 # Eclipse
 ######################
 *.pydevproject
-.project
+#.project
 .metadata
 bin/**
 tmp/**
@@ -45,8 +45,8 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
-.settings/
+#.classpath
+#.settings/
 .loadpath
 /src/main/resources/rebel.xml
 # External tool builders
