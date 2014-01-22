@@ -16,8 +16,8 @@ public class Main {
     public static State currentState = State.FORWARD;
     
     private static final int LightCutoff = 40;
-    private static final double RobotMoveSpeed = 80;
-    private static final double RobotTurnSpeed = 5;
+    private static double RobotMoveSpeed = 80;
+    private static double RobotTurnSpeed = 0.1;
     
     private static final int TireDiameterMm = 56;
     private static final int TrackWidthMm = 113;
@@ -25,8 +25,11 @@ public class Main {
 	public static void main (String[] args) {
 		LightSensor leftLight = new LightSensor(SensorPort.S1);
         LightSensor rightLight = new LightSensor(SensorPort.S4);
-        
+
         DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
+        
+        RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.3;
+        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.01;
         
         // tracker provides a Pose updated every time pilot performs a move
         OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
@@ -102,8 +105,8 @@ public class Main {
         	if(dist > 160) {
         		starting = false;
         	}
-        	// for defender 60 works, attacker 100
-        	else if(!starting && dist <= 60 /* empirical */) {
+        	// for defender 50 works, attacker 100
+        	else if(!starting && dist <= 50 /* empirical */) {
         		running = false;
         	}
         }
