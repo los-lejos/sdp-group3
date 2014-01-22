@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 public class SocketVisionReader extends Reader {
 
-	public static final int PORT = 28546;
+	public static final int PORT = 28541;
 	// these values are not set in stone
 	// pick them as you wish
 	private static final double DISTMINTRESHOLD = 1.2;

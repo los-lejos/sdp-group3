@@ -15,7 +15,7 @@ from filter import Filter
 from display import Gui, ThresholdGui
 
 HOST = 'localhost' 
-PORT = 28546 
+PORT = 28541
 
 # Distinct between field size line or entity line
 ENTITY_BIT = 'E';
