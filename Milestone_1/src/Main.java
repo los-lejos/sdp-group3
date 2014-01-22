@@ -16,8 +16,8 @@ public class Main {
     public static State currentState = State.FORWARD;
     
     private static final int LightCutoff = 40;
-    private static final double RobotMoveSpeed = 200;
-    private static final double RobotTurnSpeed = 20;
+    private static final double RobotMoveSpeed = 80;
+    private static final double RobotTurnSpeed = 5;
     
     private static final int TireDiameterMm = 56;
     private static final int TrackWidthMm = 113;
@@ -33,7 +33,6 @@ public class Main {
         
         pilot.setTravelSpeed(RobotMoveSpeed);
         pilot.setRotateSpeed(RobotTurnSpeed);
-        pilot.setAcceleration((int) RobotMoveSpeed);
 
         // start moving to begin with
         pilot.forward();
@@ -103,20 +102,13 @@ public class Main {
         	if(dist > 160) {
         		starting = false;
         	}
-        	else if(!starting && dist <= 100 /* empirical */) {
+        	// for defender 60 works, attacker 100
+        	else if(!starting && dist <= 60 /* empirical */) {
         		running = false;
         	}
         }
 
 		pilot.stop();
-		
-		/*
-		 * TODO: Do something to get back to startPose here?
-		 * 
-		 * float startAngle = startPose.getHeading()
-		 * Point startCoords = startPose.getLocation()
-		 */
-		
 		
         Button.waitForAnyPress();
 	}
