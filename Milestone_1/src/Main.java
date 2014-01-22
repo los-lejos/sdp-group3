@@ -1,3 +1,4 @@
+import lejos.geom.Point;
 import lejos.nxt.*;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -15,11 +16,11 @@ public class Main {
     public static State currentState = State.FORWARD;
     
     private static final int LightCutoff = 40;
-    private static final double RobotMoveSpeed = 120;
-    private static final double RobotTurnSpeed = 15;
+    private static final double RobotMoveSpeed = 200;
+    private static final double RobotTurnSpeed = 20;
     
     private static final int TireDiameterMm = 56;
-    private static final int TrackWidthMm = 100;
+    private static final int TrackWidthMm = 113;
     
 	public static void main (String[] args) {
 		LightSensor leftLight = new LightSensor(SensorPort.S1);
@@ -32,7 +33,8 @@ public class Main {
         
         pilot.setTravelSpeed(RobotMoveSpeed);
         pilot.setRotateSpeed(RobotTurnSpeed);
-        
+        pilot.setAcceleration((int) RobotMoveSpeed);
+
         // start moving to begin with
         pilot.forward();
 
@@ -42,6 +44,8 @@ public class Main {
 		
 		// we will need to return here later
 		Pose startPose = tracker.getPose();
+		Point startPoint = startPose.getLocation();
+		boolean starting = true;
 
 		State greenDirection;
 		if(leftLight.getLightValue() >= LightCutoff) {
@@ -91,6 +95,17 @@ public class Main {
 
             if (Button.readButtons() != 0)
                 running = false;
+            
+            Pose currentPose = tracker.getPose();
+            float dist = currentPose.distanceTo(startPoint);
+        	System.out.println(dist);
+        	
+        	if(dist > 160) {
+        		starting = false;
+        	}
+        	else if(!starting && dist <= 100 /* empirical */) {
+        		running = false;
+        	}
         }
 
 		pilot.stop();
