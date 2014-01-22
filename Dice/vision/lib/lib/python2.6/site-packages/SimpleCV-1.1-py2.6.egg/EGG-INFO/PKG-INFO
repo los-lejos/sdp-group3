@@ -1,0 +1,28 @@
+Metadata-Version: 1.1
+Name: SimpleCV
+Version: 1.1
+Summary: Make Computers See with SimpleCV, the Python Framework for Machine Vision
+Home-page: http://simplecv.org
+Author: Ingenuitas Inc
+Author-email: support@ingenuitas.com
+License: BSD
+Download-URL: http://sourceforge.net/projects/simplecv/files/1.1/SimpleCV-1.1.tar.gz
+Description: Super-library for machine vision wrappers in Python, providing a unified, pythonic interface to image aquisition, conversion, manipulation, and feature extraction.
+Keywords: opencv,cv,machine vision,computer vision,image recognition,kinect,freenect
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Manufacturing
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Multimedia :: Graphics :: Capture :: Digital Camera
+Classifier: Topic :: Multimedia :: Graphics :: Graphics Conversion
+Classifier: Topic :: Scientific/Engineering :: Image Recognition
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires: cv
+Requires: numpy
+Requires: scipy
+Requires: pygame
+Requires: pil
