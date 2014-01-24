@@ -1,21 +1,24 @@
 package dice;
-import java.io.*;
-import lejos.pc.*;
-import lejos.pc.comm.*;
+
+import dice.communication.BluetoothCommunicationException;
+import dice.communication.BluetoothRobotConnection;
+
+/*
+ * @author Joris S. Urbaitis
+ */
 
 public class Main {
 	public static void main (String[] args) {
+		BluetoothRobotConnection conn = new BluetoothRobotConnection("OptimusPrime", "macaddr");
 		try {
-			NXTComm nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-		
-			NXTInfo[] nxtInfo = nxtComm.search("NXT");
-			
-			for(NXTInfo info : nxtInfo) {
-				System.out.println(info.name);
-			}
-		} catch (NXTCommException e) {
+			conn.openConnection();
+			conn.handshake();
+		} catch (BluetoothCommunicationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// Start the communications thread
+		conn.start();
 	}
 }
