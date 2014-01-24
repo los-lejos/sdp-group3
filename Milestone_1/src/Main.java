@@ -16,11 +16,11 @@ public class Main {
     public static State currentState = State.FORWARD;
     
     private static final int LightCutoff = 40;
-    private static double RobotMoveSpeed = 80;
-    private static double RobotTurnSpeed = 0.1;
+    private static double RobotMoveSpeed;
+    private static double RobotTurnSpeed;
     
     private static final int TireDiameterMm = 56;
-    private static final int TrackWidthMm = 113;
+    private static final int TrackWidthMm = 114;
     
 	public static void main (String[] args) {
 		LightSensor leftLight = new LightSensor(SensorPort.S1);
@@ -28,14 +28,15 @@ public class Main {
 
         DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
         
-        RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.3;
-        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.01;
+        RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.4;
+        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.2;
         
         // tracker provides a Pose updated every time pilot performs a move
         OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
         
         pilot.setTravelSpeed(RobotMoveSpeed);
-        pilot.setRotateSpeed(RobotTurnSpeed);
+        // Needed for rotate(angle) method
+        // pilot.setRotateSpeed(RobotTurnSpeed);
 
         // start moving to begin with
         pilot.forward();
@@ -60,11 +61,13 @@ public class Main {
         // begin main loop
         boolean running = true;
         while (running) {
+        	
         	if(leftLight.getLightValue() >= LightCutoff && rightLight.getLightValue() >= LightCutoff) {
         		// Prefer the direction in which we started walking around the pitch
         		if(greenDirection == State.TURNING_LEFT) {
         			System.out.println("Turning left.");
                     currentState = State.TURNING_LEFT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
                     pilot.rotateLeft();
         		} else {
         			System.out.println("Turning right.");
@@ -77,10 +80,12 @@ public class Main {
                 if (leftLight.getLightValue() >= LightCutoff) {
                     System.out.println("Turning right.");
                     currentState = State.TURNING_RIGHT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
                     pilot.rotateRight();
                 } else if (rightLight.getLightValue() >= LightCutoff) {
                     System.out.println("Turning left.");
                     currentState = State.TURNING_LEFT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
                     pilot.rotateLeft();
                 }
             } else if (currentState == State.TURNING_RIGHT || currentState == State.TURNING_LEFT) {
@@ -88,6 +93,7 @@ public class Main {
                     rightLight.getLightValue() < LightCutoff) {
                     System.out.println("Going forward.");
                     currentState = State.FORWARD;
+                    pilot.setTravelSpeed(RobotMoveSpeed);
                     pilot.forward();
                 }
             } else {
