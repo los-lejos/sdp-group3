@@ -32,5 +32,4 @@ public abstract class RobotState {
     abstract double getOrientationRads();
 
     abstract double getOrientationDegs();
-
 }
