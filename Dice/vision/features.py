@@ -8,9 +8,9 @@ class Features:
     # Sizes of various features
     # Format: (area_min, area_expected, area_max)
 
-    Sizes = { 'ball'     : (35, 131, 300),
-          'yellow'         : (200, 510, 1000),
-          'blue'         : (100, 400, 800),
+    Sizes = { 'ball'     : (4, 16, 100),
+          'yellow'         : (30, 54, 169),
+          'blue'         : (25, 49, 160),
         }
 
     def __init__(self, display, threshold):
@@ -62,8 +62,10 @@ class Features:
         for blob in blobs:
             diff = self.sizeMatch(blob, which)
             if diff >= 0 and diff < mindiff:
-                entityblob = blob
-                mindiff = diff
+                #avoiding long lines along the edges to be detected as blue blob
+                if which == 'ball' or blob.isSquare(tolerance=0.8, ratiotolerance=0.4):
+                    entityblob = blob
+                    mindiff = diff
         
         if entityblob is None:
             return Entity()
