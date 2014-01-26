@@ -4,12 +4,9 @@
     	
     </description>
 
-    <!--<ant antfile="../common/build.xml" inheritAll="false" target="dist"/>-->
-
 	<!-- set properties for this build -->
 	<property environment="env" />
 	<property file="build.properties" />
-	
 	
 	<!-- check whether nxj.home is correct -->
 	<available file="${nxj.home}/lib/pc" property="lejos.pc.exists" />
@@ -22,15 +19,9 @@
 		<fileset dir="${nxj.home}/lib/pc">
 			<include name="**/*.jar" />
 		</fileset>
-        <!-- <fileset dir="/group/teaching/sdp/sdp1/lib/">
-            <include name="*.jar" />
-		</fileset> -->
 	</path>
 
 	<path id="lejos.nxt">
-        <!-- <fileset dir="/group/teaching/sdp/sdp1/lib/">
-            <include name="*.jar" />
-		</fileset> -->
 		<fileset dir="${nxj.home}/lib/nxt">
 			<include name="**/*.jar" />
 		</fileset>
@@ -39,11 +30,12 @@
 		</fileset>
 	</path>
 	
-	<!--<condition property="d32Flag" value="-d32" else="-Dblank.dummy.arg=">
+	<!-- leJOS doesn't work on the 64-bit JVM on Macs -->
+	<condition property="d32Flag" value="-d32" else="-Dblank.dummy.arg=">
 		<and>
-			<os family="linux" />
+			<os family="mac" />
 		</and>
-	</condition>-->
+	</condition>
 
 	<!-- deletes generated files -->
 	<target name="clean" description="clean up all generated files">
@@ -120,27 +112,21 @@
 	<target name="upload" depends="link" description="upload the binary">
 		<java classname="lejos.pc.tools.NXJUpload" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
-			<!--<jvmarg value="-d32" />-->
-			<classpath refid="lejos.pc" />
-			<classpath>
-				<pathelement path="${nxj.home}/bin" />
-			</classpath>
-			<arg value="${output.nxj}" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
 			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
-
+			<jvmarg value="${d32flag}" />
+			<classpath refid="lejos.pc" />
+			<arg value="${output.nxj}" />
 		</java>
-		<!--<exec dir="${nxj.home}/bin" executable="./nxjupload">
-			<arg line="-n 'OptimusPrime'"/>
-			<arg file="${output.nxj}"/>
-		</exec>-->
 	</target>
 	
 	<target name="uploadandrun" depends="link" description="upload and run the binary">
 		<java classname="lejos.pc.tools.NXJUpload" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
-			<!--<jvmarg value="-d32" />-->
-			<classpath refid="lejos.pc" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
 			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
+			<jvmarg value="${d32Flag}" />
+			<classpath refid="lejos.pc" />
 			<arg value="-r" />
 			<arg file="${output.nxj}" />
 		</java>
@@ -149,7 +135,9 @@
 	<target name="debuguploadandrun" depends="debuglink" description="upload and run the binary">
 		<java classname="lejos.pc.tools.NXJUpload" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
-			<jvmarg value="-d32" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
+			<jvmarg value="${d32flag}" />
 			<classpath refid="lejos.pc" />
 			<arg value="-r" />
 			<arg file="${output.nxj}" />
@@ -160,7 +148,9 @@
 		<sleep seconds="4" />
 		<java classname="lejos.pc.tools.NXJConsole" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
-			<jvmarg value="-d32" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
+			<jvmarg value="${d32flag}" />
 			<classpath refid="lejos.pc" />
 			<arg value="-di" />
 			<arg file="${output.nxj}" />
@@ -171,7 +161,9 @@
 		<sleep seconds="4" />
 		<java classname="lejos.pc.tools.NXJConsoleViewer" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
-			<jvmarg value="-d32" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
+			<jvmarg value="${d32Flag}" />
 			<classpath refid="lejos.pc" />
 			<arg value="-di" />
 			<arg file="${output.nxd}" />
@@ -193,6 +185,8 @@
 		  />
 		<java classname="lejos.pc.tools.NXJDebugTool" fork="true" failonerror="true">
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
 			<classpath refid="lejos.pc" />
 			<arg value="-di" />
 			<arg file="${output.nxd}" />
@@ -202,45 +196,5 @@
 			<arg value="${method}" />
 			<arg value="${pc}" />
 		</java>
-	</target>
-	
-	<!-- generate javadocs -->
-	<target name="docs" description="generate javadocs">
-		<delete dir="${docs.dir}" />
-    	<mkdir dir="${docs.dir}" />
-		<javadoc
-			destdir="${docs.dir}"
-			source="${source.version}"
-			encoding="${source.encoding}"
-			charset="utf-8"
-			locale="en_US"
-			author="true"
-			access="protected"
-			windowtitle="Project documentation"
-			verbose="false"
-		>
-			<bootclasspath refid="lejos.nxt" />
-			<!--
-				Without this, there are some JDK jars in the classpath.
-				Set verbose=true to check that the classpath is really clean.
-			-->
-    		<arg value="-extdirs" />
-    		<arg value="" />
-			
-			<packageset	dir="${source.dir}"
-				includes="${source.include}"
-				excludes="${source.exclude}"
-			/>
-		</javadoc>
-	</target>
-
-	<!-- zip the project -->
-	<target name="dist.zip" description="generate zip of sources">
-    	<zip
-    		destfile="${dist.zip}"
-    		basedir="${basedir}"
-    		includes="${dist.include}"
-    		excludes="${dist.exclude}"
-    	/>
 	</target>
 </project>
