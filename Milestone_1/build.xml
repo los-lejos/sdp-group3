@@ -9,7 +9,8 @@
 	<!-- set properties for this build -->
 	<property environment="env" />
 	<property file="build.properties" />
-
+	
+	
 	<!-- check whether nxj.home is correct -->
 	<available file="${nxj.home}/lib/pc" property="lejos.pc.exists" />
 	<available file="${nxj.home}/lib/nxt" property="lejos.nxt.exists" />
@@ -124,8 +125,9 @@
 			<classpath>
 				<pathelement path="${nxj.home}/bin" />
 			</classpath>
-			<jvmarg value="-Dbluecove.native.path='${nxj.home}/bin'"/>
 			<arg value="${output.nxj}" />
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
+
 		</java>
 		<!--<exec dir="${nxj.home}/bin" executable="./nxjupload">
 			<arg line="-n 'OptimusPrime'"/>
@@ -138,6 +140,7 @@
 			<sysproperty key="nxj.home" file="${nxj.home}"/>
 			<!--<jvmarg value="-d32" />-->
 			<classpath refid="lejos.pc" />
+			<env key="LD_LIBRARY_PATH" path="${nxj.home}" />
 			<arg value="-r" />
 			<arg file="${output.nxj}" />
 		</java>
@@ -239,19 +242,5 @@
     		includes="${dist.include}"
     		excludes="${dist.exclude}"
     	/>
-	</target>
-	
-
-	<!--  used only for modifying the Netbeans NXJPlugin -->
-	<target name="Zip for Netbeans" description="Zip the application to the sample project">
-		<property name="plugin" location="../NXJPlugin/src/nxjplugin/" />
-		<zip basedir="." destfile="${plugin}/NXJSampleProject.zip">
-			<exclude name="build/**" />
-			<exclude name="bin/**" />
-			<exclude name="dist/**" />
-			<exclude name="nbproject/private/**" />
-			<exclude name=".project" />
-			<exclude name=".classpath" />
-		</zip>
 	</target>
 </project>
