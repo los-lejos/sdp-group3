@@ -140,7 +140,7 @@ public class BluetoothRobotConnection extends Thread {
 	
 	public void handshake() throws BluetoothCommunicationException {
 		System.out.println("Sending handshake to " + nxtInfo.name);
-		
+
 		try {
 			out.write(HANDSHAKE_MESSAGE);
 			out.flush();
@@ -169,5 +169,4 @@ public class BluetoothRobotConnection extends Thread {
 		isRunning = false;
 		connected = false;
 	}
-
 }
