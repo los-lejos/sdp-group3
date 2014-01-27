@@ -158,10 +158,8 @@ class Vision:
         
     def send(self, string):
         if self.stdout:
-            print('not sends ' + string)
             sys.stdout.write(string)
         else:
-            print('sends ' + string)
             self.socket.send(string)
 
 class OptParser(OptionParser):
