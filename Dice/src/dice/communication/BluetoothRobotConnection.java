@@ -87,7 +87,14 @@ public class BluetoothRobotConnection extends Thread {
     			}
     		}
     		
-    		this.closeConnection();
+        	try {
+				in.close();
+				out.close();
+				nxtConn.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
         }
 	}
 	
@@ -159,16 +166,8 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	public void closeConnection() {
-		try {
-			isRunning = false;
-			in.close();
-			out.close();
-			nxtConn.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			connected = false;
-		}
+		isRunning = false;
+		connected = false;
 	}
 
 }
