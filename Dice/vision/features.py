@@ -170,7 +170,7 @@ class Entity:
             
             if image != None:
                 # Trying to confirm the direction by checking points around the centroid
-                dist = 13       # Distance from the centroid in px
+                dist = 4       # Distance from the centroid in px
                 diff = 0.85     # Angle in rads
                 angle = self._angle
                 self._ResX = image.width - 1
