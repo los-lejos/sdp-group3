@@ -9,9 +9,17 @@ public class WorldState {
     private RobotState opponentAttacker;
     private RobotState ourDefender;
     private RobotState ourAttacker;
+    private Ball ball;
 
-    public WorldState() {
+    // populate the world. First all robots and the
+    // ball must be created
+    public WorldState(RobotState opponentDefender, RobotState opponentAttacker, RobotState ourDefender, RobotState ourAttacker, Ball ball) {
         
+        this.opponentDefender = opponentDefender;
+        this.opponentAttacker = opponentAttacker;
+        this.ourDefender = ourDefender;
+        this.ourAttacker = ourAttacker;
+        this.ball = ball;
     }
 
     public RobotState getOpponentDefender() {
