@@ -74,6 +74,7 @@
 		<!-- Link the binary and create a signature file -->
 		<java classname="lejos.pc.tools.NXJLink" failonerror="true">
 			<classpath refid="lejos.pc" />
+	        <sysproperty key="java.library.path" path="${nxj.home}"/>
 			<arg value="--bootclasspath" />
 			<arg pathref="lejos.nxt" />
 			<arg value="--classpath" />
