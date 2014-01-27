@@ -3,6 +3,7 @@ package dice.communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommFactory;
@@ -135,15 +136,14 @@ public class BluetoothRobotConnection extends Thread {
 			e.printStackTrace();
 		}
 
-		byte[] response = null;
+		byte[] response = new byte[HANDSHAKE_RESPONSE.length];
 		try {
-			// This blocks, should probably be wrapped
 			in.read(response);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		if(response == HANDSHAKE_RESPONSE) {
+
+		if(Arrays.equals(response, HANDSHAKE_RESPONSE)) {
 			System.out.println("Handshake completed with " + nxtInfo.name);
 		}
 		else {

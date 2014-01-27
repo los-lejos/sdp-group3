@@ -3,12 +3,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import lejos.nxt.Button;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
 public class Main {
 	public static void main(String[] args) {
+		System.out.println("Waiting for Bluetooth connection");
 		BTConnection btc = Bluetooth.waitForConnection();
+		System.out.println("Received Bluetooth connection");
 		
 		InputStream in = btc.openInputStream();
 		OutputStream out = btc.openOutputStream();
@@ -35,6 +38,7 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+			Button.ESCAPE.waitForPressAndRelease();
 			btc.close();
 		}
 	}
