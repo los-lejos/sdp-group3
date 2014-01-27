@@ -48,11 +48,12 @@ class Threshold:
         
 
     def yellowT(self, frame):
-        return self.threshold(frame,
-            [self._values['yellow'][0][0], self._values['yellow'][0][1],
-            # + normalization
-                self._values['yellow'][0][2] + self._normalDiff],
-            self._values['yellow'][1])
+        return self.threshold(frame, self._values['yellow'][0], self._values['yellow'][1])
+#        return self.threshold(frame,
+#            [self._values['yellow'][0][0], self._values['yellow'][0][1],
+#            # + normalization
+#                self._values['yellow'][0][2] + self._normalDiff],
+#            self._values['yellow'][1])
 
     def blueT(self, frame):
         return self.threshold(frame, self._values['blue'][0], self._values['blue'][1])
@@ -135,21 +136,21 @@ class Threshold:
 """
 defaults[0] for the main pitch, and defaults[1] for the other table
 """
+
 defaults =[
         {
-        'yellow' : [[20, 56, 175], [36, 255, 255]],
-        'blue' : [[80,  57,  74], [115, 255, 255]],
-        'ball' : [[0, 160, 90], [10, 255, 255]]
+        'yellow' : [[0, 214, 179], [40, 40, 239]],
+        'blue' : [[131, 67, 69], [171, 147, 129]],
+        'ball' : [[163, 158, 148], [22, 255, 230]]
         },
         {
         'yellow' : [[11, 32, 198], [42, 255, 255]],
         'blue' : [[84, 80, 17], [139, 122, 255]],
-        'ball' : [[2, 126, 140], [15, 255, 255]]
+        'ball' : [[0, 0, 79], [15, 255, 255]]
         }]
 
-
 # defaultBlur[0] for the main pitch and defaultBlur[1] for the other one
-defaultBlur = [3, 3]
+defaultBlur = [0, 3]
 
 # defaultDiff[0] for the main pitch and defaultDiff[1] for the other one
 # Used in features.py

@@ -57,6 +57,7 @@ class Preprocessor:
     def preprocess(self, frame):
         
         if self.hasPitchSize:
-            frame = frame.crop(*self._cropRect)
+            #aspect ratio when cropped is 583/327
+            frame = frame.crop(*self._cropRect).resize(256, 152)
 
         return frame

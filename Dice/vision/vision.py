@@ -158,8 +158,10 @@ class Vision:
         
     def send(self, string):
         if self.stdout:
+            print('not sends ' + string)
             sys.stdout.write(string)
         else:
+            print('sends ' + string)
             self.socket.send(string)
 
 class OptParser(OptionParser):
@@ -177,6 +179,7 @@ class OptParser(OptionParser):
 if __name__ == "__main__":
 
     parser = OptParser()
+
     parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH', default='0',
                       help='PITCH should be 0 for main pitch, 1 for the other pitch')
 

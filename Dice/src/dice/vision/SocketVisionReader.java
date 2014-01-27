@@ -56,7 +56,9 @@ public class SocketVisionReader extends Reader {
 
 					while (scanner.hasNextLine()) {
 						try {
-							parse(scanner.nextLine());
+							String line = scanner.nextLine();
+							System.out.println(line);
+							parse(line);
 						} catch (java.util.NoSuchElementException e) {
 							System.out.println("No input from camera!");
 						}
