@@ -28,8 +28,32 @@ public class Main {
 		byte[] response = { 4, 3, 2, 1 };
 		try {
 			out.write(response);
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		while(Button.ESCAPE.isUp()) {
+			byte[] incoming = new byte[4];
+			try {
+				in.read(incoming);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			String debug = "Incoming:\n";
+			for(int i = 0; i < incoming.length; i++) {
+				debug += "" + incoming[i] + " ";
+			}
+			
+			System.out.println(debug);
+			
+			try {
+				out.write(incoming);
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		try {
@@ -38,7 +62,6 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			Button.ESCAPE.waitForPressAndRelease();
 			btc.close();
 		}
 	}
