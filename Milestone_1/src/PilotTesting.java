@@ -18,7 +18,6 @@ public class PilotTesting {
     private static double RobotTurnSpeed;
     
     private static final int TireDiameterMm = 56;
-    
     private static final int TrackWidthMm = 114;
     
 	public static void main (String[] args) {

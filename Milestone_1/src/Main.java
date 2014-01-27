@@ -23,13 +23,13 @@ public class Main {
     private static final int TrackWidthMm = 114;
     
 	public static void main (String[] args) {
-		LightSensor leftLight = new LightSensor(SensorPort.S1);
-        LightSensor rightLight = new LightSensor(SensorPort.S4);
+		LightSensor leftLight = new LightSensor(SensorPort.S4);
+        LightSensor rightLight = new LightSensor(SensorPort.S1);
 
         DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
         
         RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.4;
-        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.2;
+        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.1;
         
         // tracker provides a Pose updated every time pilot performs a move
         OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
@@ -72,6 +72,7 @@ public class Main {
         		} else {
         			System.out.println("Turning right.");
                     currentState = State.TURNING_RIGHT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
                     pilot.rotateRight();
         		}
         	}
