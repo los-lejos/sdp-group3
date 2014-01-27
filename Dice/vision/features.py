@@ -8,9 +8,9 @@ class Features:
     # Sizes of various features
     # Format: (area_min, area_expected, area_max)
 
-    Sizes = { 'ball'     : (4, 16, 100),
+    Sizes = { 'ball'     : (8, 16, 100),
           'yellow'         : (30, 54, 169),
-          'blue'         : (25, 49, 160),
+          'blue'         : (30, 54, 166),
         }
 
     def __init__(self, display, threshold):
