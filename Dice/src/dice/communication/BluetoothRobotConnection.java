@@ -32,9 +32,6 @@ public class BluetoothRobotConnection extends Thread {
 	private InputStream in;
 	private OutputStream out;
 	
-	private RobotInstruction instructionToSend;
-	
-
 	public BluetoothRobotConnection(RobotType robot) {
 		if(robot == RobotType.ATTACKER) {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
@@ -62,13 +59,14 @@ public class BluetoothRobotConnection extends Thread {
 	        if(instructionCallbacks[currentInstructionCallback] != null) {
 	        	instructionCallbacks[currentInstructionCallback].onTimeout();
 	        }
-	        
-	        synchronized(instructionToSend) {
-	        	instructionToSend = instruction;
-	        	instructionToSend.getInstruction()[0] = currentInstructionCallback;
-	        	instructionCallbacks[currentInstructionCallback] = instructionToSend.getCallback();
-	        }
-        }  
+
+        	instruction.getInstruction()[0] = currentInstructionCallback;
+        	instructionCallbacks[currentInstructionCallback] = instruction.getCallback();
+        	
+        	// Send to the robot
+        	out.write(instruction.getInstruction());
+			out.flush();
+        }
 	}
 	
 	@Override
@@ -79,7 +77,6 @@ public class BluetoothRobotConnection extends Thread {
         	while(isRunning) {
     			try {
     				this.receiveMessages();
-    				this.sendMessages();
     			} catch(IOException e) {
     				e.printStackTrace();
     			} catch (BluetoothCommunicationException e) {
@@ -100,28 +97,16 @@ public class BluetoothRobotConnection extends Thread {
 	
 	private void receiveMessages() throws BluetoothCommunicationException, IOException {
 		synchronized(instructionCallbacks) {
-			if(in.available() >= RobotInstruction.LENGTH) {
-				byte[] res = new byte[4];
-				in.read(res);
-				
-				byte instructionId = res[0];
-				RobotCommunicationCallback callback = instructionCallbacks[instructionId];
-				if(callback != null) {
-					callback.onDone();
-				}
-				else {
-					throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
-				}
+			byte[] res = new byte[4];
+			in.read(res);
+			
+			byte instructionId = res[0];
+			RobotCommunicationCallback callback = instructionCallbacks[instructionId];
+			if(callback != null) {
+				callback.onDone();
 			}
-		}
-	}
-	
-	private void sendMessages() throws IOException {
-		synchronized(instructionToSend) {
-			if(instructionToSend != null) {
-				out.write(instructionToSend.getInstruction());
-				out.flush();
-				instructionToSend = null;
+			else {
+				throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
 			}
 		}
 	}
