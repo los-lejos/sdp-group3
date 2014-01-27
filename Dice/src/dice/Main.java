@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import dice.communication.BluetoothCommunicationException;
 import dice.communication.BluetoothRobotConnection;
+import dice.communication.RobotType;
 
 /*
  * @author Joris S. Urbaitis
@@ -11,8 +12,7 @@ import dice.communication.BluetoothRobotConnection;
 
 public class Main {
 	public static void main (String[] args) {
-		BluetoothRobotConnection conn = new BluetoothRobotConnection("OptimusPrime", "0016530A553F");
-		//BluetoothRobotConnection conn = new BluetoothRobotConnection("Ball-E", "0016530A5C22");
+		BluetoothRobotConnection conn = new BluetoothRobotConnection(RobotType.ATTACKER);
 		try {
 			System.out.println("Opening Bluetooth connection");
 			conn.openConnection();

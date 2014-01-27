@@ -15,7 +15,7 @@ import lejos.pc.comm.NXTInfo;
  */
 
 public class BluetoothRobotConnection extends Thread {
-	
+
 	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
 	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
 	
@@ -35,8 +35,13 @@ public class BluetoothRobotConnection extends Thread {
 	private RobotInstruction instructionToSend;
 	
 
-	public BluetoothRobotConnection(String deviceName, String deviceMacAddress) {
-		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, deviceName, deviceMacAddress);
+	public BluetoothRobotConnection(RobotType robot) {
+		if(robot == RobotType.ATTACKER) {
+			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
+		} else {
+			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Ball-E", "0016530A5C22");
+		}
+		
 		nxtConn = new NXTConnector();
 		
 		instructionCallbacks = new RobotCommunicationCallback[INSTRUCTION_CALLBACK_MAX];
