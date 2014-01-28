@@ -5,18 +5,24 @@ from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
 from threshold import Threshold
 
 class Features:
-    # Sizes of various features
-    # Format: (area_min, area_expected, area_max)
-
-    Sizes = { 'ball'     : (8, 16, 100),
-          'yellow'         : (30, 54, 169),
-          'blue'         : (30, 54, 166),
-        }
 
     def __init__(self, display, threshold):
         self.threshold = threshold
         self._display = display
 
+        # Sizes of various features
+        # Format: (area_min, area_expected, area_max)
+        self.Sizes = { 'ball': (8, 16, 100),
+                       'yellow1': (30, 54, 169),
+                       'blue1': (30, 54, 166),
+                       'yellow2': (30, 54, 169),
+                       'blue2': (30, 54, 166) }
+        self.Areas = { 'ball' : (0, 0, 256, 152),
+                       'blue1': (0, 0, 65, 152),
+                       'yellow1': (45, 0, 90, 152),
+                       'yellow2': (115, 0, 90, 152),
+                       'blue2': (190, 0, 65, 152) }
+    
     def extractFeatures(self, frame):
 
         if (self.threshold._blur > 0 and self.threshold._displayBlur):
@@ -24,21 +30,35 @@ class Features:
             cv.Smooth(frameBmp, frameBmp, cv.CV_BLUR, self.threshold._blur)
 
         hsv = frame.toHSV()
-        ents = {'yellow': None, 'blue': None, 'ball': None}
-        yellow = self.threshold.yellowT(hsv).smooth(grayscale=True)
-        blue = self.threshold.blueT(hsv).smooth(grayscale=True)
+        ents = { 'yellow1': None,
+                 'yellow2': None,
+                 'blue1': None,
+                 'blue2': None,
+                 'ball': None }
+        yellow1 = self.threshold.yellowT(hsv.crop(self.Areas['yellow1'])).smooth(grayscale=True)
+        yellow2 = self.threshold.yellowT(hsv.crop(self.Areas['yellow2'])).smooth(grayscale=True)
+        blue1 = self.threshold.blueT(hsv.crop(self.Areas['blue1'])).smooth(grayscale=True)
+        blue2 = self.threshold.blueT(hsv.crop(self.Areas['blue2'])).smooth(grayscale=True)
         ball = self.threshold.ball(hsv).smooth(grayscale=True)
 
-        self._display.updateLayer('threshY', yellow)
-        self._display.updateLayer('threshB', blue)
+        self._display.updateLayer('threshY', yellow1)
+        self._display.updateLayer('threshB', blue1)
         self._display.updateLayer('threshR', ball)
 
-        ents['yellow'] = self.findEntity(yellow, 'yellow', hsv)
-        ents['blue'] = self.findEntity(blue, 'blue', hsv)
+        # assuming blues are goalkeepers
+        # letting areas overlap for better detection
+        # MAY be a bad idea for strikers, since they are both of the same colour
+        ents['blue1'] = self.findEntity(blue1, 'blue1', hsv.crop(self.Areas['blue1']))
+        ents['yellow1'] = self.findEntity(yellow1, 'yellow1', hsv.crop(self.Areas['yellow1']))
+        ents['yellow2'] = self.findEntity(yellow2, 'yellow2', hsv.crop(self.Areas['yellow2']))
+        ents['blue2'] = self.findEntity(blue2, 'blue2', hsv.crop(self.Areas['blue2']))
         ents['ball'] = self.findEntity(ball, 'ball', hsv)
 
-        self._display.updateLayer('yellow', ents['yellow'])
-        self._display.updateLayer('blue', ents['blue'])
+
+        self._display.updateLayer('blue', ents['blue1'])
+        self._display.updateLayer('yellow', ents['yellow1'])
+        self._display.updateLayer('yellow', ents['yellow2'])
+        self._display.updateLayer('blue', ents['blue2'])
         self._display.updateLayer('ball', ents['ball'])
 
         return ents
@@ -70,8 +90,7 @@ class Features:
         if entityblob is None:
             return Entity()
         
-        notBall = which != 'ball'
-        entity = Entity.fromFeature(entityblob, notBall, notBall, orig.getBitmap(), self.threshold._diff)
+        entity = Entity(which, entityblob, orig.getBitmap(), self.threshold._diff, self.Areas)
 
         return entity
 
@@ -79,8 +98,6 @@ class Features:
         expected = self.Sizes[which]
 
         area = feature.area()
-        
-        #print which, area
 
         if (expected[0] < area < expected[2]):
             # Absolute difference from expected size:
@@ -90,33 +107,24 @@ class Features:
         return -1
 
 class Entity:
-    @classmethod
-    def fromFeature(cls, feature, hasAngle, useBoundingBox = True, image = None, diff = -50):
-        entity = Entity(hasAngle)
-        if useBoundingBox:
-            entity._coordinates = feature.coordinates()
-        else:
-            entity._coordinates = feature.centroid()
+
+    def __init__(self, which = None, entityblob = None, image = None, diff = None, areas = None):
         
-        entity._feature = feature
-        entity._defaultDiff = diff
-
-        if hasAngle:
-            entity._angle = entity.angle(image)
-
-        return entity
-
-    def __init__(self, hasAngle=True):
-        """
-        hasAngle = True if it makes sense for this entity to have an angle
-        i.e. it isn't a ball
-        """
-
-        self._coordinates = (-1, -1)
-        self._hasAngle = hasAngle
         self._angle = None
-        self._feature = None
-        self._defaultDiff = -50
+        if which == None:
+            self._coordinates = (-1, -1)
+            self._feature = None
+            self._defaultDiff = -50
+        else:
+            self._feature =  entityblob
+            self._hasAngle = which != 'ball'
+            self._useBoundingBox = which != 'ball'
+            if self._useBoundingBox:
+                x, y = entityblob.coordinates()
+                x += areas[which][0]
+                self._coordinates = (x, y)
+            else:
+                self._coordinates = entityblob.centroid()
     
     def coordinates(self):
         return self._coordinates
@@ -175,7 +183,11 @@ class Entity:
                 angle = self._angle
                 self._ResX = image.width - 1
                 self._ResY = image.height - 1
-                p_centr = cv.Get2D(image, int(cy), int(cx))
+                try:
+                    p_centr = cv.Get2D(image, int(cy), int(cx))
+                except:
+                    print 'cy IS ' + str(cy)
+                    print 'cx IS ' + str(cx)
                 
                 (x, y) = self.move((cx, cy), angle+diff, -dist)
                 p_right1 = cv.Get2D(image, y, x)
