@@ -3,10 +3,10 @@ package dice.state;
 /** A game object that can have the ball.
  * @author Craig Wilkinson
  */
-public abstract class RobotState extends GameObject {
+public class RobotState extends GameObject {
     private boolean hasBall;
 
-    public RobotState(float xPos, float yPos) {
+    public RobotState(double xPos, double yPos) {
     	super(xPos, yPos);
     }
 

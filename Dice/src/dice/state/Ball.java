@@ -1,9 +1,11 @@
 package dice.state;
 
+/** @author Craig Wilkinson
+ */
 public class Ball extends GameObject {
 	private byte currentQuartile;
 
-    public Ball(float xPos, float yPos) {
+    public Ball(double xPos, double yPos) {
     	super(xPos, yPos);
     }
 

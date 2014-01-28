@@ -22,6 +22,15 @@ public class WorldState {
         this.ball = ball;
     }
 
+    public void update(RobotState opponentDefender, RobotState opponentAttacker, RobotState ourDefender, RobotState ourAttacker, Ball ball) {
+        
+        this.opponentDefender = opponentDefender;
+        this.opponentAttacker = opponentAttacker;
+        this.ourDefender = ourDefender;
+        this.ourAttacker = ourAttacker;
+        this.ball = ball;
+    }
+
     public RobotState getOpponentDefender() {
     	return opponentDefender;
     }
