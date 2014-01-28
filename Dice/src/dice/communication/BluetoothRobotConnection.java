@@ -19,6 +19,8 @@ public class BluetoothRobotConnection extends Thread {
 	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
 	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
 	
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
+	
 	private static final byte INSTRUCTION_CALLBACK_MAX = 4;
 	private RobotCommunicationCallback[] instructionCallbacks;
 	private byte currentInstructionCallback = -1;
@@ -64,9 +66,13 @@ public class BluetoothRobotConnection extends Thread {
         	instructionCallbacks[currentInstructionCallback] = instruction.getCallback();
         	
         	// Send to the robot
-        	out.write(instruction.getInstruction());
-			out.flush();
+        	this.send(instruction.getInstruction());
         }
+	}
+	
+	private void send(byte[] msg) throws IOException {
+		out.write(msg);
+		out.flush();
 	}
 	
 	@Override
@@ -98,15 +104,17 @@ public class BluetoothRobotConnection extends Thread {
 	private void receiveMessages() throws BluetoothCommunicationException, IOException {
 		byte[] res = new byte[4];
 		in.read(res);
-			
-		synchronized(instructionCallbacks) {	
-			byte instructionId = res[0];
-			RobotCommunicationCallback callback = instructionCallbacks[instructionId];
-			if(callback != null) {
-				callback.onDone();
-			}
-			else {
-				throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
+		
+		if(!Arrays.equals(res, EXIT_MESSAGE)) {
+			synchronized(instructionCallbacks) {	
+				byte instructionId = res[0];
+				RobotCommunicationCallback callback = instructionCallbacks[instructionId];
+				if(callback != null) {
+					callback.onDone();
+				}
+				else {
+					throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
+				}
 			}
 		}
 	}
@@ -127,8 +135,7 @@ public class BluetoothRobotConnection extends Thread {
 		System.out.println("Sending handshake to " + nxtInfo.name);
 
 		try {
-			out.write(HANDSHAKE_MESSAGE);
-			out.flush();
+			this.send(HANDSHAKE_MESSAGE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -150,8 +157,10 @@ public class BluetoothRobotConnection extends Thread {
 		connected = true;
 	}
 	
-	public void closeConnection() {
+	public void closeConnection() throws IOException {
 		isRunning = false;
 		connected = false;
+		
+		this.send(EXIT_MESSAGE);
 	}
 }
