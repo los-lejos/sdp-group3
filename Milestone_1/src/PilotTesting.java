@@ -1,7 +1,13 @@
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
+// import lejos.nxt.LightSensor;
+
+/*
+ * @author Owen Gillespie
+ */
 
 public class PilotTesting {
 	
@@ -9,12 +15,10 @@ public class PilotTesting {
 		FORWARD, TURNING_RIGHT, TURNING_LEFT
 	}
 	
-    public static final NXTRegulatedMotor leftMotor = Motor.A;
-    public static final NXTRegulatedMotor rightMotor = Motor.C;
-    
+    public static final UltrasonicSensor frontSensor = new UltrasonicSensor(SensorPort.S2);
     public static State currentState = State.FORWARD;
     
-    private static double RobotMoveSpeed;
+    //private static double RobotMoveSpeed;
     private static double RobotTurnSpeed;
     
     private static final int TireDiameterMm = 56;
@@ -22,18 +26,38 @@ public class PilotTesting {
     
 	public static void main (String[] args) {
 
-        DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
+		DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, Motor.C, Motor.A, true);
+		//RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.4;
+		RobotTurnSpeed = pilot.getMaxTravelSpeed() * 0.18;
+        //OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
+        //Pose startPose;
+        //float startHeading;
+        //float headingDiff;
         
-        RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.6;
-        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.1;
-        pilot.setTravelSpeed(RobotMoveSpeed);
-        pilot.setRotateSpeed(RobotTurnSpeed);
+        //RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.5;
+        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.15;
+        pilot.setTravelSpeed(RobotTurnSpeed);
+        // pilot.setRotateSpeed(RobotTurnSpeed);
+        //startPose = tracker.getPose();
+        //startHeading = startPose.getHeading();
 
-        for (int i = 0; i < 4; i++) {
-        	pilot.travel(50);
-        	long beforeTime = System.currentTimeMillis();
-        	while (System.currentTimeMillis() - beforeTime < 1500)
-        		pilot.rotateLeft();
+        // Left
+        // pilot.steer(200);
+        // Right
+        // pilot.steer(-200);
+        // Right
+        // pilot.steerBackward(200);
+        // Left
+        // pilot.steerBackward(-200);
+        
+        boolean running = true;
+        while (running) {
+        	// headingDiff = tracker.getPose().getHeading() - startHeading;
+        	// System.out.println(RightLight.getLightValue());
+        	System.out.println(frontSensor.getDistance());
+        	if (Button.readButtons() != 0) {
+        		running = false;
+        	}
         }
         
         pilot.stop();

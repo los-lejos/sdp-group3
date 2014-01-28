@@ -1,8 +1,19 @@
 import lejos.geom.Point;
-import lejos.nxt.*;
+import lejos.nxt.Button;
+import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
+import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.navigation.Pose;
+
+/*
+ * @author Owen Gillespie
+ * @author Craig Wilkinson
+ * @author Joris Urbaitis
+ * @author Andrew Johnston
+ */
 
 public class Main {
 	
@@ -10,116 +21,161 @@ public class Main {
 		FORWARD, TURNING_RIGHT, TURNING_LEFT
 	}
 	
-    public static final NXTRegulatedMotor leftMotor = Motor.A;
-    public static final NXTRegulatedMotor rightMotor = Motor.C;
-    
-    public static State currentState = State.FORWARD;
-    
-    private static final int LightCutoff = 40;
+	private static final int TireDiameterMm = 56;
+	private static final int TrackWidthMm = 114;
+	private static final int LightCutoff = 40;
     private static double RobotMoveSpeed;
     private static double RobotTurnSpeed;
-    
-    private static final int TireDiameterMm = 56;
-    private static final int TrackWidthMm = 114;
-    
-	public static void main (String[] args) {
-		LightSensor leftLight = new LightSensor(SensorPort.S4);
-        LightSensor rightLight = new LightSensor(SensorPort.S1);
+	private static final LightSensor RightLight = new LightSensor(SensorPort.S4);
+    private static final LightSensor LeftLight = new LightSensor(SensorPort.S1);
+    public static final UltrasonicSensor FrontSensor = new UltrasonicSensor(SensorPort.S2);
+    private static State currentState = State.FORWARD;
 
-        DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, leftMotor, rightMotor, true);
-        
-        RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.4;
-        RobotTurnSpeed = pilot.getMaxRotateSpeed() * 0.1;
-        
-        // tracker provides a Pose updated every time pilot performs a move
+	public static void main(String[] args) {
+		
+		Pose startPose = null;
+		Pose currentPose;
+	    Point startPoint = null;
+	    float dist = 0;
+	    float heading = 0;
+	    long inRangeTime = 0;
+		
+		// Configure pilot + tracker
+		DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, Motor.C, Motor.A, true);
+		RobotMoveSpeed = pilot.getMaxTravelSpeed() * 0.4;
+		RobotTurnSpeed = pilot.getMaxTravelSpeed() * 0.18;
+        pilot.setTravelSpeed(RobotMoveSpeed);
         OdometryPoseProvider tracker = new OdometryPoseProvider(pilot);
         
-        pilot.setTravelSpeed(RobotMoveSpeed);
-        // Needed for rotate(angle) method
-        // pilot.setRotateSpeed(RobotTurnSpeed);
-
-        // start moving to begin with
+        // Move forward until we hit white
         pilot.forward();
-
-		// Busy wait for a sensor to hit the white ground
-		while(leftLight.getLightValue() < LightCutoff &&
-		      rightLight.getLightValue() < LightCutoff);
-		
-		// we will need to return here later
-		Pose startPose = tracker.getPose();
-		Point startPoint = startPose.getLocation();
-		boolean starting = true;
-
-		State greenDirection;
-		if(leftLight.getLightValue() >= LightCutoff) {
-			greenDirection = State.TURNING_RIGHT;
+        while(RightLight.getLightValue() < LightCutoff &&
+  		      LeftLight.getLightValue() < LightCutoff);
+        
+        // Store initial turn direction
+        State greenDirection;
+		if(RightLight.getLightValue() >= LightCutoff) {
+			greenDirection = State.TURNING_LEFT;
+			System.out.println("Left turn bias.");
 		}
 		else {
-		  	greenDirection = State.TURNING_LEFT;
+		  	greenDirection = State.TURNING_RIGHT;
+		  	System.out.println("Right turn bias.");
 		}
+		
+		// For checking we've moved away from start position
+		boolean starting = true;
 
-        // begin main loop
+		// Main loop yo
         boolean running = true;
+        boolean stopping = false;
         while (running) {
         	
-        	if(leftLight.getLightValue() >= LightCutoff && rightLight.getLightValue() >= LightCutoff) {
-        		// Prefer the direction in which we started walking around the pitch
-        		if(greenDirection == State.TURNING_LEFT) {
-        			System.out.println("Turning left.");
-                    currentState = State.TURNING_LEFT;
-                    pilot.setTravelSpeed(RobotTurnSpeed);
-                    pilot.rotateLeft();
+        	System.out.println(dist);
+        	// Avoid walls
+        	
+        	if (FrontSensor.getDistance() <= 14) {
+        		System.out.println("Avoiding wall.");
+        		pilot.setTravelSpeed(RobotTurnSpeed);
+        		if (greenDirection == State.TURNING_LEFT) {
+        			currentState = State.TURNING_LEFT;
+                    pilot.steerBackward(-160);
         		} else {
-        			System.out.println("Turning right.");
-                    currentState = State.TURNING_RIGHT;
-                    pilot.setTravelSpeed(RobotTurnSpeed);
-                    pilot.rotateRight();
+        			currentState = State.TURNING_RIGHT;
+                    pilot.steerBackward(160);
         		}
         	}
-            
-            if (currentState == State.FORWARD) {
-                if (leftLight.getLightValue() >= LightCutoff) {
-                    System.out.println("Turning right.");
-                    currentState = State.TURNING_RIGHT;
-                    pilot.setTravelSpeed(RobotTurnSpeed);
-                    pilot.rotateRight();
-                } else if (rightLight.getLightValue() >= LightCutoff) {
-                    System.out.println("Turning left.");
+        	
+        	// Corner case (both lights in white)
+        	if (RightLight.getLightValue() >= LightCutoff && LeftLight.getLightValue() >= LightCutoff) {
+        		System.out.println("Corner turn.");
+        		if (greenDirection == State.TURNING_LEFT) {
                     currentState = State.TURNING_LEFT;
                     pilot.setTravelSpeed(RobotTurnSpeed);
-                    pilot.rotateLeft();
-                }
-            } else if (currentState == State.TURNING_RIGHT || currentState == State.TURNING_LEFT) {
-                if (leftLight.getLightValue() < LightCutoff &&
-                    rightLight.getLightValue() < LightCutoff) {
-                    System.out.println("Going forward.");
-                    currentState = State.FORWARD;
-                    pilot.setTravelSpeed(RobotMoveSpeed);
-                    pilot.forward();
-                }
-            } else {
-                System.out.println("Impossible state!");
-            }
-
-
-            if (Button.readButtons() != 0)
-                running = false;
-            
-            Pose currentPose = tracker.getPose();
-            float dist = currentPose.distanceTo(startPoint);
-        	System.out.println(dist);
+                    pilot.steer(200);
+        		} else {
+                    currentState = State.TURNING_RIGHT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
+                    pilot.steer(-200);
+        		}
+        	}
         	
-        	if(dist > 160) {
+        	if (currentState == State.FORWARD) {
+        		System.out.println("Forward.");
+        		if (RightLight.getLightValue() >= LightCutoff) {
+                    currentState = State.TURNING_LEFT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
+                    pilot.steer(40);
+                } else if (LeftLight.getLightValue() >= LightCutoff) {
+                    currentState = State.TURNING_RIGHT;
+                    pilot.setTravelSpeed(RobotTurnSpeed);
+                    pilot.steer(-40);
+                }
+        	
+        	} else if (currentState == State.TURNING_LEFT) {
+        		// Set start position if we are beginning to track edge
+        		if (startPose == null) {
+        			startPose = tracker.getPose();
+        			startPoint = startPose.getLocation();
+        		}
+        		if (RightLight.getLightValue() < LightCutoff) {
+	        		currentState = State.FORWARD;
+	        		pilot.setTravelSpeed(RobotMoveSpeed);
+	        		pilot.steer(-7);
+        		}
+        		
+        	} else if (currentState == State.TURNING_RIGHT) {
+        		// Set start position if we are beginning to track edge
+        		if (startPose == null) {
+        			startPose = tracker.getPose();
+        			startPoint = startPose.getLocation();
+        		}
+        		if (LeftLight.getLightValue() < LightCutoff) {
+	        		currentState = State.FORWARD;
+	        		pilot.setTravelSpeed(RobotMoveSpeed);
+	        		pilot.steer(7);
+        		}
+        		
+        	} else {
+        		System.out.println("Impossible state!");
+        	}
+        	
+        	// Update distance to startPoint
+        	if (startPoint != null) {
+	        	currentPose = tracker.getPose();
+	            dist = currentPose.distanceTo(startPoint);
+	            heading = currentPose.getHeading();
+        	}
+	        
+        	// Don't detect startPoint proximity until we've moved away
+        	if (dist > 200) {
         		starting = false;
         	}
-        	// for defender 50 works, attacker 100
-        	else if(!starting && dist <= 50 /* empirical */) {
+        	
+        	// Detect when we're close to startPoint
+        	if (!starting && !stopping && dist <= 180) {
+        		System.out.println("Heading: " + heading);
+        		if ((greenDirection == State.TURNING_RIGHT && heading > -95 && heading < 20) ||
+        			(greenDirection == State.TURNING_LEFT && heading < 95 && heading > -20)) {
+	        		inRangeTime = System.currentTimeMillis();
+	        		stopping = true;
+	        		System.out.println("Stopping...");
+        		}
+        	}
+        	
+        	// Keep going for a while once in range
+        	if (stopping && System.currentTimeMillis() - inRangeTime >= 1700) {
         		running = false;
         	}
+        	
+        	// Kill by pressing something
+        	if (Button.readButtons() != 0)
+                running = false;
+        	
         }
-
-		pilot.stop();
-		
+        
+        System.out.println("Stopped!");
+        pilot.stop();
         Button.waitForAnyPress();
 	}
 
