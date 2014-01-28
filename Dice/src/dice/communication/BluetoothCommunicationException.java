@@ -1,5 +1,9 @@
 package dice.communication;
 
+/*
+ * @author Joris S. Urbaitis
+ */
+
 public class BluetoothCommunicationException extends Exception {
 
 	private static final long serialVersionUID = 1L;
