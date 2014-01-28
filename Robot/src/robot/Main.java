@@ -13,6 +13,7 @@ import robot.communication.OnNewInstructionHandler;
 
 public class Main {
 	
+	private static boolean quit = false;
 	private static IssuedInstruction currentInstruction, newInstruction;
 	
 	public static void main(String[] args) {
@@ -21,12 +22,17 @@ public class Main {
 			public void onNewInstruction(IssuedInstruction instruction) {
 				newInstruction = instruction;
 			}
+
+			@Override
+			public void onExitRequested() {
+				quit = true;
+			}
 		});
 		
 		conn.openConnection();
 		conn.start();
 		
-		while(Button.ESCAPE.isUp()) {
+		while(!quit) {
 			if(currentInstruction != newInstruction) {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
@@ -41,8 +47,9 @@ public class Main {
 				}
 			}
 		}
+		
+		System.out.println("Exiting");
 
-		Button.ESCAPE.waitForPressAndRelease();
 		conn.closeConnection();
 	}
 }

@@ -16,6 +16,8 @@ public class BluetoothDiceConnection extends Thread {
 
 	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
 	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
+	
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
 
 	private boolean connected = false;
 	private boolean isRunning = true;
@@ -85,6 +87,14 @@ public class BluetoothDiceConnection extends Thread {
 			} catch (BluetoothCommunicationException e) {
 				e.printStackTrace();
 			}
+		} else if(Arrays.equals(res, EXIT_MESSAGE)) {
+			try {
+				this.send(EXIT_MESSAGE);
+			} catch (BluetoothCommunicationException e) {
+				e.printStackTrace();
+			}
+			
+			this.instructionHandler.onExitRequested();
 		} else {
 			IssuedInstruction instruction = new IssuedInstruction(res);
 			this.instructionHandler.onNewInstruction(instruction);

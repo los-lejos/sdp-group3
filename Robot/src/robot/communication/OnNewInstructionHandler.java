@@ -6,4 +6,5 @@ package robot.communication;
 
 public interface OnNewInstructionHandler {
 	public void onNewInstruction(IssuedInstruction instruction);
+	public void onExitRequested();
 }
