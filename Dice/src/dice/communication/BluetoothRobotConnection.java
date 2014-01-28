@@ -3,6 +3,7 @@ package dice.communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommFactory;
@@ -14,9 +15,11 @@ import lejos.pc.comm.NXTInfo;
  */
 
 public class BluetoothRobotConnection extends Thread {
-	
+
 	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
 	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
+	
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
 	
 	private static final byte INSTRUCTION_CALLBACK_MAX = 4;
 	private RobotCommunicationCallback[] instructionCallbacks;
@@ -31,11 +34,13 @@ public class BluetoothRobotConnection extends Thread {
 	private InputStream in;
 	private OutputStream out;
 	
-	private RobotInstruction instructionToSend;
-	
-
-	public BluetoothRobotConnection(String deviceName, String deviceMacAddress) {
-		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, deviceName, deviceMacAddress);
+	public BluetoothRobotConnection(RobotType robot) {
+		if(robot == RobotType.ATTACKER) {
+			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
+		} else {
+			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Ball-E", "0016530A5C22");
+		}
+		
 		nxtConn = new NXTConnector();
 		
 		instructionCallbacks = new RobotCommunicationCallback[INSTRUCTION_CALLBACK_MAX];
@@ -56,13 +61,18 @@ public class BluetoothRobotConnection extends Thread {
 	        if(instructionCallbacks[currentInstructionCallback] != null) {
 	        	instructionCallbacks[currentInstructionCallback].onTimeout();
 	        }
-	        
-	        synchronized(instructionToSend) {
-	        	instructionToSend = instruction;
-	        	instructionToSend.getInstruction()[0] = currentInstructionCallback;
-	        	instructionCallbacks[currentInstructionCallback] = instructionToSend.getCallback();
-	        }
-        }  
+
+        	instruction.getInstruction()[0] = currentInstructionCallback;
+        	instructionCallbacks[currentInstructionCallback] = instruction.getCallback();
+        	
+        	// Send to the robot
+        	this.send(instruction.getInstruction());
+        }
+	}
+	
+	private void send(byte[] msg) throws IOException {
+		out.write(msg);
+		out.flush();
 	}
 	
 	@Override
@@ -73,7 +83,6 @@ public class BluetoothRobotConnection extends Thread {
         	while(isRunning) {
     			try {
     				this.receiveMessages();
-    				this.sendMessages();
     			} catch(IOException e) {
     				e.printStackTrace();
     			} catch (BluetoothCommunicationException e) {
@@ -81,16 +90,23 @@ public class BluetoothRobotConnection extends Thread {
     			}
     		}
     		
-    		this.closeConnection();
+        	try {
+				in.close();
+				out.close();
+				nxtConn.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
         }
 	}
 	
 	private void receiveMessages() throws BluetoothCommunicationException, IOException {
-		synchronized(instructionCallbacks) {
-			if(in.available() >= RobotInstruction.LENGTH) {
-				byte[] res = new byte[4];
-				in.read(res);
-				
+		byte[] res = new byte[4];
+		in.read(res);
+		
+		if(!Arrays.equals(res, EXIT_MESSAGE)) {
+			synchronized(instructionCallbacks) {	
 				byte instructionId = res[0];
 				RobotCommunicationCallback callback = instructionCallbacks[instructionId];
 				if(callback != null) {
@@ -99,16 +115,6 @@ public class BluetoothRobotConnection extends Thread {
 				else {
 					throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
 				}
-			}
-		}
-	}
-	
-	private void sendMessages() throws IOException {
-		synchronized(instructionToSend) {
-			if(instructionToSend != null) {
-				out.write(instructionToSend.getInstruction());
-				out.flush();
-				instructionToSend = null;
 			}
 		}
 	}
@@ -127,23 +133,21 @@ public class BluetoothRobotConnection extends Thread {
 	
 	public void handshake() throws BluetoothCommunicationException {
 		System.out.println("Sending handshake to " + nxtInfo.name);
-		
+
 		try {
-			out.write(HANDSHAKE_MESSAGE);
-			out.flush();
+			this.send(HANDSHAKE_MESSAGE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		byte[] response = null;
+		byte[] response = new byte[HANDSHAKE_RESPONSE.length];
 		try {
-			// This blocks, should probably be wrapped
 			in.read(response);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		if(response == HANDSHAKE_RESPONSE) {
+
+		if(Arrays.equals(response, HANDSHAKE_RESPONSE)) {
 			System.out.println("Handshake completed with " + nxtInfo.name);
 		}
 		else {
@@ -153,17 +157,10 @@ public class BluetoothRobotConnection extends Thread {
 		connected = true;
 	}
 	
-	public void closeConnection() {
-		try {
-			isRunning = false;
-			in.close();
-			out.close();
-			nxtConn.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			connected = false;
-		}
+	public void closeConnection() throws IOException {
+		isRunning = false;
+		connected = false;
+		
+		this.send(EXIT_MESSAGE);
 	}
-
 }

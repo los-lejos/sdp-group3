@@ -19,6 +19,9 @@ PORT = 28541
 
 # Distinct between field size line or entity line
 ENTITY_BIT = 'E';
+BALL_BIT = 'O';
+BLUE_BIT = 'B';
+YELLOW_BIT = 'Y';
 PITCH_SIZE_BIT  = 'P';
 
 class Vision:
@@ -76,6 +79,7 @@ class Vision:
                 # If the rest of the system is not up yet/gets quit,
                 # just wait for it to come available.
                 time.sleep(1)
+                print("Connection error, sleeping 1s...")
 
                 # Strange things seem to happen to X sometimes if the
                 # display isn't updated for a while
@@ -89,6 +93,7 @@ class Vision:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect( (HOST, PORT) )
         self.connected = True
+        print("Successfully connected")
 
     def quit(self):
         self.running = False
@@ -103,8 +108,9 @@ class Vision:
         
         self.gui.updateLayer('raw', frame)
 
-        ents = self.features.extractFeatures(frame)
-        self.outputEnts(ents)
+        if self.preprocessor.hasPitchSize:
+            ents = self.features.extractFeatures(frame)
+            self.outputEnts(ents)
 
         self.gui.loop()
 
@@ -130,11 +136,21 @@ class Vision:
         if not self.connected or not self.preprocessor.hasPitchSize:
             return
 
-        self.send("{0} ".format(ENTITY_BIT))
-
-        for name in ['yellow', 'blue', 'ball']:
+        self.send('{0} '.format(ENTITY_BIT))
+        for name in ['yellow1', 'blue1', 'yellow2', 'blue2', 'ball']:
             entity = ents[name]
             x, y = entity.coordinates()
+            x += self.features.Areas[name][0]
+#            if name == 'yellow1':
+#                x += 45
+#            elif name == 'blue1':
+#                x += 0
+#            elif name == 'yellow2':
+#                x += 115
+#            else:
+#                x += 190
+
+            self.send('{0} {1} '.format(x, y))
 
             # The rest of the system needs (0, 0) at the bottom left
             if y != -1:
@@ -146,22 +162,20 @@ class Vision:
                 angle = 360 - (((entity.angle() * (180/math.pi)) - 360) % 360)
             self.filter.change(name, x, y, angle)
 
-        coords = self.filter.update()
+            #coords = self.filter.update()
 
-        for name in ['yellow', 'blue', 'ball']:
-            if name == 'ball':
-                self.send('{0} {1} '.format(coords[name][0], coords[name][1]))
-            else:
-                self.send('{0} {1} {2} '.format(coords[name][0], coords[name][1], coords[name][2]))
+        #for name in ['yellow', 'blue', 'ball']:
+        #   if name == 'ball':
+        #        self.send('{0} {1} '.format(coords[name][0], coords[name][1]))
+        #    else:
+        #        self.send('{0} {1} {2} '.format(coords[name][0], coords[name][1], coords[name][2]))
 
         self.send(str(int(time.time() * 1000)) + " \n")
         
     def send(self, string):
         if self.stdout:
-            print('not sends ' + string)
             sys.stdout.write(string)
         else:
-            print('sends ' + string)
             self.socket.send(string)
 
 class OptParser(OptionParser):

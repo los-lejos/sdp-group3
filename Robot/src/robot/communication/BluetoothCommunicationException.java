@@ -1,4 +1,4 @@
-package dice.communication;
+package robot.communication;
 
 /*
  * @author Joris S. Urbaitis
