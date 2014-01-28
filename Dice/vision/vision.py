@@ -108,8 +108,9 @@ class Vision:
         
         self.gui.updateLayer('raw', frame)
 
-        ents = self.features.extractFeatures(frame)
-        self.outputEnts(ents)
+        if self.preprocessor.hasPitchSize:
+            ents = self.features.extractFeatures(frame)
+            self.outputEnts(ents)
 
         self.gui.loop()
 
@@ -136,9 +137,18 @@ class Vision:
             return
 
         self.send('{0} '.format(ENTITY_BIT))
-        for name in ['yellow', 'blue', 'ball']:
+        for name in ['yellow1', 'blue1', 'yellow2', 'blue2', 'ball']:
             entity = ents[name]
             x, y = entity.coordinates()
+            x += self.features.Areas[name][0]
+#            if name == 'yellow1':
+#                x += 45
+#            elif name == 'blue1':
+#                x += 0
+#            elif name == 'yellow2':
+#                x += 115
+#            else:
+#                x += 190
 
             self.send('{0} {1} '.format(x, y))
 

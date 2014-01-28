@@ -59,5 +59,4 @@ local.properties
 .buildpath
 
 # Vision stuff
-data
 *.pyc
