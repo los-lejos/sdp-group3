@@ -29,9 +29,20 @@ public class SocketVisionReader extends Reader {
 	private static final String GOAL_POS_BIT = "G";
 	private WorldState world;
 
+	private SocketThread thread;
+
 	public SocketVisionReader() {
-		new SocketThread().start();
+		thread = new SocketThread();
+		thread.start();
 	}
+
+	public void stop() {
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+        	e.printStackTrace();
+        }
+    }
 
 	class SocketThread extends Thread {
 
