@@ -5,32 +5,32 @@ package dice.state;
  * @author Craig Wilkinson
  */
 public abstract class GameObject {
-    protected float xPos;
-    protected float yPos;
+    protected double xPos;
+    protected double yPos;
 
-    public GameObject(float xPos, float yPos) {
+    public GameObject(double xPos, double yPos) {
     	this.xPos = xPos;
     	this.yPos = yPos;
     }
 
-    public void setPos(float xPos, float yPos) {
+    public void setPos(double xPos, double yPos) {
     	this.xPos = xPos;
     	this.yPos = yPos;
     }
 
-    public void setX(float xPos) {
+    public void setX(double xPos) {
     	this.xPos = xPos;
     }
 
-    public void setY(float yPos) {
+    public void setY(double yPos) {
     	this.yPos = yPos;
     }
 
-    public float getX() {
+    public double getX() {
     	return xPos;
     }
 
-    public float getY() {
+    public double getY() {
     	return yPos;
     }
 

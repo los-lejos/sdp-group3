@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
-import dice.state.GameObject;
+import dice.state.RobotState;
+import dice.state.WorldState;
+import dice.state.Ball;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)

@@ -96,10 +96,10 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	private void receiveMessages() throws BluetoothCommunicationException, IOException {
-		synchronized(instructionCallbacks) {
-			byte[] res = new byte[4];
-			in.read(res);
+		byte[] res = new byte[4];
+		in.read(res);
 			
+		synchronized(instructionCallbacks) {	
 			byte instructionId = res[0];
 			RobotCommunicationCallback callback = instructionCallbacks[instructionId];
 			if(callback != null) {
