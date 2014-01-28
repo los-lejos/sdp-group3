@@ -1,5 +1,7 @@
 package dice.state;
 
+/** @author Craig Wilkinson
+ */
 public class Ball extends GameObject {
 	private byte currentQuartile;
 
