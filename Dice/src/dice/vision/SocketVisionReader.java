@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
+import dice.state.GameObject;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
@@ -20,10 +21,11 @@ import java.util.Scanner;
  */
 public class SocketVisionReader extends Reader {
 
-	public static final int PORT = 28541;
-	public static final String ENTITY_BIT = "E";
-	public static final String PITCH_SIZE_BIT = "P";
-	public static final String GOAL_POS_BIT = "G";
+	private static final int PORT = 28541;
+	private static final String ENTITY_BIT = "E";
+	private static final String PITCH_SIZE_BIT = "P";
+	private static final String GOAL_POS_BIT = "G";
+	private WorldState world;
 
 	public SocketVisionReader() {
 		new SocketThread().start();
@@ -71,19 +73,51 @@ public class SocketVisionReader extends Reader {
 
 			if (tokens[0].equals(ENTITY_BIT)) {
 
-				double x1 = Double.parseDouble(tokens[1]); // yellow x
-				double y1 = Double.parseDouble(tokens[2]); // yellow y
-				double d1 = Double.parseDouble(tokens[3]); // yellow angle
+				// parse robots from left to right on the screen
 
-				double x2 = Double.parseDouble(tokens[4]); // blue x
-				double y2 = Double.parseDouble(tokens[5]); // blue y
-				double d2 = Double.parseDouble(tokens[6]); // blue angle
+				// leftmost defender
+				double x1 = Double.parseDouble(tokens[1]); // x
+				double y1 = Double.parseDouble(tokens[2]); // y
+				double d1 = Double.parseDouble(tokens[3]); // angle
 
-				double x3 = Double.parseDouble(tokens[7]); // ball x
-				double y3 = Double.parseDouble(tokens[8]); // ball y
+                // left attacker
+				double x2 = Double.parseDouble(tokens[4]); // x
+				double y2 = Double.parseDouble(tokens[5]); // y
+				double d2 = Double.parseDouble(tokens[6]); // angle
+
+				// right attacker
+				double x3 = Double.parseDouble(tokens[7]); // x
+				double y3 = Double.parseDouble(tokens[8]); // y
+				double d3 = Double.parseDouble(tokens[9]); // angle
+
+                // rightmost defender
+				double x4 = Double.parseDouble(tokens[10]); // x
+				double y4 = Double.parseDouble(tokens[11]); // y
+				double d4 = Double.parseDouble(tokens[12]); // angle
+
+				// ball
+				double xBall = Double.parseDouble(tokens[13]); // x
+				double yBall = Double.parseDouble(tokens[14]); // y
+
+
 				// +timestamp
 				propagate(x1, y1, d1, x2, y2, d2, x3, y3,
 						Long.parseLong(tokens[9]));
+
+				// if this is the first time we have heard about the
+				// world, initialize the world state
+				if (world == null) {
+					// first yellow
+					RobotState opponentDefender = new RobotState(x1, y1);
+					RobotState ourAttacker = new RobotState(x2, y2);
+					RobotState opponentAttacker = new RobotState(x3, y3);
+					RobotState ourDefender = new RobotState(x4, y4);
+					Ball ball = new Ball(xBall, yBall);
+					world = new WorldState(opponentDefender, ourAttacker,
+					                       opponentAttacker, ourDefender,
+					                       ball); // stuff
+                }
+
 
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
 
