@@ -1,9 +1,6 @@
 package dice.strategy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import dice.communication.RobotCommunication;
+import dice.communication.RobotType;
 import dice.state.WorldState;
 
 /*
@@ -21,37 +18,38 @@ import dice.state.WorldState;
 
 public class StrategyEvaluator {
 	
-	// Actions currently assigned to the robots
-	StrategyAction defenderAction, attackerAction;
-	
-	private List<StrategyAction> possibleActions = new ArrayList<StrategyAction>();
-	
+	private RobotStrategyState attacker, defender;
+
 	public StrategyEvaluator() {
+		// Populate attacker actions
+		attacker = new RobotStrategyState();
+		attacker.addAction(new InterceptAction(RobotType.ATTACKER));
 		
+		// Populate defender actions
+		defender = new RobotStrategyState();
+		defender.addAction(new InterceptAction(RobotType.DEFENDER));
 	}
 
 	/*
-	 * Returns possible actions sorted by their utility from best to worst.
+	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
-		possibleActions.clear();
-		
-		// Take possible moves, ex:
-		// check to see if opponent's defending robot will get to the ball before it leaves the zone
-		//	if yes, move attacking robot to intercept the ball
-		//	if no, move to either middle of zone or inbetween
-		
-		// add those possible actions to a list together with their utility values
-		// choose the best one
-		
-		StrategyAction bestAttackerAction = null, bestDefenderAction = null;
-		
+		StrategyAction bestAttackerAction = attacker.getBestAction(state);
+		StrategyAction bestDefenderAction = defender.getBestAction(state);
+
 		// Flag that, if set, causes the new action to be sent to the robot
 		// regardless of what it is doing right now
 		boolean attackerOverride = false, defenderOverride = false;
+		
+		// Do custom logic here, maybe we want to override the given action to cooperate and pass the ball
 
-		if(defenderOverride || defenderAction == null || defenderAction.isCompleted() || !defenderAction.isPossible(state)) {
-			RobotCommunication.getInstance().sendInstruction(bestDefenderAction.getInstruction());
+		// Check if we should send actions to the robots
+		if(defenderOverride || defender.needsNewAction(state)) {
+			defender.setCurrentAction(bestDefenderAction);
+		}
+		
+		if(attackerOverride || attacker.needsNewAction(state)) {
+			attacker.setCurrentAction(bestAttackerAction);
 		}
 	}
 }
