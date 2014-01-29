@@ -12,10 +12,8 @@ public class InterceptAction extends StrategyAction {
 
 	private byte x, y;
 	
-	public InterceptAction(RobotType target, byte x, byte y) {
+	public InterceptAction(RobotType target) {
 		super(target);
-		this.x = x;
-		this.y = y;
 	}
 	
 	public boolean isPossible(WorldState state) {

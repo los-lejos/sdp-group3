@@ -9,12 +9,14 @@ import dice.state.WorldState;
  * @author Joris S. Urbaitis
  */
 
-public abstract class StrategyAction {
+public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	
 	private RobotCommunicationCallback callback;
 	private RobotType target;
 	
 	private boolean completed = false;
+	
+	private int cachedUtility = 0;
 	
 	public StrategyAction(RobotType target) {
 		this.target = target;
@@ -35,8 +37,16 @@ public abstract class StrategyAction {
 	}
 
 	public abstract boolean isPossible(WorldState state);
-	public abstract int calculateUtility(WorldState state);
+	protected abstract int calculateUtility(WorldState state);
 	public abstract RobotInstruction getInstruction();
+	
+	public void updateUtility(WorldState state) {
+		this.cachedUtility = this.calculateUtility(state);
+	}
+	
+	public int getCachedUtility() {
+		return this.cachedUtility;
+	}
 	
 	public RobotCommunicationCallback getCallback() {
 		return callback;
@@ -45,8 +55,15 @@ public abstract class StrategyAction {
 	public boolean isCompleted() {
 		return completed;
 	}
-	
+
 	public RobotType getTargetRobot() {
 		return target;
 	}
+	
+	@Override
+    public int compareTo(StrategyAction a) {
+		Integer a1Utility = this.getCachedUtility();
+		Integer a2Utility = a.getCachedUtility();
+        return a1Utility.compareTo(a2Utility);
+    }
 }
