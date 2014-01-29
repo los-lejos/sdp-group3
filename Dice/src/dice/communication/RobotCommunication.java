@@ -18,19 +18,32 @@ public class RobotCommunication {
 	
 	private RobotCommunication() {}
 	
-	public void init() {
-		attacker = new BluetoothRobotConnection(RobotType.ATTACKER);
-		this.initRobotConnection(attacker);
-		
-		//defender = new BluetoothRobotConnection(RobotType.DEFENDER);
-		//this.initRobotConnection(defender);
-		
-		//this.sendInstruction(new RobotInstruction())
+	public void init(RobotType robot) {
+		if(robot == RobotType.ATTACKER) {
+			attacker = new BluetoothRobotConnection(RobotType.ATTACKER);
+			this.initRobotConnection(attacker);
+		} else {
+			defender = new BluetoothRobotConnection(RobotType.DEFENDER);
+			this.initRobotConnection(defender);
+		}
 	}
 	
 	public void close() {
-		attacker.closeConnection();
-		defender.closeConnection();
+		if(attacker != null) {
+			try {
+				attacker.closeConnection();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(defender != null) {
+			try {
+				defender.closeConnection();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void initRobotConnection(BluetoothRobotConnection robot) {
