@@ -19,9 +19,9 @@ class Features:
                        'blue2': (30, 54, 166) }
         self.Areas = { 'ball' : (0, 0, 256, 152),
                        'blue1': (0, 0, 65, 152),
-                       'yellow1': (45, 0, 90, 152),
-                       'yellow2': (115, 0, 90, 152),
-                       'blue2': (190, 0, 65, 152) }
+                       'blue2': (45, 0, 90, 152),
+                       'yellow1': (115, 0, 90, 152),
+                       'yellow2': (190, 0, 65, 152) }
     
     def extractFeatures(self, frame):
 

@@ -141,14 +141,6 @@ class Vision:
             entity = ents[name]
             x, y = entity.coordinates()
             x += self.features.Areas[name][0]
-#            if name == 'yellow1':
-#                x += 45
-#            elif name == 'blue1':
-#                x += 0
-#            elif name == 'yellow2':
-#                x += 115
-#            else:
-#                x += 190
 
             self.send('{0} {1} '.format(x, y))
 

@@ -11,7 +11,7 @@ class Gui:
     the rest must be features and will be drawn on top
     """
     layersets = {
-            'default': ['raw', 'yellow', 'blue', 'ball'],
+            'default': ['raw', 'yellow1', 'blue1', 'blue2', 'yellow2', 'ball'],
             'yellow': ['threshY', 'yellow'],
             'blue': ['threshB', 'blue'],
             'ball': ['threshR', 'ball']
@@ -26,10 +26,17 @@ class Gui:
                 'threshR': None,
 
                 # Overlay layers
-                'yellow': None,
-                'blue': None,
+                'yellow1': None,
+                'blue1': None,
+                'yellow2': None,
+                'blue2': None,
                 'ball' : None,
                 }
+        self.Areas = { 'ball' : (0, 0, 256, 152),
+                       'blue1': (0, 0, 65, 152),
+                       'yellow1': (45, 0, 90, 152),
+                       'yellow2': (115, 0, 90, 152),
+                       'blue2': (190, 0, 65, 152) }
 
         # These layers are drawn regardless of the current layerset
         self._persistentLayers = {
@@ -64,7 +71,11 @@ class Gui:
                 continue
             
             elif isinstance(toDraw, DrawingLayer):
-                baseLayer.addDrawingLayer(toDraw)
+                # baseLayer.addDrawingLayer(toDraw)
+                layer = Image((toDraw.width, toDraw.height))
+                layer.addDrawingLayer(toDraw)
+                layer.applyLayers()
+                baseLayer.blit(layer, (self.Areas[key][0],0))
 
             else:
                 toDraw.draw(entityLayer)
