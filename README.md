@@ -1,4 +1,4 @@
-# The NXT Best Thing
+# Los leJOS
 
 ## Setup
 

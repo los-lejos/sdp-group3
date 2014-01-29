@@ -1,0 +1,17 @@
+Sam - Thinks 3, general contributions towards a few aspects but feels he could contribute more
+
+Tom - Thinks 4, Feels that his contribution towards hardware is short limited given the scope of the project and that relatively has contributed a lot.
+
+Pete - Thinks 3
+
+Owen - Thinks 3-4, wrote much robot code
+
+Craig - Think 4, wrote code for robot movement as well as vision code in the Java
+
+Robin - Thinks 3 but not confident. Group descended into discussion about general delegation issues at this point. The discussion rounded off into vague agreement on the idea of a 3.
+
+Andrew - Thinks 3, did various management stuff, as well as taking care of some of the robot code.
+
+Joris - Thinks 4, but group pushed for a 5.
+
+Ingvaras - Thinks 4, did a lot of the vision code.

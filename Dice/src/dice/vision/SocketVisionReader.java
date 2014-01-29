@@ -11,6 +11,7 @@ import dice.state.Ball;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
+ * @author Craig Wilkinson
  * 
  *         SocketVisionReader: Captures input from vision system.
  * 

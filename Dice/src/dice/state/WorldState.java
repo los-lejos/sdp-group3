@@ -5,15 +5,15 @@ package dice.state;
  * @author Craig Wilkinson
  */
 public class WorldState {
-    private RobotState opponentDefender;
-    private RobotState opponentAttacker;
-    private RobotState ourDefender;
-    private RobotState ourAttacker;
-    private Ball ball;
+    private GameObject opponentDefender;
+    private GameObject opponentAttacker;
+    private GameObject ourDefender;
+    private GameObject ourAttacker;
+    private GameObject ball;
 
     // populate the world. First all robots and the
     // ball must be created
-    public WorldState(RobotState opponentDefender, RobotState opponentAttacker, RobotState ourDefender, RobotState ourAttacker, Ball ball) {
+    public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
         
         this.opponentDefender = opponentDefender;
         this.opponentAttacker = opponentAttacker;
@@ -22,7 +22,7 @@ public class WorldState {
         this.ball = ball;
     }
 
-    public void update(RobotState opponentDefender, RobotState opponentAttacker, RobotState ourDefender, RobotState ourAttacker, Ball ball) {
+    public void update(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
         
         this.opponentDefender = opponentDefender;
         this.opponentAttacker = opponentAttacker;
@@ -31,19 +31,19 @@ public class WorldState {
         this.ball = ball;
     }
 
-    public RobotState getOpponentDefender() {
+    public GameObject getOpponentDefender() {
     	return opponentDefender;
     }
 
-    public RobotState getOpponentAttacker() {
+    public GameObject getOpponentAttacker() {
     	return opponentAttacker;
     }
 
-    public RobotState getOurDefender() {
+    public GameObject getOurDefender() {
     	return ourDefender;
     }
 
-    public RobotState getOurAttacker() {
+    public GameObject getOurAttacker() {
     	return ourAttacker;
     }
 
