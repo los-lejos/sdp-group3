@@ -26,10 +26,12 @@ class Vision:
         self.stdout = stdout
         self.cam = Camera()
         self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
-        if self.preprocessor.hasPitchSize:
+        if self.preprocessor.has_pitch_size:
             self.gui = Gui(self.preprocessor.pitch_size)
         else:
             self.gui = Gui()
+        self.threshold = Threshold(pitch_num, reset_thresholds)
+        self.threshold_gui = ThresholdGui(self.threshold, self.gui)
 
 if __name__ == "__main__":
 

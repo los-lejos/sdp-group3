@@ -33,17 +33,16 @@ class Threshold:
         self._pitch_num = pitch_num
         self._path_thresholds = os.path.join('data', 'default_thresholds_{0}').format(self._pitch_num)
         self._reset_thresholds = reset_thresholds
-        self.__getDefaults()
+        self.__get_defaults()
 
-    def __getDefaults(self):
+    def __get_defaults(self):
 
         self._threshold_values = None
         self._threshold_values = util.load_from_file(self._path_thresholds)
         if (self._threshold_values is None) or (self._reset_thresholds):
             self._threshold_values = dict(self.default_thresholds[self._pitch_num])
-        self._diff = defaultDiff[self._pitch_num]
 
-    def __saveDefaults(self):
+    def __save_defaults(self):
         util.dump_to_file(self._threshold_values, self._path_thresholds.format(self._pitch_num))
 
     def yellowT(self, frame):
@@ -92,7 +91,7 @@ class Threshold:
 
         return result
 
-    def updateValues(self, entity, newValues):
+    def update_values(self, entity, newValues):
         self._threshold_values[entity] = newValues
-        self.__saveDefaults()
+        self.__save_defaults()
 

@@ -23,49 +23,49 @@ class Preprocessor:
     def __init__(self, pitch_num, reset_pitch_size, scale):
 
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
-        self._cropRect = None
+        self._crop_rect = None
 
         if not reset_pitch_size:
-            self.__loadPitchSize()
+            self.__load_pitch_size()
 
-        if self._cropRect is None:
-            self._cropRect = []
-            self.hasPitchSize = False
+        if self._crop_rect is None:
+            self._crop_rect = []
+            self.has_pitch_size = False
         else:
-            self.hasPitchSize = True
+            self.has_pitch_size = True
 
-    def __loadPitchSize(self):
-        self._cropRect = util.load_from_file(self._path_pitch_size)
+    def __load_pitch_size(self):
+        self._crop_rect = util.load_from_file(self._path_pitch_size)
 
-    def __savePitchSize(self):
-        util.dump_to_file(self._cropRect, self._path_pitch_size)
+    def __save_pitch_size(self):
+        util.dump_to_file(self._crop_rect, self._path_pitch_size)
 
     def preprocess(self, frame, scale):
         
-        if self.hasPitchSize:
-            frame = frame.crop(*self._cropRect).scale(scale)
+        if self.has_pitch_size:
+            frame = frame.crop(*self._crop_rect).scale(scale)
         return frame
 
     def setNextPitchCorner(self, point):
 
         assert len(point) == 2, "setNextPitchCorner takes a tuple (x, y)"
 
-        length = len(self._cropRect)
+        length = len(self._crop_rect)
 
         if length == 0:
-            self._cropRect.extend(point)
+            self._crop_rect.extend(point)
         elif length == 2:
-            next = map(sub, point, self._cropRect)
-            self.hasPitchSize = True
-            self._cropRect.extend(next)
-            self.__savePitchSize()
+            next = map(sub, point, self._crop_rect)
+            self.has_pitch_size = True
+            self._crop_rect.extend(next)
+            self.__save_pitch_size()
         else:
             return
-        print "Cropped rectangle {0}".format(self._cropRect)
+        print "Cropped rectangle {0}".format(self._crop_rect)
 
     @property
     def pitch_size(self):
-        if not self.hasPitchSize:
+        if not self.has_pitch_size:
             return None
-        return (self._cropRect[2], self._cropRect[3])
+        return (self._crop_rect[2], self._crop_rect[3])
 
