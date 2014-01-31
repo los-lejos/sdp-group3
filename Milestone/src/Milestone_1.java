@@ -15,7 +15,7 @@ import lejos.robotics.navigation.Pose;
  * @author Andrew Johnston
  */
 
-public class Main {
+public class Milestone_1 {
 	
 	public enum State {
 		FORWARD, TURNING_RIGHT, TURNING_LEFT
