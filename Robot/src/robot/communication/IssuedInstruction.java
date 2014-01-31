@@ -22,4 +22,13 @@ public class IssuedInstruction {
 		return response;
 	}
 	
+	public byte getType() {
+		return this.type;
+	}
+	
+	public byte[] getParameters() {
+		byte[] parameters = {this.param1, this.param2};
+		return parameters;
+	}
+	
 }

@@ -20,4 +20,11 @@
 		<nature>org.lejos.nxt.ldt.leJOSNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Shared</name>
+			<type>2</type>
+			<location>/afs/inf.ed.ac.uk/user/s11/s1136004/inf3/sdp/sdp-group3/Shared</location>
+		</link>
+	</linkedResources>
 </projectDescription>

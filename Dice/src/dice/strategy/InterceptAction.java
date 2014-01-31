@@ -1,5 +1,6 @@
 package dice.strategy;
 
+import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
@@ -27,7 +28,7 @@ public class InterceptAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction() {
 		return new RobotInstruction(
-				RobotInstruction.MOVE_TO,
+				RobotInstructions.MOVE_TO,
 				this.x,
 				this.y,
 				this.getTargetRobot(),

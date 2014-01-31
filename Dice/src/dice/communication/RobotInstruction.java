@@ -1,14 +1,12 @@
-package dice.communication;
+package dice.communication; 
+
+import shared.RobotInstructions;
 
 /*
  * @author Joris S. Urbaitis
  */
 
 public class RobotInstruction {
-	public static final byte LENGTH = 4;
-	
-	public static final byte MOVE_TO = 0;
-	public static final byte KICK_TOWARDS = 1;
 	
 	private RobotType robotType;
 	private byte[] instruction;
@@ -19,7 +17,7 @@ public class RobotInstruction {
 		this.callback = callback;
 		
 		// Position 0 in the instruction is reserved for the unique id of this instruction
-		this.instruction = new byte[LENGTH];
+		this.instruction = new byte[RobotInstructions.LENGTH];
 		this.instruction[1] = instructionType;
 		this.instruction[2] = param1;
 		this.instruction[3] = param2;
