@@ -9,15 +9,18 @@ import java.util.ArrayList;
  */
 public class GameObject {
     private List<Position> positions;
+    private double rotation; // the rotation of the object relative
+                             // to 'up' (on the camera)
     private boolean hasBall;
 
-    public GameObject(double xPos, double yPos) {
+    public GameObject(double xPos, double yPos, double rotation) {
     	// add the first position
     	Position position = new Position(xPos, yPos);
     	positions = new ArrayList<Position>();
     	positions.add(position);
 
     	this.hasBall = false;
+    	this.rotation = rotation;
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -39,7 +42,10 @@ public class GameObject {
 
     // get the most recent position
     public Position getPos() {
-    	return positions.get(positions.size() - 1);
+    	if (positions.size() > 0)
+            return positions.get(positions.size() - 1);
+        else
+        	return new Position(-1, -1); // essentially a failure
     }
 
     // get the projected position t milliseconds from
@@ -68,8 +74,21 @@ public class GameObject {
 
             return new Position(newX, newY);
         } else
-            return null;
+            return new Position(-1, -1); // essentially a failure
     }
-        
 
+
+    // code to get the rotation. Currently awaiting vision from python
+    // that contains rotation information
+    public double getRotationRelativeTo(GameObject obj) {
+        Position myPos = this.getPos();
+        Position otherPos = obj.getPos();
+
+        double yDiff = otherPos.Y - myPos.Y;
+        double xDiff = otherPos.X - myPos.X;
+        
+        double theta = Math.atan2(yDiff, xDiff);
+
+        return (Math.PI / 2.0) - theta - rotation;
+    }
 }
