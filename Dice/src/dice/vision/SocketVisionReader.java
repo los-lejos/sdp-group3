@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import dice.state.WorldState;
+import dice.state.GameObject;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
