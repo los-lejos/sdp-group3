@@ -17,6 +17,7 @@ public class Main {
 	private static IssuedInstruction currentInstruction, newInstruction;
 	
 	public static void main(String[] args) {
+		
 		final BluetoothDiceConnection conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
 			@Override
 			public void onNewInstruction(IssuedInstruction instruction) {
@@ -53,7 +54,6 @@ public class Main {
 		}
 		
 		System.out.println("Exiting");
-
 		conn.closeConnection();
 	}
 }

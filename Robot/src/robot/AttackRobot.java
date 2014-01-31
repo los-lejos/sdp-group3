@@ -6,6 +6,10 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
+/*
+ * @author Owen Gillespie
+ */
+
 public class AttackRobot extends Robot {
 	
 	public AttackRobot() {
