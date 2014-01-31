@@ -13,9 +13,6 @@ import robot.communication.OnNewInstructionHandler;
 
 public class Main {
 	
-	// private static final AttackRobot ATTACK_ROBOT = new AttackRobot();
-	// private static final DefenseRobot DEFENSE_ROBOT = new DefenseRobot();
-	
 	private static boolean quit = false;
 	private static IssuedInstruction currentInstruction, newInstruction;
 	
@@ -53,7 +50,6 @@ public class Main {
 			if(Button.readButtons() != 0) {
 				quit = true;
 			}
-			
 		}
 		
 		System.out.println("Exiting");
