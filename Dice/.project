@@ -18,7 +18,7 @@
 		<link>
 			<name>Shared</name>
 			<type>2</type>
-			<location>/afs/inf.ed.ac.uk/user/s11/s1136004/inf3/sdp/sdp-group3/Shared</location>
+			<locationURI>PARENT-1-PROJECT_LOC/Shared</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
