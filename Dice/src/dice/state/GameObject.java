@@ -84,11 +84,14 @@ public class GameObject {
         Position myPos = this.getPos();
         Position otherPos = obj.getPos();
 
-        double yDiff = otherPos.Y - myPos.Y;
+        double yDiff = myPos.Y - otherPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
-        double theta = Math.atan2(yDiff, xDiff);
+        double theta = Math.PI / 2.0 - Math.atan2(yDiff, xDiff);
 
-        return (Math.PI / 2.0) - theta - rotation;
+        if (yDiff < 0)
+            return theta - rotation;
+        else
+            return rotation - theta;
     }
 }
