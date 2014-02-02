@@ -50,9 +50,14 @@ public class StrategyEvaluator {
 		// regardless of what it is doing right now
 		boolean attackerOverride = false, defenderOverride = false;
 		
-		// Do custom logic here, maybe we want to override the given action to cooperate and pass the ball
+		// Action overrides	
+		// if defender is passing, attacker needs to receive
+		if (bestDefenderAction instanceof PassAction) {
+			attackerOverride = true;
+			bestAttackerAction = new RecievePassAction(RobotType.ATTACKER);
+		}
 		
-
+		
 		// Check if we should send actions to the robots
 		if(defenderOverride || defender.needsNewAction(state)) {
 			defender.setCurrentAction(bestDefenderAction, state);
