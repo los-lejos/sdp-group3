@@ -1,5 +1,6 @@
 package dice.strategy;
 
+import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
@@ -17,13 +18,11 @@ public class GetBallAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public RobotInstruction getInstruction() {
-		// TODO Auto-generated method stub
+	public RobotInstruction getInstruction(WorldState state) {
 		return null;
 	}
 
