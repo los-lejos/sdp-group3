@@ -19,10 +19,12 @@ PORT = 28541
 
 class Vision:
 
-    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, our_colour, our_side):
+    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, colour_order):
 
         self.running = True
         self.connected = False
+#        self.scale = scale
+#        self.colour_order = colour_order
         self.stdout = stdout
         self.cam = Camera()
         self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
@@ -32,6 +34,7 @@ class Vision:
             self.gui = Gui()
         self.threshold = Threshold(pitch_num, reset_thresholds)
         self.threshold_gui = ThresholdGui(self.threshold, self.gui)
+        self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num)
 
 if __name__ == "__main__":
 
@@ -52,22 +55,15 @@ if __name__ == "__main__":
     parser.add_option('-c', '--scale', dest='scale', type='float', metavar='SCALE', default=0.0,
                       help='Scale down the image in preprocessing stage')
 
-    parser.add_option('-u', '--our-colour', dest='our_colour', type='string', metavar='COLOUR',
-                      help='COLOUR - the colour of our team (yellow/blue)')
-
-    # dumb, could be done automagically
-    parser.add_option('-i', '--our-side', dest='our_side', type='string', metavar='SIDE',
-                      help='SIDE - are we on the left or right side')
+    parser.add_option('-i', '--colour-order', dest='colour_order', type='string', metavar='COLOUR_ORDER', default='yybb'
+                      help='COLOUR_ORDER - the way different colour robots are put from left to right (e. g. "yybb")')
 
     (opts, args) = parser.parse_args()
 
     if opts.pitch not in [0, 1]:
         parser.error('Pitch must be 0 or 1.')
 
-    if opts.our_colour not in ['yellow', 'blue']:
-        parser.error('Invalid (or no) team colour specified.')
+    if opts.colour_order not in ['yybb', 'bbyy', 'ybby', 'byyb', 'ybyb', 'byby']:
+        parser.error('Invalid colour ordering specified.')
 
-    if opts.our_side not in ['left', 'right']:
-        parser.error('Invalid (or no) side specified.')
-
-    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.our_colour, opts.our_side)
+    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.colour_order)
