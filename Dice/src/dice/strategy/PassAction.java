@@ -6,6 +6,9 @@ import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+/*
+ * @author Sam Stern
+ */
 
 /**
  *
