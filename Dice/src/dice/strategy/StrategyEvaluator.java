@@ -24,10 +24,19 @@ public class StrategyEvaluator {
 		// Populate attacker actions
 		attacker = new RobotStrategyState();
 		attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+		attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		attacker.addAction(new BlockAction(RobotType.ATTACKER));
+		attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
+		attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
 		
 		// Populate defender actions
 		defender = new RobotStrategyState();
 		defender.addAction(new InterceptAction(RobotType.DEFENDER));
+		defender.addAction(new ToGoalAction(RobotType.DEFENDER));
+		defender.addAction(new PassAction(RobotType.DEFENDER));
+		defender.addAction(new BlockAction(RobotType.DEFENDER));
+		defender.addAction(new GetBallAction(RobotType.DEFENDER));
+		defender.addAction(new ToZoneCenterAction(RobotType.DEFENDER));
 	}
 
 	/*
@@ -42,6 +51,7 @@ public class StrategyEvaluator {
 		boolean attackerOverride = false, defenderOverride = false;
 		
 		// Do custom logic here, maybe we want to override the given action to cooperate and pass the ball
+		
 
 		// Check if we should send actions to the robots
 		if(defenderOverride || defender.needsNewAction(state)) {

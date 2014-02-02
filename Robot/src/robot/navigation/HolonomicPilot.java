@@ -3,6 +3,8 @@ package robot.navigation;
 import java.util.ArrayList;
 
 import lejos.robotics.RegulatedMotor;
+import lejos.robotics.navigation.Move;
+import lejos.robotics.navigation.MoveController;
 import lejos.robotics.navigation.MoveListener;
 
 /*
@@ -11,7 +13,10 @@ import lejos.robotics.navigation.MoveListener;
  * This class gives us something similar to DifferentialPilot, but
  * for the holonomic design.
  * 
- * TODO Odometry: how do we figure out our new location given wheel diameter?
+ *  Is trackWidth relevant? Need to figure out odometry stuff for this design.
+ * 		Can't just steal this directly from DifferentialPilot since angle info
+ * 		depends on differences in wheel turns.
+ *  - I cannot find any use of it.
  *  
  * TODO Implementing MoveController (needed if we want to use Navigator) forces
  * 		is into implementing some methods that IMO don't make much sense given
@@ -25,23 +30,31 @@ import lejos.robotics.navigation.MoveListener;
  *  - TODO Done?
  */
 
-public class HolonomicPilot {
+public class HolonomicPilot implements MoveController {
 	
-	private double wheelDiameter; // Needed for odometry.
-	private int[] travelSpeed; // we can store the speed of the forwardMotor at position 0 and lateralMotor at position 1
-	private int acceleration; // there is only one variable because it is only sensible to add acceleration to the back/forward movement
+	private double wheelDiameter;
+	private double trackWidth;
+	private double[] travelSpeed; // we can store the speed of the forwardMotor at position 0 and lateralMotor at position 1
+	private double acceleration; // there is only one variable because it is only sensible to add acceleration to the back/forward movement
 	private RegulatedMotor forwardMotor;
 	private RegulatedMotor lateralMotor;
+	private Move currentMovement;
 	private ArrayList<MoveListener> listeners = new ArrayList<MoveListener>();
 	
-	public HolonomicPilot(final double wheelDiameter, final RegulatedMotor forwardMotor, final RegulatedMotor lateralMotor) {
+	public HolonomicPilot(final double wheelDiameter, final double trackWidth, final RegulatedMotor forwardMotor, final RegulatedMotor lateralMotor) {
 		this.wheelDiameter = wheelDiameter;
+		this.trackWidth = trackWidth;
 		this.forwardMotor = forwardMotor;
 		this.lateralMotor = lateralMotor;
 	}
 	
+	@Override
+	public Move getMovement() {
+		return currentMovement;
+	}
+
 	// TODO We will need to inform MoveListeners, for example, when a move is started/completed.
-	
+	@Override
 	public void addMoveListener(MoveListener listener) {
 		listeners.add(listener);
 	}
@@ -49,14 +62,15 @@ public class HolonomicPilot {
 	/*
 	 * NOTE: forward(), backward(), left() and right() depend on motor orientation.
 	 * Will need to look at the actual robot to figure out the correct configuration.
+	 * 
 	 */
-
+	
+	@Override
 	public void forward() {
-		forwardMotor.forward();
-		
+		forwardMotor.forward();		
 	}
 
-	
+	@Override
 	public void backward() {
 		forwardMotor.backward();
 		
@@ -70,47 +84,65 @@ public class HolonomicPilot {
 		lateralMotor.backward();
 	}
 
-	
+	@Override
 	public void stop() {
 		forwardMotor.stop(true);
 		lateralMotor.stop(true);
 		waitComplete();
 	}
 
+	@Override
 	public boolean isMoving() {
 		return forwardMotor.isMoving() || lateralMotor.isMoving();
+	}
+
+	@Override
+	public void travel(double distance) {
+		this.travel(distance, false);
+	}
+
+	@Override
+	public void travel(double distance, boolean immediateReturn) {
+		if (!immediateReturn) waitComplete();	
+		this.travel(distance); // Do some forward/backward travelling here
 	}
 	
 	// Travel a given amount in a given direction.
 	// A navigator class could use this in an implementation of goTo(x, y, heading).
 	// Or x, y, heading could come from PC, if we choose to do it that way.
-	public void travel(double distance, int heading, boolean immediateReturn) {
-		// Do some travelling here.
+	public void travel(double distance, double heading, boolean immediateReturn) {
 		if (!immediateReturn) waitComplete();
+		this.travel(distance);
+		lateralMotor.rotateTo(heading);
 	}
+
+	// This sucks since we would probably like to set lateral speed independently
+	// from forward/backward speed. Included since (right now, anyway) we need this
+	// if we want to implement MoveController. (Do we? We could write a custom navigator
+	// that takes in a HolonomicPilot rather than a MoveController...)
 	
-	public void setTravelSpeed(int speedF, int speedL) {
-		forwardMotor.setSpeed(speedF);
-		lateralMotor.setSpeed(speedL); 
+	// Resolved: We could have two variables passing the speed for the forwardMotor and lateralMotor
+	@Override
+	public void setTravelSpeed(double speedF, double speedL) {
+		forwardMotor.setSpeed((int) speedF);
+		lateralMotor.setSpeed((int) speedL); 
 		this.travelSpeed[0] = speedF;
 		this.travelSpeed[1] = speedL;
 	}
 	
-	public void setAcceleration(int acceleration) {
-		forwardMotor.setAcceleration(acceleration);
+	// setAccelerationSpeed might be a nice/useful method.
+	//		(Seriously, we should do some acceleration. It will look so cool, guys.)
+	@Override
+	public void setAccelerationSpeed(double acceleration){
 		this.acceleration = acceleration;
 	}
-	
-	public int getAcceleration() {
-		return acceleration;
-	}
 
-	
-	public int[] getTravelSpeed() {
+	@Override
+	public double[] getTravelSpeed() {
 		return travelSpeed;
 	}
 
-	
+	@Override
 	public double getMaxTravelSpeed() {
 		return Math.min(forwardMotor.getMaxSpeed(), lateralMotor.getMaxSpeed());
 	}
