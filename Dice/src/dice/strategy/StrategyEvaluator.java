@@ -55,11 +55,11 @@ public class StrategyEvaluator {
 
 		// Check if we should send actions to the robots
 		if(defenderOverride || defender.needsNewAction(state)) {
-			defender.setCurrentAction(bestDefenderAction);
+			defender.setCurrentAction(bestDefenderAction, state);
 		}
 		
 		if(attackerOverride || attacker.needsNewAction(state)) {
-			attacker.setCurrentAction(bestAttackerAction);
+			attacker.setCurrentAction(bestAttackerAction, state);
 		}
 	}
 }

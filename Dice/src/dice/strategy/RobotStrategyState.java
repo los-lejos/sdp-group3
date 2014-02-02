@@ -42,9 +42,9 @@ public class RobotStrategyState {
 		return possibleActions.get(possibleActions.size() - 1);
 	}
 	
-	public void setCurrentAction(StrategyAction action) {
+	public void setCurrentAction(StrategyAction action, WorldState state) {
 		this.action = action;
-		RobotCommunication.getInstance().sendInstruction(action.getInstruction());
+		RobotCommunication.getInstance().sendInstruction(action.getInstruction(state));
 	}
 	
 	public boolean needsNewAction(WorldState state) {
