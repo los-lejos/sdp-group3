@@ -1,0 +1,59 @@
+Strategy
+
+Check to see if ball is in opponents defending zone
+	defender move to center of goal
+
+	check to see if opponent's defending robot will get to the ball before it leaves the zone
+		if yes, move attacker to intercept the ball			
+		if no, move attacker either middle of zone or in between opponents robots depending on whats faster
+
+	check to see if opponent's defender has possession of the ball
+		if yes, determine whether opponent defender is going to pass directly to opponents attacker
+			if yes, place attacker between opponents robots
+			if no, forecast trajectory angle and move attacker to intercept
+	
+	move defender in front of goal
+
+Check to see if ball is in attacking zone
+	defender move to center of goal
+
+	attacker intercept ball
+
+	check if attacker has ball
+		if yes,
+			determine whether to shoot directly or bank
+			turn to shoot
+			shoot
+		if no,
+			attacker move to ball
+
+
+Check to see if ball is in opponents attacking zone
+	check to see if opponent's attacker will get the ball before it leaves the zone
+		if yes, move defender between opponent's attacker and goal
+			defender face opponent's attacker
+		if no, check if ball will move to attacking zone
+			if yes, attacker intercept the ball
+			if no, defender intercept the ball
+
+	check to see if opponent's attacker has possession of the ball
+		if yes, determine which way opponent's attacker is facing
+			forecast trajectory
+			move defender to intercept
+
+Check to see if ball is in defending zone
+	check to see if ball is heading towards the goal
+		if yes, defender intercept
+
+	check to see if defender can reach ball before it leaves the zone
+		if yes, move defender to intercept the ball
+ 		if no, defender move to the middle of the goal and face the ball
+
+	attacker move to opposite side of the pitch from the opponent's attacker
+
+	check to see if defender has possession of the ball
+		if yes, determine whether to pass directly to attacker or to bank
+			defender pivot and shoot
+
+
+
