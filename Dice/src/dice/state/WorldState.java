@@ -46,5 +46,11 @@ public class WorldState {
     public GameObject getOurAttacker() {
     	return ourAttacker;
     }
+    
+    public GameObject getBall() {
+    	return ball;
+    }
+
+    
 
 }
