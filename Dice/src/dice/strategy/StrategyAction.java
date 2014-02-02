@@ -12,7 +12,7 @@ import dice.state.WorldState;
 public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	
 	private RobotCommunicationCallback callback;
-	private RobotType target;
+	protected RobotType target;
 	
 	private boolean completed = false;
 	

@@ -4,6 +4,9 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 
+/*
+ * @author Sam Stern
+ */
 public class RecievePassAction extends StrategyAction {
 	
 	public RecievePassAction(RobotType target) {
