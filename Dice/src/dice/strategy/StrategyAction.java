@@ -38,7 +38,7 @@ public abstract class StrategyAction implements Comparable<StrategyAction>  {
 
 	public abstract boolean isPossible(WorldState state);
 	protected abstract int calculateUtility(WorldState state);
-	public abstract RobotInstruction getInstruction();
+	public abstract RobotInstruction getInstruction(WorldState state);
 	
 	public void updateUtility(WorldState state) {
 		this.cachedUtility = this.calculateUtility(state);
