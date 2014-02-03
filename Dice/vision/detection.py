@@ -9,7 +9,7 @@ Object detection class
 
 Detects objects.
 """
-
+#TODO decouple Detection and Entity classes
 import sys
 import math
 import cv
@@ -19,6 +19,7 @@ from threshold import Threshold
 __author__ = "Ingvaras Merkys"
 
 BALL = 4
+DOT = 5
 
 class Detection:
 
@@ -45,7 +46,10 @@ class Detection:
         hsv = frame.toHSV()
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
-        thresholds = [None, None, None, None, None]
+        # TODO remove/turn off FULL image thresholding for black dots
+        thresholds = [None, None, None, None, None, None]
+        yellow = frame
+        blue = frame
 
         for i in range(0, 4)
             #crop(x, y=None, w=None, h=None, centered=False, smart=False)
@@ -56,17 +60,21 @@ class Detection:
 
             if self._colour_order[i] == 'b':
                 thresholds[i] = self._threshold.blueT(cropped_img).smooth(grayscale=True)
+                blue.blit(thresholds[i], (x, y))
             elif self._colour_order[i] == 'y':
                 thresholds[i] = self._threshold.yellowT(cropped_img).smooth(grayscale=True)
+                yellow.blit(thresholds[i], (x, y))
 
             entities[i] =  self.__find_entity(thresholds[i], i, cropped_img)
 
         thresholds[BALL] = self._threshold.ball(hsv).smooth(grayscale=True)
         entities[BALL] = self.__find_entity(ball, BALL, hsv)
-        #TODO construct threshold display layers
-        # self._gui.updateLayer('threshY', yellow)
-        # self._gui.updateLayer('threshB', blue)
-        # self._gui.updateLayer('threshR', ball)
+        thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
+        self._gui.update_layer('threshY', yellow)
+        self._gui.update_layer('threshB', blue)
+        self._gui.update_layer('threshR', thresholds[BALL])
+        self._gui.update_layer('threshD', thresholds[DOT])
+        return entities
 
     def __find_entity(self, image, which, orig):
 '''
@@ -138,6 +146,9 @@ class Entity:
     def coordinates(self):
         return self._coordinates
 
+    def angle(self):
+        return self._angle
+
     def __clarify_coords(self, image, colour_coords):
     """Given the coordinates of the colored part of 
     """
@@ -147,9 +158,10 @@ class Entity:
         crop_w = min((col_x + 23), image.width)
         crop_h = min((col_y + 23), image.height)
         cropped_img = image.crop(crop_x, crop_y, crop_w, crop_h)
-        #TODO threshold, maybe check if circle??
+        #TODO maybe check if circle??
+        cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
         size = int(self.detection.shape_sizes['dot']*self._scale)
-        entity_blob = self.detection.__find_entity_blob(cropped_img, size)
+        entity_blob = self.detection.__find_entity_blob(cropped_img_threshold, size)
         # if dot is not found return at least the coordinates
         if entity_blob is None:
             return (None, colour_coords)
