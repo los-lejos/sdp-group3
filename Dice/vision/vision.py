@@ -10,12 +10,17 @@ Main class
 Sends data (coordinates of robots and the ball) to localhost over TCP.
 """
 
+import sys
+import time
 from optparse import OptionParser
 
 __author__ = "Ingvaras Merkys"
 
 HOST = 'localhost'
 PORT = 28541
+ENTITY_BIT = 'E'
+PITCH_SIZE_BIT = 'P'
+BALL = 4
 
 class Vision:
 
@@ -49,7 +54,7 @@ class Vision:
                     self.output_pitch_size()
                     self.gui.set_show_mouse(False)
                 else:
-                    self.eventHandler.setClickListener(self.setNextPitchCorner)
+                    self.eventHandler.setClickListener(self.set_next_pitch_corner)
 
                 while self.running:
                     self.process_frame()
@@ -83,8 +88,50 @@ class Vision:
         if self.preprocessor.has_pitch_size:
             entities = self.detection.detect_objects(frame)
 
-        self.outputEnts(entities)
+        self.output_entities(entities)
         self.gui.process_update()
+
+    def set_next_pitch_corner(self, where):
+
+        self.preprocessor.set_next_pitch_corner(where)
+
+        if self.preprocessor.has_pitch_size:
+           #print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
+            self.output_pitch_size()
+            self.gui.set_show_mouse(False)
+            self.gui.update_layer('corner', None)
+        else:
+            self.gui.draw_crosshair(where, 'corner')
+
+    def output_pitch_size(self):
+
+       #print(self.preprocessor.pitch_size)
+        self.send('{0} {1} {2} \n'.format(PITCH_SIZE_BIT,
+                                          self.preprocessor.pitch_size[0],
+                                          self.preprocessor.pitch_size[1]))
+
+    def output_entities(self, entities):
+
+        if not self.connected or not self.preprocessor.hasPitchSize:
+            return
+
+        self.send('{0} '.format(ENTITY_BIT))
+
+        for i in range(0, 4):
+            entity = entities[i]
+            x, y = entity.coordinates()
+            angle = -1 if entity.angle() is None else entity.angle()
+            self.send('{0} {1} {2} '.format(x, y, angle))
+
+        x, y = entities[BALL].coordinates
+        self.send('{0} {1}'.format(x, y))
+        self.send(str(int(time.time() * 1000)) + "\n")
+
+    def send(self, string):
+        if self.stdout:
+            sys.stdout.write(string)
+        else:
+            self.socket.send(string)
 
 if __name__ == "__main__":
 
