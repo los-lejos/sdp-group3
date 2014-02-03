@@ -2,6 +2,11 @@
 *.nxd
 *.nxj
 
+# Autogen .gitignore
+Dice/.gitignore
+Milestone/.gitignore
+Robot/.gitignore
+
 # Directories #
 /build/
 /bin/

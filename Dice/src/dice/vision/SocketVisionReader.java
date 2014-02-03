@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import dice.state.WorldState;
+import dice.state.GameObject;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
@@ -121,11 +122,11 @@ public class SocketVisionReader extends Reader {
 				// world, initialize the world state
 				if (world == null) {
 					// first yellow
-					//RobotState opponentDefender = new RobotState(x1, y1);
-					//RobotState ourAttacker = new RobotState(x2, y2);
-					//RobotState opponentAttacker = new RobotState(x3, y3);
-					//RobotState ourDefender = new RobotState(x4, y4);
-					//Ball ball = new Ball(xBall, yBall);
+					GameObject opponentDefender = new GameObject(x1, y1, 0.0);
+					GameObject ourAttacker = new GameObject(x2, y2, 0.0);
+					GameObject opponentAttacker = new GameObject(x3, y3, 0.0);
+					GameObject ourDefender = new GameObject(x4, y4, 0.0);
+					GameObject ball = new GameObject(xBall, yBall, 0.0);
 					//world = new WorldState(opponentDefender, ourAttacker,
 					//                       opponentAttacker, ourDefender,
 					//                       ball); // stuff
