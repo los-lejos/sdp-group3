@@ -22,12 +22,14 @@ class Gui:
     _layer_sets = { 'default': ['raw', 'yellow', 'blue', 'ball'],
                     'yellow': ['threshY', 'yellow'],
                     'blue': ['threshB', 'blue'],
-                    'ball': ['threshR', 'ball'] }
+                    'ball': ['threshR', 'ball']
+                    'dot': ['threshD'] }
 
     _layers = { 'raw': None,
                 'threshY': None,
                 'threshB': None,
                 'threshR': None,
+                'threshD': None,
                 'yellow': None,
                 'blue': None,
                 'ball' : None }
@@ -210,11 +212,13 @@ class ThresholdGui:
         def yellow(): self.change_entity('yellow')
         def blue(): self.change_entity('blue')
         def ball(): self.change_entity('ball')
+        def dot(): self.change_entity('dot')
 
         key_handler = self._gui.get_event_handler()
         key_handler.add_listener('y', yellow)
         key_handler.add_listener('b', blue)
         key_handler.add_listener('r', ball)
+        key_handler.add_listener('d', dot)
         key_handler.add_listener('t', self.toggle_gui)
 
     def __create_trackbars(self):
