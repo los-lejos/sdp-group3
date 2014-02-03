@@ -13,8 +13,8 @@ import robot.navigation.HolonomicPilot;
 
 public class DefenceRobot extends Robot {
 	
-	private static final int tireDiameterMm = 48;
-	private static final int kickSpeed = 50; // TODO placeholder value
+	private static final int tireDiameterMm = 48; // TODO placeholder value
+	private static final int kickSpeed = 800;
 	private static final NXTRegulatedMotor kickMotor = Motor.B;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
@@ -24,8 +24,9 @@ public class DefenceRobot extends Robot {
 	private final HolonomicPilot pilot;
     
     public DefenceRobot() {
-    	super(kickSpeed, kickMotor, leftLightSensor, rightLightSensor, ballSensor);
+    	super(leftLightSensor, rightLightSensor, ballSensor);
     	pilot = new HolonomicPilot(tireDiameterMm, forwardMotor, lateralMotor);
+    	kickMotor.setSpeed(kickSpeed);
     }
 
 	@Override
@@ -40,9 +41,9 @@ public class DefenceRobot extends Robot {
 
 	@Override
 	public void kick() {
-		// TODO Auto-generated method stub
+		if (this.hasBall()) {
+			this.unsetHasBall();
+			kickMotor.rotate(-40);
+		}
 	}
-    
-    
-
 }

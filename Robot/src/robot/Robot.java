@@ -27,8 +27,6 @@ public abstract class Robot {
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 12;
 
-	protected final int KICK_SPEED;
-	protected final NXTRegulatedMotor KICK_MOTOR;
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
@@ -36,13 +34,9 @@ public abstract class Robot {
     private IssuedInstruction currentInstruction, newInstruction;
     private byte instructionType;
     private byte[] instructionParameters;
-    private boolean quit;
+    private boolean quit, hasBall;
     
-    public Robot(int KICK_SPEED, NXTRegulatedMotor KICK_MOTOR,
-    			 LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
-    			 UltrasonicSensor BALL_SENSOR) {
-    	this.KICK_SPEED = KICK_SPEED;
-    	this.KICK_MOTOR = KICK_MOTOR;
+    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
@@ -86,6 +80,7 @@ public abstract class Robot {
 			
 			if (objectAtFrontSensor()) {
 				// TODO Grab ball here
+				hasBall = true;
 			}
 
 			if(Button.readButtons() != 0) {
@@ -127,6 +122,14 @@ public abstract class Robot {
 
     private boolean objectAtFrontSensor() {
     	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
+    }
+    
+    protected boolean hasBall() {
+    	return hasBall;
+    }
+    
+    protected void unsetHasBall() {
+    	hasBall = false;
     }
     
 }
