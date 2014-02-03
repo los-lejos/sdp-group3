@@ -1,5 +1,6 @@
 package dice.strategy;
 
+import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
@@ -25,31 +26,41 @@ public class ToZoneCenterAction extends StrategyAction {
 	protected int calculateUtility(WorldState state) {
 		switch( this.getTargetRobot()) {
 		case ATTACKER:
-			if (state.getOpponentAttacker().getHasBall()||state.getOpponentDefender().getHasBall()) {
+			if (state.getBall().getPos().Y < 5 || state.getBall().getPos().Y > 7) { // TODO change numbers to seperation of zone coordinates	
 				return 1;
 			} else {
 				return 0;
 			}
 		case DEFENDER:
-			if (state.getOpponentAttacker().getHasBall()|| state)
-			
+			if (state.getBall().getPos().Y > 7) {// TODO same as above
+				return 1;
+			} else {
+				return 0;
+			}
+			return 0;
 		}
-		
-//		if (state.getOpponentAttacker().getHasBall() && this.getTargetRobot().equals(state.getOurAttacker())) {
-//			return 2;
-//		} else if (state.getOpponentAttacker().getHasBall() && this.getTargetRobot.equals(state.getOurDefender())) {
-//			return 0;
-//		} else if (this.getTargetRobot().equals(state.getOurAttacker())) {
-//			return 0;
-//		} else {
-//			return 1;
-//		}
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		if (this.getTargetRobot().equals(other)) {
-			
+		switch(this.getTargetRobot()) {
+		case ATTACKER:
+			return new RobotInstruction(
+					RobotInstructions.MOVE_TO,
+					xA,
+					yA,
+					this.getTargetRobot(),
+					this.getCallback()
+					);
+		case DEFENDER:
+			return new RobotInstruction(
+					RobotInstructions.MOVE_TO,
+					xD,
+					yD,
+					this.getTargetRobot(),
+					this.getCallback()
+					);
+			return new RobotInstruction(
 		}
 	}
 

@@ -2354,20 +2354,20 @@
            <void property="anchor"> 
             <object class="edu.usfca.xj.appkit.gview.base.Vector2D"> 
              <void property="x"> 
-              <double>558.1932782337857</double> 
+              <double>558.6175582583943</double> 
              </void> 
              <void property="y"> 
-              <double>166.37700518935978</double> 
+              <double>168.10751904583913</double> 
              </void> 
             </object> 
            </void> 
            <void property="direction"> 
             <object class="edu.usfca.xj.appkit.gview.base.Vector2D"> 
              <void property="x"> 
-              <double>111.33490033103953</double> 
+              <double>109.09711990874962</double> 
              </void> 
              <void property="y"> 
-              <double>-32.61743820826703</double> 
+              <double>-21.646856138016233</double> 
              </void> 
             </object> 
            </void> 
@@ -2375,10 +2375,10 @@
           <void property="direction"> 
            <object class="edu.usfca.xj.appkit.gview.base.Vector2D"> 
             <void property="x"> 
-             <double>98.0</double> 
+             <double>88.0</double> 
             </void> 
             <void property="y"> 
-             <double>-26.0</double> 
+             <double>-4.0</double> 
             </void> 
            </object> 
           </void> 
@@ -2399,16 +2399,16 @@
            <double>20.0</double> 
           </void> 
           <void property="flateness"> 
-           <double>-54.2112286061903</double> 
+           <double>-43.01474111329807</double> 
           </void> 
           <void property="label"> 
            <void property="position"> 
             <object class="edu.usfca.xj.appkit.gview.base.Vector2D"> 
              <void property="x"> 
-              <double>650.7825935122264</double> 
+              <double>649.3417616165161</double> 
              </void> 
              <void property="y"> 
-              <double>137.18777326932886</double> 
+              <double>144.25136378244537</double> 
              </void> 
             </object> 
            </void> 

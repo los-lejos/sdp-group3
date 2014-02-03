@@ -12,6 +12,7 @@ public class RobotInstruction {
 	private byte[] instruction;
 	private RobotCommunicationCallback callback;
 	
+	
 	public RobotInstruction(byte instructionType, byte param1, byte param2, RobotType robotType, RobotCommunicationCallback callback) {
 		this.robotType = robotType;
 		this.callback = callback;
