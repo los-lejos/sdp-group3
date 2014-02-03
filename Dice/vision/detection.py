@@ -22,6 +22,16 @@ BALL = 4
 
 class Detection:
 
+    # Format: (area_min, area_expected, area_max)
+    # one for both colours COULD be sufficient
+    shape_sizes = { 'ball': (145, 160, 175),  # actual 176
+                    'yellow': (80, 95, 110),  # actual 104
+                    'blue': (80, 95, 110),
+                    'dot': (80, 90, 100) } # actual 95
+
+    # Areas of the robots (width). Symmetrical, allowing for some overlap.
+    areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793) (0.759, 1.0)]
+
     def __init__(self, gui, threshold, colour_order, scale, pitch_num):
     
         self._threshold = threshold
@@ -29,16 +39,6 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num
-
-        # Format: (area_min, area_expected, area_max)
-        # one for both colours COULD be sufficient
-        self.shape_sizes = { 'ball': (145, 160, 175),  # actual 176
-                             'yellow': (80, 95, 110),  # actual 104
-                             'blue': (80, 95, 110),
-                             'dot': (80, 90, 100) } # actual 95
-
-        # Areas of the robots (width). Symmetrical, allowing for some overlap.
-        self.areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793) (0.759, 1.0)]
 
     def detect_objects(self, frame):
 

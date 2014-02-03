@@ -35,6 +35,56 @@ class Vision:
         self.threshold = Threshold(pitch_num, reset_thresholds)
         self.threshold_gui = ThresholdGui(self.threshold, self.gui)
         self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num)
+        self.event_handler = self.gui.get_event_handler()
+        self.event_handler.addListener('q', self.quit)
+
+        while self.running:
+            try:
+                if not self.stdout:
+                    self.connect()
+                else:
+                    self.connected = True
+
+                if self.preprocessor.has_pitch_size:
+                    self.output_pitch_size()
+                    self.gui.set_show_mouse(False)
+                else:
+                    self.eventHandler.setClickListener(self.setNextPitchCorner)
+
+                while self.running:
+                    self.process_frame()
+                    
+
+            except socket.error:
+                self.connected = False
+                # If the rest of the system is not up yet/gets quit,
+                # just wait for it to come available.
+                time.sleep(1)
+                print("Connection error, sleeping 1s...")
+                # Strange things seem to happen to X sometimes if the
+                # display isn't updated for a while
+                self.process_frame()
+
+        if not self.stdout:
+            self.socket.close()
+
+    def process_frame(self):
+        """Get frame, detect objects and display frame
+        """
+        # This is where calibration comes in
+        if self.cap.getCameraMatrix is None:
+            frame = self.cap.getImage()
+        else:
+            frame = self.cap.getImageUndistort()
+
+        frame = self.preprocessor.preprocess(frame)
+        self.gui.update_layer('raw', frame)
+
+        if self.preprocessor.has_pitch_size:
+            entities = self.detection.detect_objects(frame)
+
+        self.outputEnts(entities)
+        self.gui.process_update()
 
 if __name__ == "__main__":
 
