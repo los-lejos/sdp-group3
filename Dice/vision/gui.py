@@ -22,7 +22,7 @@ class Gui:
     _layer_sets = { 'default': ['raw', 'yellow', 'blue', 'ball'],
                     'yellow': ['threshY', 'yellow'],
                     'blue': ['threshB', 'blue'],
-                    'ball': ['threshR', 'ball']
+                    'ball': ['threshR', 'ball'],
                     'dot': ['threshD'] }
 
     _layers = { 'raw': None,
@@ -48,7 +48,7 @@ class Gui:
 
     def __draw(self):
 
-        iterator = iter(self._current_layerset)
+        iterator = iter(self._current_layer_set)
         base_layer = self._layers[iterator.next()]
 
         if base_layer is None:
@@ -92,7 +92,7 @@ class Gui:
         size = self._layers['raw'].size()
 
         if layer_name is not None:
-            layer = self.getDrawingLayer()
+            layer = DrawingLayer(self._layers['raw'].size())
         else:
             layer = self._layers['raw'].dl()
 
@@ -147,7 +147,7 @@ class Gui:
 
     def switch_layer_set(self, name):
 
-        assert name in self.layersets.keys(), 'Unknown layerset ' + name + '!'
+        assert name in self._layer_sets.keys(), 'Unknown layerset ' + name + '!'
 
         self._current_layer_set = self._layer_sets[name]
 
@@ -156,7 +156,7 @@ class Gui:
         if not show_mouse:
             self.update_layer('mouse', None)
 
-        self._showMouse = showMouse
+        self._show_mouse = show_mouse
 
     class EventHandler:
         
@@ -191,10 +191,11 @@ class Gui:
 
 class ThresholdGui:
 
-    def __init__(self, threshold_instance, gui, window=None):
+    def __init__(self, threshold_instance, gui, window=None, pitch_num=0):
 
+        self.pitch_num = pitch_num
         if window is None:
-            self.window = 'thresh_adjust'
+            self.window = 'Threshold Adjustments'
             cv.NamedWindow(self.window, 0)
         else:
             self.window = window
@@ -259,7 +260,7 @@ class ThresholdGui:
         Can be 'blue', 'yellow' or 'ball'
         """
         self.current_entity = name
-        self.set_trackbar_values(self.threshold._values[name])
+        self.set_trackbar_values(self.threshold.default_thresholds[self.pitch_num][name])
 
         # Make sure trackbars update immediately
         cv.WaitKey(2)

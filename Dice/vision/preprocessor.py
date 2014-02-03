@@ -46,9 +46,9 @@ class Preprocessor:
             frame = frame.crop(*self._crop_rect).scale(scale)
         return frame
 
-    def setNextPitchCorner(self, point):
+    def set_next_pitch_corner(self, point):
 
-        assert len(point) == 2, "setNextPitchCorner takes a tuple (x, y)"
+        assert len(point) == 2, "set_next_pitch_corner takes a tuple (x, y)"
 
         length = len(self._crop_rect)
 

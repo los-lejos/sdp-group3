@@ -25,13 +25,13 @@ class Detection:
 
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
-    shape_sizes = { 'ball': (145, 160, 175),  # actual 176
-                    'yellow': (80, 95, 110),  # actual 104
-                    'blue': (80, 95, 110),
-                    'dot': (80, 90, 100) } # actual 95
+    shape_sizes = { 'ball': [145, 160, 175],  # actual 176
+                    'yellow': [80, 95, 110],  # actual 104
+                    'blue': [80, 95, 110],
+                    'dot': [80, 90, 100] } # actual 95
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
-    areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793) (0.759, 1.0)]
+    areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
 
     def __init__(self, gui, threshold, colour_order, scale, pitch_num):
     
@@ -39,7 +39,7 @@ class Detection:
         self._gui = gui
         self._scale = scale
         self._colour_order = colour_order
-        self._pitch_num
+        self._pitch_num = pitch_num
 
     def detect_objects(self, frame):
 
@@ -51,12 +51,14 @@ class Detection:
         yellow = frame
         blue = frame
 
-        for i in range(0, 4)
+        for i in range(0, 4):
             #crop(x, y=None, w=None, h=None, centered=False, smart=False)
-            x = int(self.scale*self.areas[i][0]*720)
+            x = int(self._scale*self.areas[i][0]*720)
             y = 0
-            w = int(self.scale*self.areas[i][1]*720)
-            cropped_img = hsv.crop(x, y, w)
+            w = int(self._scale*self.areas[i][1]*720)-x
+            h = frame.height
+            print 'x={0} y={1} w={2} h={3}'.format(x, y, w, h)
+            cropped_img = hsv.crop(x, y, w, h)
 
             if self._colour_order[i] == 'b':
                 thresholds[i] = self._threshold.blueT(cropped_img).smooth(grayscale=True)
@@ -77,19 +79,19 @@ class Detection:
         return entities
 
     def __find_entity(self, image, which, orig):
-'''
+        '''
         # Work around OpenCV crash on some nearly black images
         nonZero = cv.CountNonZero(image.getGrayscaleMatrix())
         if nonZero < 10:
             return Entity()
-'''
+        '''
         size = None
         if which == BALL:
-            size = int(self.shape_sizes['ball']*self._scale)
+            size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
         elif self._colour_order[which] == 'b':
-            size = int(self.shape_sizes['blue']*self._scale)
+            size = map(lambda x: int(x*self._scale), self.shape_sizes['blue'])
         elif self._colour_order[which] == 'y':
-            size = int(self.shape_sizes['yellow']*self._scale)
+            size = map(lambda x: int(x*self._scale), self.shape_sizes['yellow'])
 
         entity_blob = self.__find_entity_blob(image, size)
         entity = Entity(self, which, entity_blob, orig.getBitmap(), self.areas, self._scale)
@@ -150,8 +152,8 @@ class Entity:
         return self._angle
 
     def __clarify_coords(self, image, colour_coords):
-    """Given the coordinates of the colored part of 
-    """
+        """Given the coordinates of the colored part of 
+        """
         col_x, col_y = colour_coords
         crop_x = max((col_x - 23), 0)
         crop_y = max((col_y - 23), 0)
@@ -185,26 +187,26 @@ class Entity:
         If angle is true then orientation will also be drawn
         """
         if which >= 0 and which < 4:
-            x = int(self._coordinates[0]*self.scale)
-            y = int(self._coordinates[1]*self.scale)
+            x = int(self._coordinates[0]*self._scale)
+            y = int(self._coordinates[1]*self._scale)
             layer.circle((x, y), radius=2, filled=1)
 
             if self.detection._colour_order[which] == 'b':
                 colour = Color.BLUE
             else:
                 colour = Color.YELLOW
-            layer.circle((x, y), radius=int(25*self.scale), color=Color.BLUE)
+            layer.circle((x, y), radius=int(25*self._scale), color=Color.BLUE)
             # TODO improve what's below
             if angle and self._has_angle:
                 angle = self.angle()
-                endx = x + int(25*self.scale) * math.cos(angle)
-                endy = y + int(25*self.scale) * math.sin(angle)
+                endx = x + int(25*self._scale) * math.cos(angle)
+                endy = y + int(25*self._scale) * math.sin(angle)
                 degrees = abs(self._angle - math.pi)  / math.pi * 180 
                 layer.line((x, y), (endx, endy), antialias=False)
         elif which == 4:
             w = layer.width
             h = layer.height
-            x = int(self._coordinates[0]*self.scale)
-            y = int(self._coordinates[1]*self.scale)
+            x = int(self._coordinates[0]*self._scale)
+            y = int(self._coordinates[1]*self._scale)
             layer.line((x, 0), (x, h), antialias=False, color=Color.RED)
             layer.line((0, y), (w, y), antialias=False, color=Color.RED)
