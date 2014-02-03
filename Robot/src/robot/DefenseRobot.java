@@ -15,7 +15,7 @@ import lejos.robotics.navigation.Navigator;
 public class DefenseRobot extends Robot {
     
     public DefenseRobot() {
-    	TIRE_DIAMETER_MM = 56;
+    	TIRE_DIAMETER_MM = 48;
     	TRACK_WIDTH_MM = 114;
     	LEFT_MOTOR = Motor.C;
     	RIGHT_MOTOR = Motor.A;
