@@ -7,7 +7,7 @@ import java.util.List;
 import dice.communication.RobotCommunication;
 import dice.state.WorldState;
 
-/*
+/**
  * @author Joris S. Urbaitis
  */
 

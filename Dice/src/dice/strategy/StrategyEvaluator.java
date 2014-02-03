@@ -3,17 +3,17 @@ package dice.strategy;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 
-/*
- * @author Joris S. Urbaitis
- */
-
-/*
+/**
  * Keep track of what both robots are doing
  * When new state is received from vision or a robot completes an action,
  * use StrategyEvaluator to get a sorted list of actions by utility
  * 
  * If the robots are not performing actions or are performing actions that are now impossible / useless
  * send them new directives, otherwise leave it
+ * 
+ * @author Joris S. Urbaitis
+ * @author Andrew Johnston
+ * @author Sam Stern
  */
 
 public class StrategyEvaluator {
@@ -50,9 +50,14 @@ public class StrategyEvaluator {
 		// regardless of what it is doing right now
 		boolean attackerOverride = false, defenderOverride = false;
 		
-		// Do custom logic here, maybe we want to override the given action to cooperate and pass the ball
+		// Action overrides	
+		// if defender is passing, attacker needs to receive
+		if (bestDefenderAction instanceof PassAction) {
+			attackerOverride = true;
+			bestAttackerAction = new RecievePassAction(RobotType.ATTACKER);
+		}
 		
-
+		
 		// Check if we should send actions to the robots
 		if(defenderOverride || defender.needsNewAction(state)) {
 			defender.setCurrentAction(bestDefenderAction, state);

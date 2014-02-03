@@ -4,9 +4,14 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 
-/*
+/**
+ * Action which receives a pass from the defending robot using PassAction
+ * 
+ * @see dice.strategy.PassAction
+ * @author Andrew Johnston
  * @author Sam Stern
  */
+
 public class RecievePassAction extends StrategyAction {
 	
 	public RecievePassAction(RobotType target) {
@@ -26,7 +31,7 @@ public class RecievePassAction extends StrategyAction {
 	}
 
 	@Override
-	public RobotInstruction getInstruction() {
+	public RobotInstruction getInstruction(WorldState state) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -6,13 +6,12 @@ import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
-/*
- * @author Sam Stern
- */
 
 /**
+ * Action which has our defending robot pass to the attacking robot.
  *
  * @author Andrew Johnston
+ * @author Sam Stern
  */
 
 public class PassAction extends StrategyAction {
@@ -23,7 +22,7 @@ public class PassAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		switch (target) {
+		switch (this.getTargetRobot()) {
 		case ATTACKER:
 			// do we need to pass to the goalie?
 			// probably not
@@ -41,7 +40,7 @@ public class PassAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		switch (target) {
+		switch (this.getTargetRobot()) {
 		case ATTACKER:
 			return 0;
 		case DEFENDER:
@@ -55,7 +54,7 @@ public class PassAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		
-		switch (target) {
+		switch (this.getTargetRobot()) {
 		case ATTACKER:
 		case DEFENDER:		
 		}
