@@ -1,14 +1,11 @@
 package robot;
 
 import java.io.IOException;
+
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.UltrasonicSensor;
-import lejos.robotics.localization.OdometryPoseProvider;
-import lejos.robotics.navigation.DifferentialPilot;
-import lejos.robotics.navigation.Navigator;
-import lejos.robotics.navigation.Pose;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
@@ -30,25 +27,26 @@ public abstract class Robot {
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 12;
 
-	protected static int TIRE_DIAMETER_MM;
-	protected static int TRACK_WIDTH_MM;
-	protected static int KICK_MOTOR_SPEED;
-	protected static NXTRegulatedMotor LEFT_MOTOR;
-	protected static NXTRegulatedMotor RIGHT_MOTOR;
-	protected static NXTRegulatedMotor KICK_MOTOR;
-	protected static LightSensor LEFT_LIGHT_SENSOR;
-	protected static LightSensor RIGHT_LIGHT_SENSOR;
-    protected static UltrasonicSensor FRONT_SENSOR;
-    protected static DifferentialPilot PILOT;
-    protected static OdometryPoseProvider POSE_PROVIDER;
-    protected static Navigator NAVIGATOR;
+	protected final int KICK_SPEED;
+	protected final NXTRegulatedMotor KICK_MOTOR;
+	private final LightSensor LEFT_LIGHT_SENSOR;
+	private final LightSensor RIGHT_LIGHT_SENSOR;
+	private final UltrasonicSensor BALL_SENSOR;
 
-    double robotMoveSpeed;
-    Pose pose;
-    IssuedInstruction currentInstruction, newInstruction;
-    byte instructionType;
-    byte[] instructionParameters;
-    boolean quit;
+    private IssuedInstruction currentInstruction, newInstruction;
+    private byte instructionType;
+    private byte[] instructionParameters;
+    private boolean quit;
+    
+    public Robot(int KICK_SPEED, NXTRegulatedMotor KICK_MOTOR,
+    			 LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
+    			 UltrasonicSensor BALL_SENSOR) {
+    	this.KICK_SPEED = KICK_SPEED;
+    	this.KICK_MOTOR = KICK_MOTOR;
+    	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
+    	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
+    	this.BALL_SENSOR = BALL_SENSOR;
+    }
 
 	public void run() {
 		final BluetoothDiceConnection conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
@@ -70,7 +68,6 @@ public abstract class Robot {
 			if(currentInstruction != newInstruction) {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
-				
 				handleInstruction(currentInstruction);
 
 				// Respond that the instruction has been completed
@@ -84,7 +81,11 @@ public abstract class Robot {
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-				// TODO: Handle boundary problem. Reverse? Notify DICE? Sync location?
+				// TODO Handle boundary problem. Reverse? Notify DICE?
+			}
+			
+			if (objectAtFrontSensor()) {
+				// TODO Grab ball here
 			}
 
 			if(Button.readButtons() != 0) {
@@ -101,39 +102,31 @@ public abstract class Robot {
 		byte[] instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
-			float x = instructionParameters[0];
-			float y = instructionParameters[1];
-			NAVIGATOR.goTo(x, y);
-		} else if (instructionType == RobotInstructions.KICK_TOWARDS) {
-			float heading = instructionParameters[0];
-			NAVIGATOR.rotateTo(heading);
-			// TODO: Do some kicking. Steal code from MS2.
-		} else if (instructionType == RobotInstructions.SYNC_LOCATION) {
-			float x = instructionParameters[0];
-			float y = instructionParameters[1];
-			float heading = instructionParameters[2];
-			pose = new Pose(x, y, heading);
+			int heading = instructionParameters[0];
+			int distance = instructionParameters[1];
+			moveTo(heading, distance);
+		} else if (instructionType == RobotInstructions.TURN_TO) {
+			int heading = instructionParameters[0];
+			rotateTo(heading);
+		} else if (instructionType == RobotInstructions.KICK) {
+			kick();
 		}
 	}
+    
+    abstract void moveTo(int heading, int distance);
+    abstract void rotateTo(int heading);
+    abstract void kick();
 
-    public boolean rightSensorOnBoundary() {
+    private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
 
-    public boolean leftSensorOnBoundary() {
+    private boolean leftSensorOnBoundary() {
     	return LEFT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
 
-    public boolean objectAtFrontSensor() {
-    	return FRONT_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
+    private boolean objectAtFrontSensor() {
+    	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
     }
-
-    public void setMoveSpeed(double speed) {
-    	robotMoveSpeed = speed;
-    }
-
-    public DifferentialPilot getPilot() {
-    	return PILOT;
-    }
-
+    
 }

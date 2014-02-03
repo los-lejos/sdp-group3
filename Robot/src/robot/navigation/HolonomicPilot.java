@@ -28,9 +28,10 @@ import lejos.robotics.navigation.MoveListener;
 
 public class HolonomicPilot {
 	
-	private int distance_Wheel_To_RotationPoint = 10; // Distance between point of rotation and front (left-right) wheel. Necessary for design 1
+	private int wheelToCenterDist = 10; // Distance between point of rotation and front (left-right) wheel. Necessary for design 1
 	private double wheelDiameter; // Needed for odometry.
-	private int[] travelSpeed; // Store the speed of the forwardMotor at position 0 and lateralMotor at position 1
+	private int forwardSpeed; // Store the speed of the forwardMotor at position 0 and lateralMotor at position 1
+	private int lateralSpeed;
 	private int acceleration; // there is only one variable because it is only sensible to add acceleration to the back/forward movement
 	private RegulatedMotor forwardMotor;
 	private RegulatedMotor lateralMotor;
@@ -82,19 +83,15 @@ public class HolonomicPilot {
 		return forwardMotor.isMoving() || lateralMotor.isMoving();
 	}
 	
-	// Travel a given amount in a given direction.
-	// A navigator class could use this in an implementation of goTo(x, y, heading).
-	// Or x, y, heading could come from PC, if we choose to do it that way.
 	public void travel(double distance, int heading, boolean immediateReturn) {
-		// Do some travelling here.
 		// All the formulae depend on the direction of the motors (forward rotation side).
 		
 		// Design 1 (No straight line?) (Check sketch on GitHub)
 		// The use of the motors is a bit confusing so here is how they are used:
 		// *forwardMotor*, the one at the front, moves the robot parallelly to the goal line
 		// *lateralMotor*, the one on the side of the former, moves the robot perpendicularly to the goal line
-		forwardMotor.rotate(heading*Math.pow(distance_Wheel_To_RotationPoint, 2)/wheelDiameter); // The formula looks ridiculous but that is the final look after some simplifications 
-		lateralMotor.rotate(distance*360/wheelDiameter*Math.PI); // Almost the same thing applies here, too
+		forwardMotor.rotate((int) (heading*Math.pow(wheelToCenterDist, 2)/wheelDiameter)); // The formula looks ridiculous but that is the final look after some simplifications 
+		lateralMotor.rotate((int) (distance*360/wheelDiameter*Math.PI)); // Almost the same thing applies here, too
 		
 		// Design 2 (Same turning policy but different location of the wheels) (Check sketch on GitHub)
 		// The use of the motors is self-explanatory
@@ -108,14 +105,16 @@ public class HolonomicPilot {
 		// lateralMotor.rotate(distance*Math.sin(heading)*360/wheelDiameter*Math.PI);
 		// forwardMotor.rotate(distance*Math.cos(heading)*360/wheelDiameter*Math.PI);
 		
+		
+		
 		if (!immediateReturn) waitComplete();
 	}
 	
 	public void setTravelSpeed(int speedF, int speedL) {
 		forwardMotor.setSpeed(speedF);
-		lateralMotor.setSpeed(speedL); 
-		this.travelSpeed[0] = speedF;
-		this.travelSpeed[1] = speedL;
+		lateralMotor.setSpeed(speedL);
+		this.forwardSpeed = speedF;
+		this.lateralSpeed = speedL;
 	}
 	
 	public void setAcceleration(int acceleration) {
@@ -128,8 +127,12 @@ public class HolonomicPilot {
 	}
 
 	
-	public int[] getTravelSpeed() {
-		return travelSpeed;
+	public int getForwardSpeed() {
+		return forwardSpeed;
+	}
+	
+	public int getLateralSpeed() {
+		return lateralSpeed;
 	}
 
 	

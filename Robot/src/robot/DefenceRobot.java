@@ -5,43 +5,44 @@ import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
-import lejos.robotics.navigation.DifferentialPilot;
+import robot.navigation.HolonomicPilot;
 
 /*
  * @author Owen Gillespie
  */
 
-public class AttackRobot extends Robot {
+public class DefenceRobot extends Robot {
 	
 	private static final int tireDiameterMm = 48;
-	private static final int trackWidthMm = 114;
 	private static final int kickSpeed = 50; // TODO placeholder value
 	private static final NXTRegulatedMotor kickMotor = Motor.B;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
-	private static final NXTRegulatedMotor leftMotor = Motor.C;
-	private static final NXTRegulatedMotor rightMotor = Motor.A;
-	private final DifferentialPilot pilot;
-	
-	public AttackRobot() {
-		super(kickSpeed, kickMotor, leftLightSensor, rightLightSensor, ballSensor);
-		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, true);
-	}
+	private static final NXTRegulatedMotor forwardMotor = Motor.C;
+	private static final NXTRegulatedMotor lateralMotor = Motor.A;
+	private final HolonomicPilot pilot;
+    
+    public DefenceRobot() {
+    	super(kickSpeed, kickMotor, leftLightSensor, rightLightSensor, ballSensor);
+    	pilot = new HolonomicPilot(tireDiameterMm, forwardMotor, lateralMotor);
+    }
 
 	@Override
-	void moveTo(int heading, int distance) {
+	public void moveTo(int heading, int distance) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	void rotateTo(int heading) {
+	public void rotateTo(int heading) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	void kick() {
+	public void kick() {
 		// TODO Auto-generated method stub
 	}
+    
+    
 
 }

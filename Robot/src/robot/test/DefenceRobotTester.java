@@ -1,3 +1,4 @@
+package robot.test;
 import robot.navigation.HolonomicPilot;
 import lejos.nxt.*;
 
@@ -44,6 +45,6 @@ public class DefenceRobotTester {
 			  System.out.print(wait);
 		  }
     	  
-    	  Button.waitForPress();
+    	  Button.waitForAnyPress();
       }
 }                                                             
