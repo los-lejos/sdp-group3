@@ -26,7 +26,7 @@ public class M2_Defender {
 		float KickerKickSpeed = kickMotor.getMaxSpeed() * 0.4f;
 		float KickerCatchSpeed = kickMotor.getMaxSpeed() * 0.3f;
 		
-		int catchOpenDegrees = 40;
+		int catchOpenDegrees = 30;
 		int kickOpenDegrees = 50;
 		
 		//while(Button.readButtons() == 0) {
