@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import shared.RobotInstructions;
+
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
@@ -14,10 +16,10 @@ import lejos.nxt.comm.Bluetooth;
 
 public class BluetoothDiceConnection extends Thread {
 
-	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
-	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
+	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3, -4, -5};
+	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2, -1, -0};
 	
-	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1, -1};
 
 	private boolean connected = false;
 	private boolean isRunning = true;
@@ -70,7 +72,7 @@ public class BluetoothDiceConnection extends Thread {
 	}
 	
 	private void receiveMessages() throws IOException {
-		byte[] res = new byte[4];
+		byte[] res = new byte[RobotInstructions.LENGTH];
 		in.read(res);
 		
 		// Debug logging

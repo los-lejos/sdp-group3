@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import shared.RobotInstructions;
+
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTConnector;
@@ -16,10 +18,10 @@ import lejos.pc.comm.NXTInfo;
 
 public class BluetoothRobotConnection extends Thread {
 
-	private static final byte[] HANDSHAKE_MESSAGE = {1, 2, 3, 4};
-	private static final byte[] HANDSHAKE_RESPONSE = {4, 3, 2, 1};
+	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3, -4, -5};
+	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2, -1, -0};
 	
-	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1, -1};
 	
 	private static final byte INSTRUCTION_CALLBACK_MAX = 4;
 	private RobotCommunicationCallback[] instructionCallbacks;
@@ -102,7 +104,7 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	private void receiveMessages() throws BluetoothCommunicationException, IOException {
-		byte[] res = new byte[4];
+		byte[] res = new byte[RobotInstructions.LENGTH];
 		in.read(res);
 		
 		if(!Arrays.equals(res, EXIT_MESSAGE)) {

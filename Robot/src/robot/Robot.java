@@ -63,15 +63,15 @@ public abstract class Robot {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
 				handleInstruction(currentInstruction);
-			}
-			
-			// Respond that the instruction has been completed
-			try {
-				conn.send(currentInstruction.getCompletedResponse());
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (BluetoothCommunicationException e) {
-				e.printStackTrace();
+				
+				// Respond that the instruction has been completed
+				try {
+					conn.send(currentInstruction.getCompletedResponse());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BluetoothCommunicationException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
@@ -110,7 +110,6 @@ public abstract class Robot {
 	}
 	
     abstract void moveTo(int heading, int distance);
-    
     abstract void kickToward(int heading);
     abstract void grab();
 
