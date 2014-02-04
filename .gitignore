@@ -2,9 +2,14 @@
 *.nxd
 *.nxj
 
+# Autogen .gitignore
+Dice/.gitignore
+Milestone/.gitignore
+Robot/.gitignore
+
 # Directories #
 /build/
-/bin/
+bin/
 target/
 # OS Files #
 .DS_Store
@@ -52,7 +57,7 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 # Locally stored "Eclipse launch configurations"
-#*.launch
+*.launch
 # CDT-specific
 .cproject
 # PDT-specific
