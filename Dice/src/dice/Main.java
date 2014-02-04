@@ -65,7 +65,8 @@ public class Main {
 			byte instructionType = Byte.parseByte(cmd[2]);
 			byte param1 = Byte.parseByte(cmd[3]);
 			byte param2 = Byte.parseByte(cmd[4]);
-			final String display = "" + instructionType + param1 + param2;
+			byte param3 = Byte.parseByte(cmd[5]);
+			final String display = "" + instructionType + param1 + param2 + param3;
 			
 			RobotCommunicationCallback callback = new RobotCommunicationCallback() {
 				@Override
@@ -84,7 +85,7 @@ public class Main {
 				}
 			};
 			
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, type, callback);
+			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3, type, callback);
 			RobotCommunication.getInstance().sendInstruction(instruction);
 		}
 	}
