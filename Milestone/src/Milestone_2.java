@@ -40,7 +40,7 @@ public class Milestone_2 {
 		// Move forward
 		pilot.forward();
 		
-		while(ballSensor.getDistance() > 10 && Button.ESCAPE.isUp());
+		while(ballSensor.getDistance() > 8 && Button.ESCAPE.isUp());
 
 		// Catch ball
 		kickMotor.setSpeed(KickerCatchSpeed);
