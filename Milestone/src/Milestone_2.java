@@ -19,6 +19,9 @@ public class Milestone_2 {
 	private static final int TrackWidthMm = 144;
 	
     public static void main(String[] args) {
+    	ballSensor.reset();
+    	ballSensor.continuous();
+    	
     	NXTRegulatedMotor kickMotor = Motor.B;
     	DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, Motor.C, Motor.A, false);
 		pilot.setTravelSpeed(pilot.getMaxTravelSpeed() * 0.5f);
