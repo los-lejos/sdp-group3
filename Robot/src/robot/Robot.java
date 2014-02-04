@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
-import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.UltrasonicSensor;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
@@ -34,7 +33,8 @@ public abstract class Robot {
     private IssuedInstruction currentInstruction, newInstruction;
     private byte instructionType;
     private byte[] instructionParameters;
-    private boolean quit, hasBall;
+    private boolean quit;
+    protected boolean hasBall;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
@@ -63,15 +63,15 @@ public abstract class Robot {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
 				handleInstruction(currentInstruction);
-
-				// Respond that the instruction has been completed
-				try {
-					conn.send(currentInstruction.getCompletedResponse());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
+			}
+			
+			// Respond that the instruction has been completed
+			try {
+				conn.send(currentInstruction.getCompletedResponse());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (BluetoothCommunicationException e) {
+				e.printStackTrace();
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
@@ -79,8 +79,7 @@ public abstract class Robot {
 			}
 			
 			if (objectAtFrontSensor()) {
-				// TODO Grab ball here
-				hasBall = true;
+				grab();
 			}
 
 			if(Button.readButtons() != 0) {
@@ -93,24 +92,27 @@ public abstract class Robot {
 	}
 	
 	public void handleInstruction(IssuedInstruction instruction) {
-		byte instructionType = instruction.getType();
-		byte[] instructionParameters = instruction.getParameters();
+		instructionType = instruction.getType();
+		instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
-			int heading = instructionParameters[0];
-			int distance = instructionParameters[1];
+			byte headingA = instructionParameters[0];
+			byte headingB = instructionParameters[1];
+			int heading = (10 * headingA) + headingB;
+			int distance = instructionParameters[2];
 			moveTo(heading, distance);
-		} else if (instructionType == RobotInstructions.TURN_TO) {
-			int heading = instructionParameters[0];
-			rotateTo(heading);
-		} else if (instructionType == RobotInstructions.KICK) {
-			kick();
+		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
+			byte headingA = instructionParameters[0];
+			byte headingB = instructionParameters[1];
+			int heading = (10 * headingA) + headingB;
+			kickToward(heading);
 		}
 	}
-    
+	
     abstract void moveTo(int heading, int distance);
-    abstract void rotateTo(int heading);
-    abstract void kick();
+    
+    abstract void kickToward(int heading);
+    abstract void grab();
 
     private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
@@ -126,10 +128,6 @@ public abstract class Robot {
     
     protected boolean hasBall() {
     	return hasBall;
-    }
-    
-    protected void unsetHasBall() {
-    	hasBall = false;
     }
     
 }
