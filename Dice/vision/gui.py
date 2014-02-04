@@ -260,7 +260,7 @@ class ThresholdGui:
         Can be 'blue', 'yellow' or 'ball'
         """
         self.current_entity = name
-        self.set_trackbar_values(self.threshold.default_thresholds[self.pitch_num][name])
+        self.set_trackbar_values(self.threshold.get_threshold_values()[name])
 
         # Make sure trackbars update immediately
         cv.WaitKey(2)

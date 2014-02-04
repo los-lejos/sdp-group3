@@ -100,3 +100,7 @@ class Threshold:
         self._threshold_values[entity] = newValues
         self.__save_defaults()
 
+    def get_threshold_values(self):
+
+        return self._threshold_values
+
