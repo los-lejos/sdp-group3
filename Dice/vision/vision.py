@@ -128,11 +128,11 @@ class Vision:
 
         for i in range(0, 4):
             entity = entities[i]
-            x, y = entity.coordinates()
-            angle = -1 if entity.angle() is None else entity.angle()
+            x, y = entity.get_coordinates()
+            angle = -1 if entity.get_angle() is None else entity.get_angle()
             self.send('{0} {1} {2} '.format(x, y, angle))
 
-        x, y = entities[BALL].coordinates()
+        x, y = entities[BALL].get_coordinates()
         self.send('{0} {1} '.format(x, y))
         self.send(str(int(time.time() * 1000)) + "\n")
 
