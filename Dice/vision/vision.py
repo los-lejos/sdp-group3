@@ -95,7 +95,7 @@ class Vision:
         self.gui.update_layer('raw', frame)
 
         if self.preprocessor.has_pitch_size:
-            entities = self.detection.detect_objects(frame)
+            entities = self.detection.detect_objects(frame, self.preprocessor.pitch_size)
             self.output_entities(entities)
 
         self.gui.process_update()
@@ -121,7 +121,7 @@ class Vision:
 
     def output_entities(self, entities):
 
-        if not self.connected or not self.preprocessor.hasPitchSize:
+        if not self.connected or not self.preprocessor.has_pitch_size:
             return
 
         self.send('{0} '.format(ENTITY_BIT))
@@ -132,8 +132,8 @@ class Vision:
             angle = -1 if entity.angle() is None else entity.angle()
             self.send('{0} {1} {2} '.format(x, y, angle))
 
-        x, y = entities[BALL].coordinates
-        self.send('{0} {1}'.format(x, y))
+        x, y = entities[BALL].coordinates()
+        self.send('{0} {1} '.format(x, y))
         self.send(str(int(time.time() * 1000)) + "\n")
 
     def send(self, string):

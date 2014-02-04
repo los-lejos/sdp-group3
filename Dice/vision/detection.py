@@ -25,10 +25,10 @@ class Detection:
 
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
-    shape_sizes = { 'ball': [145, 160, 175],  # actual 176
-                    'yellow': [80, 95, 110],  # actual 104
+    shape_sizes = { 'ball': [145, 160, 175],
+                    'yellow': [80, 95, 110],
                     'blue': [80, 95, 110],
-                    'dot': [80, 90, 100] } # actual 95
+                    'dot': [80, 90, 100] }
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -40,9 +40,12 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
+        self._pitch_w = 720
+        self._pitch_h = 540
 
-    def detect_objects(self, frame):
+    def detect_objects(self, frame, pitch_size):
 
+        self._pitch_w, self._pitch_h = pitch_size
         hsv = frame.toHSV()
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
@@ -53,11 +56,11 @@ class Detection:
 
         for i in range(0, 4):
             #crop(x, y=None, w=None, h=None, centered=False, smart=False)
-            x = int(self._scale*self.areas[i][0]*720)
+            x = int(self._scale*self.areas[i][0]*self._pitch_w)
             y = 0
-            w = int(self._scale*self.areas[i][1]*720)-x
+            w = int(self._scale*self.areas[i][1]*self._pitch_w) - x
             h = frame.height
-            print 'x={0} y={1} w={2} h={3}'.format(x, y, w, h)
+            #print 'x={0} y={1} w={2} h={3}'.format(x, y, w, h)
             cropped_img = hsv.crop(x, y, w, h)
 
             if self._colour_order[i] == 'b':
@@ -70,7 +73,7 @@ class Detection:
             entities[i] =  self.__find_entity(thresholds[i], i, cropped_img)
 
         thresholds[BALL] = self._threshold.ball(hsv).smooth(grayscale=True)
-        entities[BALL] = self.__find_entity(ball, BALL, hsv)
+        entities[BALL] = self.__find_entity(thresholds[BALL], BALL, hsv)
         thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
         self._gui.update_layer('threshY', yellow)
         self._gui.update_layer('threshB', blue)
@@ -104,7 +107,7 @@ class Detection:
         blobs = blobmaker.extractFromBinary(image, image, minsize=size[0], maxsize=size[2])
         if blobs is None:
             return None
-
+        print len(blobs)
         # returns blob for which __match_size returns lowest value
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
                                 [(self.__match_size(b, size), b) for b in blobs], (9999, None))
@@ -114,9 +117,9 @@ class Detection:
 
     def __match_size(self, blob, expected_size):
         area = blob.area()
-        if (expected_size[0] < area < expected[2]):
+        if (expected_size[0] < area < expected_size[2]):
             # Absolute difference from expected size
-            return abs(area-expected[1])
+            return abs(area-expected_size[1])
         # No match
         return sys.maxint
 
@@ -134,15 +137,15 @@ class Entity:
             self._entity_blob = entity_blob
             if which == BALL:
                 x, y = entity_blob.centroid()
-                x = min(int(x/scale), 720)
-                y = min(int(y/scale), 540)
+                x = min(int(x/scale), self._pitch_w)
+                y = min(int(y/scale), self._pitch_h)
                 self._coordinates = (x, y)
             elif which >= 0 and which < 4:
                 self._has_angle = True
                 x, y = entity_blob.centroid()
                 # min to ensure it's never out of range
-                x = min(int((x + int(areas[which][0]*scale*720))/scale), 720)
-                y = min(int(y/scale), 540)
+                x = min(int((x + int(areas[which][0]*scale*self._pitch_w))/scale), self._pitch_w)
+                y = min(int(y/scale), self._pitch_h)
                 self._coordinates, self._angle = self.__clarify_coords(image, (x, y))
 
     def coordinates(self):
