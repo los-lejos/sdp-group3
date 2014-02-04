@@ -3,6 +3,7 @@ package dice.strategy;
 import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.Position;
 import dice.state.WorldState;
 
 /**
@@ -31,7 +32,17 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		if (state.getOurAttacker().getPos().X<3) { //TODO set threshold for left, right and center
+		Position shootAt = new Position(KickTargets.shootTarget());
+		double shootAtx = shootAt.X;
+		double shootAty = shootAt.Y;
+		return new RobotInstruction(
+			RobotInstructions.KICK_TOWARDS,
+			shootAtx,
+			shootAty,
+			this.getTargetRobot(),
+			this.getCallback()
+			);
+		/*if (state.getOurAttacker().getPos().X<3) { //TODO set threshold for left, right and center
 			return new RobotInstruction(
 					RobotInstructions.KICK_TOWARDS,
 					xL,
@@ -54,7 +65,7 @@ public class ShootAction extends StrategyAction {
 					yC,
 					this.getTargetRobot(),
 					this.getCallback()
-					);
+					);*/
 		}
 	}
 
