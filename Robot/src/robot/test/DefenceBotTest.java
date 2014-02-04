@@ -8,7 +8,7 @@ public class DefenceBotTest {
 		HolonomicPilot pilot = new HolonomicPilot(48, Motor.A, Motor.B);
     	  
 		pilot.setTravelSpeed(200, 200);
-    	  
+ 
 		pilot.forward();
 		Thread.sleep(5000);
 		pilot.stop();
@@ -17,7 +17,7 @@ public class DefenceBotTest {
 		Thread.sleep(5000);
 		pilot.stop();   
   
-		pilot.backward();
+		pilot.backward(); 
 		Thread.sleep(5000);
 		pilot.stop();
   
@@ -26,12 +26,12 @@ public class DefenceBotTest {
 		pilot.stop();
   
 
-		pilot.travel(0, 360, true);
+		pilot.travel(0, 360, false);
 		System.out.println(Motor.A.getTachoCount());
 		System.out.println(Motor.B.getTachoCount());
 		System.out.println();
   
-		pilot.travel(250, 45, true);
+		pilot.travel(150, 60, false);
 		System.out.println(Motor.A.getTachoCount());
 		System.out.println(Motor.B.getTachoCount());
 		System.out.println();
