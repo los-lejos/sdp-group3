@@ -15,7 +15,6 @@ public class GameObject {
     private List<Position> positions;
     private double rotation; // the rotation of the object relative
                              // to 'up' (on the camera)
-    private boolean hasBall;
 
     public GameObject(double xPos, double yPos, double rotation) {
     	// add the first position
@@ -23,7 +22,6 @@ public class GameObject {
     	positions = new ArrayList<Position>();
     	positions.add(position);
 
-    	this.hasBall = false;
     	this.rotation = rotation;
     }
 
@@ -62,14 +60,6 @@ public class GameObject {
             // sense
             return true;
         }
-    }
-
-    public void setHasBall(boolean hasBall) {
-    	this.hasBall = hasBall;
-    }
-
-    public boolean getHasBall() {
-    	return hasBall;
     }
 
     // get the most recent position
