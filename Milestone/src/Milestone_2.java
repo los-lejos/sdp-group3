@@ -18,38 +18,54 @@ public class Milestone_2 {
     private static final int TireDiameterMm = 62;
 	private static final int TrackWidthMm = 144;
 	
-	private static double RobotMoveSpeed, RobotTurnSpeed;
-    
     public static void main(String[] args) {
     	NXTRegulatedMotor kickMotor = Motor.B;
     	DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, Motor.C, Motor.A, false);
-    	RobotMoveSpeed = pilot.getMaxTravelSpeed();
-		RobotTurnSpeed = pilot.getMaxTravelSpeed() * 0.18;
-		pilot.setTravelSpeed(RobotMoveSpeed);
+		pilot.setTravelSpeed(pilot.getMaxTravelSpeed() * 0.5f);
+		
+		float KickerKickSpeed = kickMotor.getMaxSpeed();
+		float KickerCatchSpeed = kickMotor.getMaxSpeed() * 0.3f;
+		
+		int catchOpenDegrees = 40;
+		int kickOpenDegrees = 50;
 		
 		//while(Button.readButtons() == 0) {
 		//	System.out.println(ballSensor.getDistance());
 		//}
 		
 		// Open up motor
-		kickMotor.setSpeed(800);
-		kickMotor.rotate(40);
+		kickMotor.setSpeed(KickerCatchSpeed);
+		kickMotor.rotate(catchOpenDegrees);
 		
+		// Move forward
 		pilot.forward();
 		
-		while(ballSensor.getDistance() > 8 && Button.ESCAPE.isUp());
+		while(ballSensor.getDistance() > 10 && Button.ESCAPE.isUp());
 
-		kickMotor.setSpeed(800);
-		kickMotor.rotate(-40);
-		kickMotor.setSpeed(kickMotor.getMaxSpeed());
-		kickMotor.rotate(50);
+		// Catch ball
+		kickMotor.setSpeed(KickerCatchSpeed);
+		kickMotor.rotate(-catchOpenDegrees);
 		
 		pilot.stop();
+		pilot.travel(-TireDiameterMm * Math.E);
 		
-		// Close the motor
-		kickMotor.setSpeed(400);
-		kickMotor.rotate(-50);
+		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
+		pilot.forward();
 		
-		Button.ESCAPE.waitForPressAndRelease();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		// Kick
+		kickMotor.setSpeed(KickerKickSpeed);
+		kickMotor.rotate(kickOpenDegrees);
+		
+		pilot.stop();
+
+		// Close kicker
+		kickMotor.setSpeed(KickerCatchSpeed);
+		kickMotor.rotate(-kickOpenDegrees);
     }
 }
