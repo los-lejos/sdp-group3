@@ -15,6 +15,8 @@ We can also use MOVE_TO to rotate by suppling distance == 0.
 
 ### KICK_TOWARD
 
+* Just takes an **angle**, in the same form as MOVE_TO.
+
 ### Byte representation
 
 * **angle** should be given by the first two parameters. Parameter 1 = the hundreds value of angle. Parameter 2 = the tens and units values. For example, an angle of 234 is represented by the parameters 2 and 34.
