@@ -36,7 +36,6 @@ class Vision:
         self.running = True
         self.connected = False
         self.scale = scale
-#        self.colour_order = colour_order
         self.stdout = stdout
         self.cam = Camera()
         calibration_path = os.path.join('calibration', 'pitch{0}'.format(pitch_num))

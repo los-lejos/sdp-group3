@@ -92,12 +92,12 @@ class Detection:
         return entities
 
     def __find_entity(self, threshold_img, which, image):
-        '''
+        """
         # Work around OpenCV crash on some nearly black images
         nonZero = cv.CountNonZero(image.getGrayscaleMatrix())
         if nonZero < 10:
             return Entity()
-        '''
+        """
         size = None
         if which == BALL:
             size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
@@ -114,18 +114,25 @@ class Detection:
 
         return entity
 
-    def __find_entity_blob(self, image, size):
+    def __find_entity_blob(self, image, size, dot=False):
 
         blobmaker = BlobMaker()
         blobs = blobmaker.extractFromBinary(image, image, minsize=size[0], maxsize=size[2])
+
         if blobs is None:
             return None
-        # returns blob for which __match_size returns lowest value
+
+        size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+        
+        if dot:
+            size_matched_blobs = filter(lambda (_, b): b.isCircle(0.5), size_matched_blobs)
+
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
-                                [(self.__match_size(b, size), b) for b in blobs], (9999, None))
+                                size_matched_blobs, (9999, None))
 
         if entity_blob is None:
             return None
+
         return entity_blob
 
     def __match_size(self, blob, expected_size):
@@ -147,11 +154,10 @@ class Detection:
         x_offset_left = int(self.areas[entity.which][0]*self._pitch_w*self._scale)
         crop_x = max((col_x - x_offset_left - 23), 0)
         crop_y = max((col_y - 23), 0)
-        crop_w = min((col_x - x_offset_left - crop_x + 23), image.width - crop_x)
-        crop_h = min((col_y - crop_y + 23), image.height - crop_y)
+        crop_w = min((max((col_x - x_offset_left), 0) + 23), image.width - crop_x)
+        crop_h = min((col_y + 23), image.height - crop_y)
         cropped_img = image.crop(crop_x, crop_y, crop_w, crop_h)
         if cropped_img == None: return
-        #TODO maybe check if circle??
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img_threshold, size)
