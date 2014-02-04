@@ -12,41 +12,41 @@ public class GameObject {
     // allow for a variation in possible position changes
     private static double DELTA = 0.1; 
 
-    private List<Position> positions;
+    private List<Vector2> positions;
     private double rotation; // the rotation of the object relative
                              // to 'up' (on the camera)
 
     public GameObject(double xPos, double yPos, double rotation) {
     	// add the first position
-    	Position position = new Position(xPos, yPos);
-    	positions = new ArrayList<Position>();
+    	Vector2 position = new Vector2(xPos, yPos);
+    	positions = new ArrayList<Vector2>();
     	positions.add(position);
 
     	this.rotation = rotation;
     }
 
     public void setPos(double xPos, double yPos, double t) {
-    	Position position = new Position(xPos, yPos);
+    	Vector2 position = new Vector2(xPos, yPos);
         
         if (validatePos(position))
             positions.add(position);
     }
 
-    public void setPos(Position position) {
+    public void setPos(Vector2 position) {
         if (validatePos(position))
             positions.add(position);
     }
 
     // decides if a new position for the object is viable given its
     // past positions
-    private boolean validatePos(Position position) {
-        Position velocities = this.getSpeed();
+    private boolean validatePos(Vector2 position) {
+        Vector2 velocities = this.getSpeed();
         if (velocities != null) {
             double dt = position.T - getPos().T;
 
             // run the projection function to get an estimate
             // of the new position
-            Position estimate = projectPosition(dt);
+            Vector2 estimate = projectVector2(dt);
             double xDiff = Math.abs(position.X - estimate.X);
             double yDiff = Math.abs(position.Y - estimate.Y);
             if (xDiff > Math.abs(velocities.X) * DELTA ||
@@ -63,11 +63,11 @@ public class GameObject {
     }
 
     // get the most recent position
-    public Position getPos() {
+    public Vector2 getPos() {
     	if (positions.size() > 0)
             return positions.get(positions.size() - 1);
         else
-        	return new Position(-1, -1); // essentially a failure
+        	return null;
     }
 
     // get the projected position t milliseconds from
@@ -77,16 +77,16 @@ public class GameObject {
     // hasn't happened.
     //
     // returns null if there aren't enough positions taken yet
-    public Position projectPosition(double t) {
-        Position velocities = this.getSpeed();
+    public Vector2 projectVector2(double t) {
+        Vector2 velocities = this.getSpeed();
         if (velocities != null) {
-            Position lastPos = positions.get(positions.size() - 1);
+            Vector2 lastPos = positions.get(positions.size() - 1);
             double newX = lastPos.X + velocities.X * t;
             double newY = lastPos.Y + velocities.Y * t;
 
-            return new Position(newX, newY);
+            return new Vector2(newX, newY);
         } else {
-            return new Position(-1, -1); // essentially a failure
+            return null;
         }
     }
 
@@ -94,10 +94,10 @@ public class GameObject {
     // vector representing the X and Y velocities
     // returns null if the object hasn't travelled for more than
     // two frames
-    private Position getSpeed() {
+    private Vector2 getSpeed() {
         if (positions.size() >= 2) {
-            Position lastPos = positions.get(positions.size() - 1);
-            Position nextLastPos = positions.get(positions.size() - 2);
+            Vector2 lastPos = positions.get(positions.size() - 1);
+            Vector2 nextLastPos = positions.get(positions.size() - 2);
 
             // crude method:
             // calculate the changes in X and Y values
@@ -109,7 +109,7 @@ public class GameObject {
             double vx = dx / dt;
             double vy = dy / dt;
 
-            return new Position(vx, vy);
+            return new Vector2(vx, vy);
         } else {
             return null;
         }
@@ -119,8 +119,8 @@ public class GameObject {
     // code to get the rotation. Currently awaiting vision from python
     // that contains rotation information
     public double getRotationRelativeTo(GameObject obj) {
-        Position myPos = this.getPos();
-        Position otherPos = obj.getPos();
+        Vector2 myPos = this.getPos();
+        Vector2 otherPos = obj.getPos();
 
         double yDiff = myPos.Y - otherPos.Y;
         double xDiff = otherPos.X - myPos.X;
