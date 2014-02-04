@@ -28,10 +28,12 @@ import lejos.robotics.navigation.MoveListener;
 
 public class HolonomicPilot {
 	
-	private int wheelToCenterDist = 145; // Distance between point of rotation and front (left-right) wheel. Necessary for design 1
+	// private int wheelToCenterDist = 145; // Distance between point of rotation and front (left-right) wheel. Necessary for design 1
 	private int wheelDiameter; // Needed for odometry.
-	private int forwardSpeed; // Speed for going forwards/backwards - assigned to lateralMotor
-	private int lateralSpeed; // Speed for going left/right - assigned to forwardMotor
+	// private int forwardSpeed; // Speed for going forwards/backwards - assigned to lateralMotor
+	// private int lateralSpeed; // Speed for going left/right - assigned to forwardMotor
+	private int forwardSpeed; // Speed for going forwards/backwards - assigned to forwardMotor
+	private int lateralSpeed; // Speed for going left/right - assigned to lateralMotor	
 	private int acceleration; // there is only one variable because it is only sensible to add acceleration to the back/forward movement
 	private RegulatedMotor forwardMotor;
 	private RegulatedMotor lateralMotor;
@@ -55,21 +57,24 @@ public class HolonomicPilot {
 	 */
 
 	public void forward() {
-		lateralMotor.forward();		
+		// lateralMotor.forward();	
+		forwardMotor.forward();	
 	}
 
 	
 	public void backward() {
-		lateralMotor.backward();
-		
+		// lateralMotor.backward();
+		forwardMotor.backward();	
 	}
 
 	public void left() {
-		forwardMotor.forward();
+		// forwardMotor.forward();
+		lateralMotor.backward();
 	}
 	
 	public void right() {
-		forwardMotor.backward();
+		// forwardMotor.backward();
+		lateralMotor.forward();
 	}
 
 	
@@ -91,14 +96,14 @@ public class HolonomicPilot {
 		// *forwardMotor*, the one at the front, moves the robot parallelly to the goal line
 		// *lateralMotor*, the one on the side of the former, moves the robot perpendicularly to the goal line
 		
-		double arcLength = heading*Math.PI*wheelToCenterDist/180; // Basically the length of a arch of a circle = turning towards the point we have to go to
-		double wheelsCircumference = wheelDiameter*Math.PI; 
-		double numOfMotorDiskRevolutionsF = arcLength*360/wheelsCircumference; // Calculates the degrees through which the forwardMotor rotates to make the robot turn
+		// double arcLength = heading*Math.PI*wheelToCenterDist/180; // Basically the length of a arch of a circle = turning towards the point we have to go to
+		// double wheelsCircumference = wheelDiameter*Math.PI; 
+		// double numOfMotorDiskRevolutionsF = arcLength*360/wheelsCircumference; // Calculates the degrees through which the forwardMotor rotates to make the robot turn
 				
-		double numOfMotorDiskRevolutionsL = distance*360/wheelsCircumference; // Calculates the degrees through which the lateralMotor rotates to make the robot reach the aiming point
+		// double numOfMotorDiskRevolutionsL = distance*360/wheelsCircumference; // Calculates the degrees through which the lateralMotor rotates to make the robot reach the aiming point
 		
-		forwardMotor.rotate((int) numOfMotorDiskRevolutionsF); 
-		lateralMotor.rotate((int) numOfMotorDiskRevolutionsL); 		
+		// forwardMotor.rotate((int) numOfMotorDiskRevolutionsF); 
+		// lateralMotor.rotate((int) numOfMotorDiskRevolutionsL); 		
 		
 		//forwardMotor.rotate((int) (2*heading*wheelToCenterDist/wheelDiameter)); // The formula looks ridiculous but that is the final look after some simplifications 
 		//lateralMotor.rotate((int) (distance*360/(wheelDiameter*Math.PI))); // Almost the same thing applies here, too
@@ -112,8 +117,17 @@ public class HolonomicPilot {
 		// Design 3 (No turning :( - both wheels centralised) (Check sketch on GitHub)
 		// In case the previous designs don't work
 		// The use of the motors is self-explanatory
-		// lateralMotor.rotate(distance*Math.sin(heading)*360/wheelDiameter*Math.PI);
-		// forwardMotor.rotate(distance*Math.cos(heading)*360/wheelDiameter*Math.PI);
+		double xDistance = distance*Math.sin(heading*Math.PI/180);
+		double yDistance = distance*Math.cos(heading*Math.PI/180);
+		double wheelsCircumference = wheelDiameter*Math.PI;
+		double numOfMotorDiskRevolutionsF = yDistance*360/wheelsCircumference;
+		double numOfMotorDiskRevolutionsL = xDistance*360/wheelsCircumference;
+		
+		lateralMotor.rotate((int) numOfMotorDiskRevolutionsL); 
+		forwardMotor.rotate((int) numOfMotorDiskRevolutionsF); 		
+		
+		// lateralMotor.rotate((int) (distance*Math.sin(heading)*360/(wheelDiameter*Math.PI)));
+		// forwardMotor.rotate((int) (distance*Math.cos(heading)*360/(wheelDiameter*Math.PI)));
 		
 		
 		
@@ -121,8 +135,10 @@ public class HolonomicPilot {
 	}
 	
 	public void setTravelSpeed(int speedF, int speedL) {
-		lateralMotor.setSpeed(speedF);
-		forwardMotor.setSpeed(speedL);
+		// lateralMotor.setSpeed(speedF);
+		// forwardMotor.setSpeed(speedL);
+		forwardMotor.setSpeed(speedF);
+		lateralMotor.setSpeed(speedL);
 		this.forwardSpeed = speedF;
 		this.lateralSpeed = speedL;
 	}
