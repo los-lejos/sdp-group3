@@ -64,9 +64,9 @@ public class RobotCommunication {
 				defender.send(instruction);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
+			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
 		}
 	}
 }

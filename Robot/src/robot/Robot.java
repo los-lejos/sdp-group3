@@ -88,7 +88,14 @@ public abstract class Robot {
 		}
 
 		System.out.println("Exiting");
-		conn.closeConnection();
+		
+		try {
+			conn.closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void handleInstruction(IssuedInstruction instruction) {
