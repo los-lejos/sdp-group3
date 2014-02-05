@@ -25,9 +25,9 @@ class Detection:
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
     shape_sizes = { 'ball': [10, 160, 175],
-                    'yellow': [20, 95, 110],
-                    'blue': [20, 95, 110],
-                    'dot': [10, 90, 100] }
+                    'yellow': [30, 95, 110],
+                    'blue': [30, 95, 110],
+                    'dot': [10, 40, 50] }
 #(8, 16, 100),
 #          'yellow'         : (30, 54, 169),
 #          'blue'         : (30, 54, 166),
@@ -83,9 +83,9 @@ class Detection:
 
         for i in range(0, 4):
             if self._colour_order[i] == 'b':
-                self._gui.update_layer('blue', entities[i])
+                self._gui.update_layer('blue{0}'.format(i), entities[i])
             elif self._colour_order[i] == 'y':
-                self._gui.update_layer('yellow', entities[i])
+                self._gui.update_layer('yellow{0}'.format(i), entities[i])
 
         self._gui.update_layer('ball', entities[BALL])
 
@@ -146,16 +146,20 @@ class Detection:
     def __clarify_coords(self, entity, image):
         """Given the coordinates of the colored part of 
         """
-        col_x, col_y = entity.get_coordinates()
-
-        if col_x == -1:
-            return
-
-        x_offset_left = int(self.areas[entity.which][0]*self._pitch_w*self._scale)
-        crop_x = max((col_x - x_offset_left - 23), 0)
-        crop_y = max((col_y - 23), 0)
-        crop_w = min((max((col_x - x_offset_left), 0) + 23), image.width - crop_x)
-        crop_h = min((col_y + 23), image.height - crop_y)
+        radius = int(23*self._scale)
+        x, y = entity.get_coordinates()
+        if x == -1: return
+        x_offset = int(self.areas[entity.which][0]*self._pitch_w)
+        image_x = max((x - x_offset)*self._scale, 0)
+        image_y = y*self._scale
+        crop_x = max(image_x - radius, 0)
+        crop_y = max(image_y - radius, 0)
+        crop_w = 2*radius if crop_x+2*radius < image.width else image.width - crop_x
+        crop_h = 2*radius if crop_y+2*radius < image.height else image.height - crop_y
+        layer_thingy = Image((self._pitch_w, self._pitch_h))
+        layer_thingy.dl().rectangle((crop_x, crop_y), (crop_w, crop_h), Color.RED)
+        self._gui.update_layer('crop_thingy', layer_thingy)
+        print 'x={0} y={1} w={2} h={3} offset={4} image.width={5} image.height={6} radius={7} x={8} y={9} pitch_width={10}'.format(crop_x, crop_y, crop_w, crop_h, x_offset, image.width, image.height, radius, x, y, self._pitch_w)
         cropped_img = image.crop(crop_x, crop_y, crop_w, crop_h)
         if cropped_img == None: return
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
@@ -166,8 +170,8 @@ class Detection:
             return
 
         dot_x, dot_y = entity_blob.centroid()
-        a = float(col_y - col_x)
-        b = float(col_x - dot_x)
+        a = float(y - x)
+        b = float(x - dot_x)
 
         if a > 0 and b > 0:
             entity.set_angle(math.atan(a/b))
@@ -178,8 +182,8 @@ class Detection:
         elif a < 0 and b > 0:
             entity.set_angle(2*math.pi + math.atan(a/b))
 
-        x = int(dot_x + col_x / 2)
-        y = int(dot_y + col_y / 2)
+        x = int(dot_x + x / (self._scale*2))
+        y = int(dot_y + y / (self._scale*2))
         entity.set_coordinates(x, y)
 
 class Entity:

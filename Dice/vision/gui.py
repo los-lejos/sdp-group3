@@ -19,9 +19,9 @@ __author__ = "Ingvaras Merkys"
 
 class Gui:
 
-    _layer_sets = { 'default': ['raw', 'yellow', 'blue', 'ball'],
-                    'yellow': ['threshY', 'yellow'],
-                    'blue': ['threshB', 'blue'],
+    _layer_sets = { 'default': ['raw', 'yellow0', 'yellow1', 'yellow2', 'yellow3', 'blue0', 'blue1', 'blue2', 'blue3', 'ball'],
+                    'yellow': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
+                    'blue': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
                     'ball': ['threshR', 'ball'],
                     'dot': ['threshD'] }
 
@@ -30,8 +30,14 @@ class Gui:
                 'threshB': None,
                 'threshR': None,
                 'threshD': None,
-                'yellow': None,
-                'blue': None,
+                'yellow0': None,
+                'yellow1': None,
+                'yellow2': None,
+                'yellow3': None,
+                'blue0': None,
+                'blue1': None,
+                'blue2': None,
+                'blue3': None,
                 'ball' : None }
 
     _persistent_layers = { 'mouse': None }
