@@ -23,7 +23,7 @@ public class M2_Defender {
     	DifferentialPilot pilot = new DifferentialPilot(TireDiameterMm, TrackWidthMm, Motor.C, Motor.A, false);
 		pilot.setTravelSpeed(pilot.getMaxTravelSpeed() * 0.5f);
 		
-		float KickerKickSpeed = kickMotor.getMaxSpeed() * 0.4f;
+		float KickerKickSpeed = kickMotor.getMaxSpeed() * 0.5f;
 		float KickerCatchSpeed = kickMotor.getMaxSpeed() * 0.3f;
 		
 		int catchOpenDegrees = 30;
