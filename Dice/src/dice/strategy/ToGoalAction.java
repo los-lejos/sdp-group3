@@ -40,6 +40,7 @@ public class ToGoalAction extends StrategyAction {
 				RobotInstructions.MOVE_TO,
 				this.x,
 				this.y,
+				(byte) 0,
 				// TODO make robot orient towards opponents goal
 				this.getTargetRobot(),
 				this.getCallback());

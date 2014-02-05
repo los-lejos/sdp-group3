@@ -29,8 +29,10 @@ public class PassAction extends StrategyAction {
 			return false;
 		case DEFENDER:
 			// we need to have the ball
-			if (state.getOurDefender().getHasBall() == true) return true;
-			else return false;
+// TODO: getHasBall() no longer works, use state.possession		
+//			if (state.getOurDefender().getHasBall() == true) return true;
+//			else return false;
+			return false;
 		default:
 			// something went wrong
 			Log.debug("The sky is falling");

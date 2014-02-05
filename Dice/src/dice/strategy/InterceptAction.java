@@ -31,6 +31,7 @@ public class InterceptAction extends StrategyAction {
 				RobotInstructions.MOVE_TO,
 				this.x,
 				this.y,
+				(byte) 0,
 				this.getTargetRobot(),
 				this.getCallback());
 	}

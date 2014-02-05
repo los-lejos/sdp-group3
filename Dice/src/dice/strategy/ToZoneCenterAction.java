@@ -37,8 +37,9 @@ public class ToZoneCenterAction extends StrategyAction {
 			} else {
 				return 0;
 			}
-			return 0;
 		}
+		
+		return 0;
 	}
 
 	@Override
@@ -49,6 +50,7 @@ public class ToZoneCenterAction extends StrategyAction {
 					RobotInstructions.MOVE_TO,
 					xA,
 					yA,
+					(byte) 0,
 					this.getTargetRobot(),
 					this.getCallback()
 					);
@@ -57,11 +59,13 @@ public class ToZoneCenterAction extends StrategyAction {
 					RobotInstructions.MOVE_TO,
 					xD,
 					yD,
+					(byte) 0,
 					this.getTargetRobot(),
 					this.getCallback()
-					);
-			return new RobotInstruction(
+					);		
 		}
+		
+		return null;
 	}
 
 }

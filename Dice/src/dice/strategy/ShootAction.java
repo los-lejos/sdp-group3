@@ -3,7 +3,7 @@ package dice.strategy;
 import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
-import dice.state.Position;
+import dice.state.Vector2;
 import dice.state.WorldState;
 
 /**
@@ -20,9 +20,11 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if (state.getOurAttacker().getHasBall()) {
-			return true;
-		} else return false;
+// TODO: getHasBall() no longer works, use state.possession		
+//		if (state.getOurAttacker().getHasBall()) {
+//			return true;
+//		} else return false;
+		return false;
 	}
 
 	@Override
@@ -32,13 +34,14 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		Position shootAt = new Position(KickTargets.shootTarget());
+		Vector2 shootAt = new Vector2(KickTargets.shootTarget());
 		double shootAtx = shootAt.X;
 		double shootAty = shootAt.Y;
 		return new RobotInstruction(
 			RobotInstructions.KICK_TOWARDS,
-			shootAtx,
-			shootAty,
+			(byte) shootAtx,
+			(byte) shootAty,
+			(byte) 0,
 			this.getTargetRobot(),
 			this.getCallback()
 			);
@@ -68,5 +71,3 @@ public class ShootAction extends StrategyAction {
 					);*/
 		}
 	}
-
-}

@@ -1,7 +1,7 @@
 package dice.strategy;
 
 import dice.communication.RobotType;
-import dice.state.Position;
+import dice.state.Vector2;
 
 /*
  * @author Sam Stern
@@ -19,7 +19,7 @@ public class KickTargets {
 	}
 	
 	// where to aim when kicking at the goal
-	public static Position shootTarget() {
+	public static Vector2 shootTarget() {
 		//TODO
 		return null;
 	}
