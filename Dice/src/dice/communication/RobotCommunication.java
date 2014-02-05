@@ -33,7 +33,7 @@ public class RobotCommunication {
 			try {
 				attacker.closeConnection();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error closing attacker connection: " + e.getMessage());
 			}
 		}
 		
@@ -41,7 +41,7 @@ public class RobotCommunication {
 			try {
 				defender.closeConnection();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error closing defender connection: " + e.getMessage());
 			}
 		}
 	}
