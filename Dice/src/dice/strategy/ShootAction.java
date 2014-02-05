@@ -38,7 +38,7 @@ public class ShootAction extends StrategyAction {
 		double shootAtx = shootAt.X;
 		double shootAty = shootAt.Y;
 		return new RobotInstruction(
-			RobotInstructions.KICK_TOWARDS,
+			RobotInstructions.KICK_TOWARD,
 			(byte) shootAtx,
 			(byte) shootAty,
 			(byte) 0,
