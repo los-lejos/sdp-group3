@@ -3,6 +3,7 @@ package dice;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import dice.communication.RobotCommunication;
 import dice.communication.RobotCommunicationCallback;
@@ -41,8 +42,12 @@ public class Main {
 				System.out.println("List of commands:");
 				System.out.println("connect <robot> - starts up a bluetooth connection with the robot");
 				System.out.println("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
-				
-			} else if(!cmd[0].equals("quit")) {
+				System.out.println("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+			}
+			else if(cmd[0].equals("vision")) {
+				startVision(cmd);		
+			} 
+			else if(!cmd[0].equals("quit")) {
 				System.out.println("Unrecognized command");
 			}
 			
@@ -102,5 +107,17 @@ public class Main {
 		System.out.println("Invalid robot type. Accepted are 'a' for attacker and 'd' for defender");
 		
 		return null;
+	}
+	
+	private static void startVision(String[] cmd) {
+		String options = Arrays.toString(cmd);               
+		options = options.substring(1, options.length()-1).replaceAll(",", "");
+		String cmd2 = "python vision.py " + options;
+		try {
+			Runtime.getRuntime().exec(cmd2);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
