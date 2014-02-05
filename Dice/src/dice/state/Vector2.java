@@ -3,23 +3,23 @@ package dice.state;
 /** Class to represent position of an object
  * @author Craig Wilkinson
  */
-public class Position {
+public class Vector2 {
 	public double X;
 	public double Y;
 	public double T;
 
-	public Position(double X, double Y) {
+	public Vector2(double X, double Y) {
 		this.X = X;
 		this.Y = Y;
     }
 
-    public Position(double X, double Y, double T) {
+    public Vector2(double X, double Y, double T) {
     	this(X, Y);
     	this.T = T;
     }
 
     // copy values from other position
-    public Position(Position position) {
+    public Vector2(Vector2 position) {
     	this.X = position.X;
     	this.Y = position.Y;
     }
@@ -41,7 +41,7 @@ public class Position {
     	this.Y = Y;
     }
 
-    public void setPos(Position position) {
+    public void setPos(Vector2 position) {
     	this.X = position.X;
     	this.Y = position.Y;
     }
