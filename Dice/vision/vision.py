@@ -15,7 +15,7 @@ import os
 import time
 import socket
 from optparse import OptionParser
-from SimpleCV import Camera
+from SimpleCV import Camera, VirtualCamera
 from preprocessor import Preprocessor
 from gui import Gui, ThresholdGui
 from threshold import Threshold
@@ -31,15 +31,28 @@ BALL = 4
 
 class Vision:
 
-    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, colour_order):
+    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, colour_order, file_input=None):
 
         self.running = True
         self.connected = False
         self.scale = scale
         self.stdout = stdout
         self.cam = Camera()
-        calibration_path = os.path.join('calibration', 'pitch{0}'.format(pitch_num))
-        self.cam.loadCalibration(os.path.join(sys.path[0], calibration_path))
+
+        if file_input is None:  
+            self.cam = Camera()
+        else:
+            file_type = 'video'
+            if file_input.endswith(('jpg', 'png')):
+                file_type = 'image'
+            self.cam = VirtualCamera(file_input, file_type)
+
+        try:
+            calibration_path = os.path.join('calibration', 'pitch{0}'.format(pitch_num))
+            self.cam.loadCalibration(os.path.join(sys.path[0], calibration_path))
+        except TypeError:
+            print 'Calibration file not found.'
+
         self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
         if self.preprocessor.has_pitch_size:
             self.gui = Gui(self.preprocessor.pitch_size)
@@ -88,7 +101,8 @@ class Vision:
         if self.cam.getCameraMatrix is None:
             frame = self.cam.getImage()
         else:
-            frame = self.cam.getImageUndistort()
+            #frame = self.cam.getImageUndistort()
+            frame = self.cam.getImage()
 
         frame = self.preprocessor.preprocess(frame, self.scale)
         self.gui.update_layer('raw', frame)
@@ -165,13 +179,16 @@ if __name__ == "__main__":
                       help='Don\'t restore the last run\'s saved pitch size')
 
     parser.add_option('-t', '--thresholds', action='store_true', dest='reset_thresholds', default=False,
-                      help='Don\'t restore the last run\'s saved thresholds and blur values')
+                      help='Don\'t restore the last run\'s saved thresholds')
 
     parser.add_option('-c', '--scale', dest='scale', type='float', metavar='SCALE', default=1.0,
                       help='Scale down the image in preprocessing stage')
 
     parser.add_option('-i', '--colour-order', dest='colour_order', type='string', metavar='COLOUR_ORDER', default='yybb',
-                      help='COLOUR_ORDER - the way different colour robots are put from left to right (e. g. "yybb")')
+                      help=('COLOUR_ORDER - the way different colour robots are put from left to right '
+                            '(e. g. "--colour-order=yybb" for sequence yellow-yellow-blue-blue)'))
+
+    parser.add_option('-f', '--file', dest='file_input', type='string', metavar='FILE', help='File input, can be a video or image.')
 
     (opts, args) = parser.parse_args()
 
@@ -181,4 +198,4 @@ if __name__ == "__main__":
     if opts.colour_order not in ['yybb', 'bbyy', 'ybby', 'byyb', 'ybyb', 'byby']:
         parser.error('Invalid colour ordering specified.')
 
-    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.colour_order)
+    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.colour_order, file_input=opts.file_input)
