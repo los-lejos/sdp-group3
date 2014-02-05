@@ -141,4 +141,23 @@ public class WorldState {
     	return ball;
     }
 
+    public PitchZone getBallZone() {
+        PitchZone ballZone;
+        double ballX = ball.getPos().X;
+
+        if (ballX >= origin && ballX <= firstDivision)
+            ballZone = PitchZone.OUR_DEFEND_ZONE;
+        else if (ballX <= secondDivision)
+            ballZone = PitchZone.OPP_ATTACK_ZONE;
+        else if (ballX <= thirdDivision)
+            ballZone = PitchZone.OUR_ATTACK_ZONE;
+        else if (ballX <= end)
+            ballZone = PitchZone.OPP_DEFEND_ZONE;
+        else
+            return null;
+        
+        return ballZone;
+    }
+
+
 }

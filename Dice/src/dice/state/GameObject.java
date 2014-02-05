@@ -90,11 +90,27 @@ public class GameObject {
         }
     }
 
+    // project a *path* forwards from the current position
+    public Path projectPositionPath(double t) {
+        Vector2 velocity = this.getVelocity();
+
+        if (velocity != null) {
+            Vector2 lastPos = positions.get(positions.size() - 1);
+            double newX = lastPos.X + velocities.X * t;
+            double newY = lastPos.Y + velocities.Y * t;
+
+            return new Vector2(newX, newY);
+        } else {
+            return null;
+        }
+    }
+
+
     // this returns a "position" which is really just a 2D
     // vector representing the X and Y velocities
     // returns null if the object hasn't travelled for more than
     // two frames
-    private Vector2 getSpeed() {
+    public Vector2 getVelocity() {
         if (positions.size() >= 2) {
             Vector2 lastPos = positions.get(positions.size() - 1);
             Vector2 nextLastPos = positions.get(positions.size() - 2);
