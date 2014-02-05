@@ -1,5 +1,7 @@
 package dice.strategy;
 
+import quicktime.qd3d.math.Vector2D;
+import dice.state.GameObject;
 import dice.state.Vector2;
 
 /*
@@ -10,8 +12,10 @@ import dice.state.Vector2;
 
 final class StratMaths {
 
-	protected static Vector2 shootTarget() {
+	protected static Vector2 getShootVector() {
+		//TODO
 		return null;
 	}
+	
 
 }
