@@ -21,8 +21,3 @@ We can also use MOVE_TO to rotate by suppling distance == 0.
 
 * **angle** should be given by the first two parameters. Parameter 1 = the hundreds value of angle. Parameter 2 = the tens and units values. For example, an angle of 234 is represented by the parameters 2 and 34.
 * **distance** should be given by the third parameter. Since this value is not read during KICK_TOWARD we can just use zero, or whatever convention we decide upon.
-
-## To Do
-
-* Units for distance? Will probably take distances in cm, so need to convert to robot travel units (whatever these are).
-* Test: What happens with negative distances? Would be nice to use these for reversing.
