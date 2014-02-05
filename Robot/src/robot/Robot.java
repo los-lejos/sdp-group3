@@ -24,7 +24,7 @@ import shared.RobotInstructions;
 public abstract class Robot {
 
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 12;
+	private static final int FRONT_SENSOR_CUTOFF = 8;
 
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
