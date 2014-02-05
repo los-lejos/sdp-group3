@@ -52,7 +52,7 @@ public class RobotCommunication {
 			robot.handshake();
 			robot.start();
 		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
 		}
 	}
 
