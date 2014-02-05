@@ -126,7 +126,7 @@ public class BluetoothRobotConnection extends Thread {
 		boolean connected = nxtConn.connectTo(nxtInfo, NXTComm.PACKET);
 		
 		if (!connected) {
-			throw new BluetoothCommunicationException("Failed to connect to " + nxtInfo.name);
+			throw new BluetoothCommunicationException("Failed to connect to " + nxtInfo.name + " (is it switched on?)");
 		}
 
 	    out = nxtConn.getOutputStream();
@@ -160,6 +160,8 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	public void closeConnection() throws IOException {
+		if(!this.connected) return;
+		
 		isRunning = false;
 		connected = false;
 		
