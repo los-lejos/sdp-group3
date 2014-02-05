@@ -21,6 +21,8 @@ public class Main {
 		
 		String[] cmd = null;
 		do {
+			System.out.print("> ");
+			
 			// Split on whitespace
 			try {
 				cmd = br.readLine().split("\\s+");
