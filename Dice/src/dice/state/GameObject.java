@@ -46,7 +46,7 @@ public class GameObject {
 
             // run the projection function to get an estimate
             // of the new position
-            Vector2 estimate = projectVector2(dt);
+            Vector2 estimate = projectPosition(dt);
             double xDiff = Math.abs(position.X - estimate.X);
             double yDiff = Math.abs(position.Y - estimate.Y);
             if (xDiff > Math.abs(velocities.X) * DELTA ||
@@ -77,7 +77,7 @@ public class GameObject {
     // hasn't happened.
     //
     // returns null if there aren't enough positions taken yet
-    public Vector2 projectVector2(double t) {
+    public Vector2 projectPosition(double t) {
         Vector2 velocities = this.getSpeed();
         if (velocities != null) {
             Vector2 lastPos = positions.get(positions.size() - 1);
