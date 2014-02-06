@@ -1,6 +1,6 @@
 package dice.strategy;
 
-import quicktime.qd3d.math.Vector2D;
+
 import dice.state.GameObject;
 import dice.state.Vector2;
 
@@ -17,5 +17,17 @@ final class StratMaths {
 		return null;
 	}
 	
-
+	protected static boolean canBlock(Vector2 v, GameObject o) {
+		//TODO
+		return true;
+		
+	}
+	
+	protected static byte cartestanToPolarR(Vector2 v) {
+		return (byte) Math.sqrt(Math.pow(v.X, 2) + Math.pow(v.Y, 2));
+	}
+	
+	protected static long cartesianToPolarTheta(Vector2 v) {
+		return Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
+	}
 }

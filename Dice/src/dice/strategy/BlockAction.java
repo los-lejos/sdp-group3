@@ -4,6 +4,7 @@ import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
+import dice.state.Vector2;
 import dice.state.WorldState;
 
 /*
@@ -13,8 +14,8 @@ import dice.state.WorldState;
  */
 public class BlockAction extends StrategyAction {
 	
-	private double projectedPos;
-	private byte thetaA,thetaB, r;
+
+	private Vector2 whereToBlock;
 
 	public BlockAction(RobotType target) {
 		super(target);
@@ -22,8 +23,12 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		//TODO need path extrapolation from craig.
-		return true;
+		GameObject ball = state.getBall();
+		whereToBlock = ball.projectLine(ball.getPos());
+		if (StratMaths.canBlock(whereToBlock,state.getOurDefender())) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -38,11 +43,9 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return new RobotInstruction(
-				RobotInstructions.MOVE_TO,
-				thetaA,
-				thetaB,
-				r,
+		return RobotInstruction.CreateMoveTo(
+				StratMaths.cartesianToPolarTheta(whereToBlock),
+				StratMaths.cartestanToPolarR(whereToBlock),
 				this.getTargetRobot(),
 				this.getCallback());
 	}
