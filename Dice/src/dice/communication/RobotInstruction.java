@@ -44,4 +44,14 @@ public class RobotInstruction {
 	public RobotCommunicationCallback getCallback() {
 		return callback;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer result = new StringBuffer();
+		for (int i = 0; i < this.instruction.length; i++) {
+		   result.append(this.instruction[i]);
+		}
+		
+		return result.toString();
+	}
 }
