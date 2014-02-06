@@ -42,8 +42,8 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
-        self._pitch_w = 720
-        self._pitch_h = 540
+        self._pitch_w = 580
+        self._pitch_h = 320
 
     def detect_objects(self, frame, pitch_size):
 
@@ -147,20 +147,16 @@ class Detection:
         """Given the coordinates of the colored part of 
         """
         radius = int(23*self._scale)
-        x, y = entity.get_coordinates()
+        x, y = entity.get_local_coords()
         if x == -1: return
-        x_offset = int(self.areas[entity.which][0]*self._pitch_w)
-        image_x = max((x - x_offset)*self._scale, 0)
-        image_y = y*self._scale
-        crop_x = max(image_x - radius, 0)
-        crop_y = max(image_y - radius, 0)
-        crop_w = 2*radius if crop_x+2*radius < image.width else image.width - crop_x
-        crop_h = 2*radius if crop_y+2*radius < image.height else image.height - crop_y
-        layer_thingy = Image((self._pitch_w, self._pitch_h))
-        layer_thingy.dl().rectangle((crop_x, crop_y), (crop_w, crop_h), Color.RED)
-        self._gui.update_layer('crop_thingy', layer_thingy)
-        print 'x={0} y={1} w={2} h={3} offset={4} image.width={5} image.height={6} radius={7} x={8} y={9} pitch_width={10}'.format(crop_x, crop_y, crop_w, crop_h, x_offset, image.width, image.height, radius, x, y, self._pitch_w)
-        cropped_img = image.crop(crop_x, crop_y, crop_w, crop_h)
+        x1 = max(x - radius, 0)
+        y1 = max(y - radius, 0)
+        x2 = min(x + radius, image.width)
+        y2 = min(y + radius, image.height)
+        #layer_thingy = Image((self._pitch_w, self._pitch_h))
+        #layer_thingy.dl().rectangle((crop_x, crop_y), (crop_w, crop_h), Color.RED)
+        #self._gui.update_layer('crop_thingy', layer_thingy)
+        cropped_img = image.crop((x1, y1), (x2, y2))
         if cropped_img == None: return
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
@@ -182,15 +178,17 @@ class Detection:
         elif a < 0 and b > 0:
             entity.set_angle(2*math.pi + math.atan(a/b))
 
-        x = int(dot_x + x / (self._scale*2))
-        y = int(dot_y + y / (self._scale*2))
-        entity.set_coordinates(x, y)
+        dot_local_x = dot_x + x1
+        dot_local_y = dot_y + y1
+        entity.clarify_coords(dot_local_x, dot_local_y)
 
 class Entity:
 
     def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None, areas = None, scale = None):
 
-        self._coordinates = (-1, -1)
+        self._coordinates = (-1, -1)       # coordinates in 580x320 coordinate system
+        self._local_coords = (-1, -1) # coordinates in the relevant area of the frame
+        self._frame_coords = (-1, -1) # coordinates in the frame
         self._angle = None
         self._scale = scale
         self._has_angle = False
@@ -208,19 +206,42 @@ class Entity:
                 self._coordinates = (x, y)
             elif which >= 0 and which < 4:
                 self._has_angle = True
-                x, y = entity_blob.centroid()
-                # min to ensure it's never out of range
-                x = min(int((x + int(areas[which][0]*scale*self._pitch_w))/scale), self._pitch_w)
-                y = min(int(y/scale), self._pitch_h)
+                x_local, y_local = entity_blob.centroid()
+                self._local_coords = (x_local, y_local)
+                x_frame = x_local + int(areas[which][0]*self._pitch_w*scale)
+                self._frame_coords = (x_frame, y_local)
+                x = int((x_frame/float(self._pitch_w))*580)
+                y = int(y_local/float(self._pitch_h)*320)
                 self._coordinates = (x, y)
 
     def get_coordinates(self):
         return self._coordinates
 
+    def get_local_coords(self):
+        return self._local_coords
+
+    def get_frame_coords(self):
+        return self._frame_coords
+
     def get_angle(self):
         return self._angle
 
-    def set_coordinates(self, x, y):
+    def clarify_coords(self, dot_local_x, dot_local_y):
+        local_x, local_y = self.get_local_coords()
+        local_x = (local_x + dot_local_x)/2
+        local_y = (local_y + dot_local_y)/2
+        self._local_coords = (local_x, local_y)
+        
+        frame_x, frame_y = self.get_frame_coords()
+        dot_frame_x = dot_local_x + int(areas[which][0]*self._pitch_w*scale)
+        dot_frame_y = dot_local_y
+        frame_x = (frame_x + dot_frame_x)/2
+        frame_y = (frame_y + dot_frame_y)/2
+        self._frame_coords = (frame_x, frame_y)
+        
+        x, y = self.get_coordinates()
+        x = int((frame_x/float(self._pitch_w))*580)
+        y = int((frame_y/float(self._pitch_h))*580)
         self._coordinates = (x, y)
 
     def set_angle(self, angle):
