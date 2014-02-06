@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import dice.communication.RobotCommunication;
+import dice.communication.BluetoothRobotCommunicator;
 import dice.communication.RobotCommunicationCallback;
+import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 
@@ -18,11 +19,33 @@ import dice.communication.RobotType;
 
 public class Main {
 	public static void main (String[] args) {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		Main program = new Main();
+		program.init();
+		program.run();
+		program.cleanup();
+	}
+	
+	private BufferedReader br;
+	private RobotCommunicator attackerComms, defenderComms;
+
+	public void init() {
+		br = new BufferedReader(new InputStreamReader(System.in));
+	}
+	
+	public void cleanup() {
+		if(this.attackerComms != null) {
+			this.attackerComms.close();
+		}
 		
+		if(this.defenderComms != null) {
+			this.defenderComms.close();
+		}
+	}
+	
+	public void run() {
 		System.out.println("Ready");
-		
 		String[] cmd = null;
+		
 		do {
 			System.out.print("> ");
 			
@@ -56,18 +79,23 @@ public class Main {
 		} while(cmd == null || !cmd[0].equals("quit"));
 
 		System.out.println("Exiting");
-		RobotCommunication.getInstance().close();
 	}
 	
-	private static void execConnect(String[] cmd) {
+	private void execConnect(String[] cmd) {
 		RobotType type = getRobotTypeFromCommand(cmd);
 		
 		if(type != null) {
-			RobotCommunication.getInstance().init(type);
+			if(type == RobotType.ATTACKER) {
+				this.attackerComms = new BluetoothRobotCommunicator();
+				this.attackerComms.init(RobotType.ATTACKER);
+			} else {
+				this.defenderComms = new BluetoothRobotCommunicator();
+				this.defenderComms.init(RobotType.DEFENDER);
+			}
 		}
 	}
 	
-	private static void execSend(String[] cmd) {
+	private void execSend(String[] cmd) {
 		RobotType type = getRobotTypeFromCommand(cmd);
 		
 		if(type != null) {
@@ -95,11 +123,16 @@ public class Main {
 			};
 			
 			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3, type, callback);
-			RobotCommunication.getInstance().sendInstruction(instruction);
+			
+			if(type == RobotType.ATTACKER) {
+				this.attackerComms.sendInstruction(instruction);
+			} else {
+				this.defenderComms.sendInstruction(instruction);
+			}
 		}
 	}
 	
-	private static RobotType getRobotTypeFromCommand(String[] cmd) {
+	private RobotType getRobotTypeFromCommand(String[] cmd) {
 		if(cmd[1].equals("d")) {
 			return RobotType.DEFENDER;
 		} else if(cmd[1].equals("a")) {
@@ -111,7 +144,7 @@ public class Main {
 		return null;
 	}
 	
-	private static void startVision(String[] cmd) {
+	private void startVision(String[] cmd) {
 		String options = Arrays.toString(cmd);               
 		options = options.substring(1, options.length()-1).replaceAll(",", "");
 		String pythonCmd = "python vision/vision.py " + options;
