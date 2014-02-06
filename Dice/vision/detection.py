@@ -25,9 +25,9 @@ class Detection:
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
     shape_sizes = { 'ball': [10, 160, 175],
-                    'yellow': [30, 95, 110],
-                    'blue': [30, 95, 110],
-                    'dot': [10, 40, 50] }
+                    'yellow': [50, 95, 110],
+                    'blue': [50, 95, 110],
+                    'dot': [20, 40, 50] }
 #(8, 16, 100),
 #          'yellow'         : (30, 54, 169),
 #          'blue'         : (30, 54, 166),
@@ -122,16 +122,16 @@ class Detection:
         if blobs is None:
             return None
 
-        size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+        #size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+        size_matched_blobs = [(1, b) for b in blobs]
         
         if dot:
-            size_matched_blobs = filter(lambda (_, b): b.isCircle(0.5), size_matched_blobs)
+            a = len(size_matched_blobs)
+            size_matched_blobs = filter(lambda (_, b): b.isCircle(tolerance=0.1), size_matched_blobs)
+            print 'blobs1={0} blobs2={1}'.format(a, len(size_matched_blobs))
 
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
                                 size_matched_blobs, (9999, None))
-
-        if entity_blob is None:
-            return None
 
         return entity_blob
 
@@ -160,23 +160,23 @@ class Detection:
         if cropped_img == None: return
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
-        entity_blob = self.__find_entity_blob(cropped_img_threshold, size)
+        entity_blob = self.__find_entity_blob(cropped_img_threshold, size, dot=True)
 
         if entity_blob is None:
             return
 
         dot_x, dot_y = entity_blob.centroid()
-        a = float(y - x)
-        b = float(x - dot_x)
+        delta_x = float(abs(dot_x - x))
+        delta_y = float(abs(dot_y - y))
 
-        if a > 0 and b > 0:
-            entity.set_angle(math.atan(a/b))
-        elif a < 0 and b < 0:
-            entity.set_angle(math.pi + math.atan(a/b))
-        elif a > 0 and b < 0:
-            entity.set_angle(math.pi + math.atan(a/b))
-        elif a < 0 and b > 0:
-            entity.set_angle(2*math.pi + math.atan(a/b))
+        if x > dot_x and y > dot_y:
+            entity.set_angle(math.atan(delta_y/delta_x))
+        elif dot_x > x and y > dot_y:
+            entity.set_angle(math.pi+math.atan(delta_y/delta_x))
+        elif x > dot_x and dot_y > y:
+            entity.set_angle(2*math.pi-math.atan(delta_y/delta_x))
+        elif dot_x > x and y > dot_y:
+            entity.set_angle(0.5*math.pi+math.atan(delta_x/delta_y))
 
         dot_local_x = dot_x + x1
         dot_local_y = dot_y + y1
@@ -195,14 +195,19 @@ class Entity:
         self._pitch_w = pitch_w
         self._pitch_h = pitch_h
         self._colour_order = colour_order
+        self._areas = areas
         self.which = which
         
         if not entity_blob is None:
             self._entity_blob = entity_blob
             if which == BALL:
-                x, y = entity_blob.centroid()
-                x = min(int(x/scale), self._pitch_w)
-                y = min(int(y/scale), self._pitch_h)
+                x_local, y_local = entity_blob.centroid()
+                self._local_coords = (x_local, y_local)
+                x_frame = x_local
+                self._frame_coords = (x_frame, y_local)
+                x = int((x_frame/float(self._pitch_w))*580)
+                y = int(y_local/float(self._pitch_h)*320)
+                self._coordinates = (x, y)
                 self._coordinates = (x, y)
             elif which >= 0 and which < 4:
                 self._has_angle = True
@@ -233,7 +238,7 @@ class Entity:
         self._local_coords = (local_x, local_y)
         
         frame_x, frame_y = self.get_frame_coords()
-        dot_frame_x = dot_local_x + int(areas[which][0]*self._pitch_w*scale)
+        dot_frame_x = dot_local_x + int(self._areas[self.which][0]*self._pitch_w*self._scale)
         dot_frame_y = dot_local_y
         frame_x = (frame_x + dot_frame_x)/2
         frame_y = (frame_y + dot_frame_y)/2
@@ -253,8 +258,7 @@ class Entity:
         """
         if self.get_coordinates()[0] == -1: return
         if self.which >= 0 and self.which < 4:
-            x = int(self._coordinates[0]*self._scale)
-            y = int(self._coordinates[1]*self._scale)
+            x, y = self.get_frame_coords()
             layer.circle((x, y), radius=2, filled=1)
 
             if self._colour_order[self.which] == 'b':
@@ -269,10 +273,9 @@ class Entity:
                 endy = y + int(25.0*self._scale * math.sin(angle))
                 degrees = abs(self._angle - math.pi)  / math.pi * 180 
                 layer.line((x, y), (endx, endy), antialias=False)
-        elif self.which == 4:
+        elif self.which == BALL:
             w = layer.width
             h = layer.height
-            x = int(self._coordinates[0]*self._scale)
-            y = int(self._coordinates[1]*self._scale)
+            x, y = self.get_frame_coords()
             layer.line((x, 0), (x, h), antialias=False, color=Color.RED)
             layer.line((0, y), (w, y), antialias=False, color=Color.RED)

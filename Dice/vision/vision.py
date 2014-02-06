@@ -127,7 +127,6 @@ class Vision:
 
     def output_pitch_size(self):
 
-       #print(self.preprocessor.pitch_size)
         self.send('{0} {1} {2} \n'.format(PITCH_SIZE_BIT,
                                           self.preprocessor.pitch_size[0],
                                           self.preprocessor.pitch_size[1]))
