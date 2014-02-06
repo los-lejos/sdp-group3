@@ -23,7 +23,7 @@ public class StrategyEvaluator {
 	public StrategyEvaluator(RobotCommunicator attackerComms, RobotCommunicator defenderComms) {
 		// Populate attacker actions
 		attacker = new RobotStrategyState(attackerComms);
-		defender.addAction(new BlockAction());
+		attacker.addAction(new BlockAction());
 		attacker.addAction(new InterceptAction());
 		attacker.addAction(new ShootAction());
 		

@@ -1,8 +1,5 @@
 package dice.state;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.Double;
 
 /** The class that will contain all information about the
  * current state of the game.
@@ -142,7 +139,7 @@ public class WorldState {
     }
 
     public BallPossession getBallPossession() {
-    	return ballPossession;
+    	return possession;
     }
 
 }
