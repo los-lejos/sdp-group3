@@ -19,7 +19,7 @@ public class BlockAction extends StrategyAction {
 	@Override
 	public boolean isPossible(WorldState state) {
 		GameObject ball = state.getBall();
-		whereToBlock = ball.projectLine(ball.getPos());
+		whereToBlock = new Vector2(x,ball.projectPath().getY(x));
 		if (StratMaths.canBlock(whereToBlock,state.getOurDefender())) {
 			return true;
 		}
@@ -28,10 +28,12 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (isPossible(state)) {
+		if (isPossible(state) && !StratMaths.willCollideWithBall()) {
 			return 2;
 		}
-		else {
+		else if (isPossible(state) && StratMaths.willCollideWithBall()){
+			return 0;
+		} else {
 			return 1;
 		}
 	}

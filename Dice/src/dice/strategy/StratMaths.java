@@ -30,4 +30,9 @@ final class StratMaths {
 	protected static long cartesianToPolarTheta(Vector2 v) {
 		return Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
 	}
+	
+	protected static boolean willCollideWithBall() {
+		//TODO
+		return false;
+	}
 }
