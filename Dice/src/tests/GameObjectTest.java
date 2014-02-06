@@ -1,5 +1,6 @@
 package tests;
 
+import dice.Log;
 import dice.state.GameObject;
 import java.lang.Math;
 
@@ -13,6 +14,6 @@ public class GameObjectTest {
         GameObject test1 = new GameObject(0, 0, Math.PI/4.0);
         GameObject test2 = new GameObject(10, 10, 0);
 
-        System.out.println(String.valueOf(test2.getRotationRelativeTo(test1)));
+        Log.logError(String.valueOf(test2.getRotationRelativeTo(test1)));
     }
 }

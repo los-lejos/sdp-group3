@@ -2,6 +2,8 @@ package dice.communication;
 
 import java.io.IOException;
 
+import dice.Log;
+
 /*
  * @author Joris S. Urbaitis
  */
@@ -15,7 +17,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		this.robotType = robot;
 		
 		if(conn != null) {
-			System.out.println("Communicator already initialized");
+			Log.logError("Communicator already initialized");
 			return;
 		}
 
@@ -26,7 +28,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			conn.handshake();
 			conn.start();
 		} catch (BluetoothCommunicationException e) {
-			System.out.println("Error: " + e.getMessage());
+			Log.logException(e);
 		}
 	}
 	
@@ -35,23 +37,23 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			try {
 				conn.closeConnection();
 			} catch (IOException e) {
-				System.out.println("Error closing connection: " + e.getMessage());
+				Log.logError("Error closing connection: " + e.getMessage());
 			}
 		}
 	}
 
 	public void sendInstruction(RobotInstruction instruction) {
 		if(conn == null) {
-			System.out.println("Must call init before sending instruction");
+			Log.logError("Must call init before sending instruction");
 			return;
 		}
 		
 		try {
 			conn.send(instruction);
 		} catch (IOException e) {
-			System.out.println("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
+			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
-			System.out.println("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
+			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+import dice.Log;
 import dice.state.WorldState;
 import dice.state.GameObject;
 
@@ -56,7 +57,7 @@ public class SocketVisionReader extends Reader {
 				while (true) {
 					Socket socket = server.accept();
 
-					System.out.println("Client connected.");
+					Log.logError("Client connected.");
 
 					Scanner scanner = new Scanner(new BufferedInputStream(
 							socket.getInputStream()));
@@ -65,10 +66,10 @@ public class SocketVisionReader extends Reader {
 						try {
 							parse(scanner.nextLine());
 						} catch (java.util.NoSuchElementException e) {
-							System.out.println("No input from camera!");
+							Log.logError("No input from camera!");
 						}
 					}
-					System.out.println("Client disconnected");
+					Log.logError("Client disconnected");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
