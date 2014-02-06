@@ -141,4 +141,8 @@ public class WorldState {
     	return ball;
     }
 
+    public BallPossession getBallPossession() {
+    	return ballPossession;
+    }
+
 }
