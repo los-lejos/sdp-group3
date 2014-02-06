@@ -7,17 +7,13 @@ import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
-/*
+/**
  * @author Sam Stern
  */
 
 public class ShootAction extends StrategyAction {
 	
 	Goal opGoal;
-	
-	public ShootAction(RobotType target) {
-		super(target);
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -38,7 +34,6 @@ public class ShootAction extends StrategyAction {
 		
 		return RobotInstruction.CreateShootTo(
 				StratMaths.cartesianToPolarTheta(opGoal.getGoalCenter()),
-				this.getTargetRobot(),
 				this.getCallback());
 		}
 	}

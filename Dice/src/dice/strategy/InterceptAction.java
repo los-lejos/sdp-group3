@@ -2,7 +2,6 @@ package dice.strategy;
 
 import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
-import dice.communication.RobotType;
 import dice.state.WorldState;
 
 /**
@@ -12,11 +11,7 @@ import dice.state.WorldState;
 public class InterceptAction extends StrategyAction {
 
 	private byte x, y;
-	
-	public InterceptAction(RobotType target) {
-		super(target);
-	}
-	
+
 	public boolean isPossible(WorldState state) {
 		return true;
 	}
@@ -32,7 +27,6 @@ public class InterceptAction extends StrategyAction {
 				this.x,
 				this.y,
 				(byte) 0,
-				this.getTargetRobot(),
 				this.getCallback());
 	}
 }

@@ -1,8 +1,6 @@
 package dice.strategy;
 
-import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
-import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -17,9 +15,6 @@ public class BlockAction extends StrategyAction {
 
 	private Vector2 whereToBlock;
 
-	public BlockAction(RobotType target) {
-		super(target);
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -46,7 +41,6 @@ public class BlockAction extends StrategyAction {
 		return RobotInstruction.CreateMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToBlock),
 				StratMaths.cartestanToPolarR(whereToBlock),
-				this.getTargetRobot(),
 				this.getCallback());
 	}
 
