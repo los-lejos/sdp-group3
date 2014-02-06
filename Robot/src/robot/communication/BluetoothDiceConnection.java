@@ -9,6 +9,7 @@ import shared.RobotInstructions;
 
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
+import lejos.nxt.comm.NXTConnection;
 
 /*
  * @author Joris S. Urbaitis
@@ -58,6 +59,7 @@ public class BluetoothDiceConnection extends Thread {
     				this.receiveMessages();
     			} catch(IOException e) {
     				e.printStackTrace();
+    				this.terminate();
     			}
     		}
     		
@@ -74,15 +76,7 @@ public class BluetoothDiceConnection extends Thread {
 	private void receiveMessages() throws IOException {
 		byte[] res = new byte[RobotInstructions.LENGTH];
 		in.read(res);
-		
-		// Debug logging
-		String debug = "Incoming:\n";
-		for(int i = 0; i < res.length; i++) {
-			debug += "" + res[i] + " ";
-		}
-		
-		System.out.println(debug);
-		
+
 		if(Arrays.equals(res, HANDSHAKE_MESSAGE)) {
 			try {
 				this.send(HANDSHAKE_RESPONSE);
@@ -103,18 +97,31 @@ public class BluetoothDiceConnection extends Thread {
 		}
 	}
 
-	public void openConnection() {
+	public void openConnection() throws BluetoothCommunicationException {
 		System.out.println("Waiting for Bluetooth connection");
-		btc = Bluetooth.waitForConnection();
-		System.out.println("Received Bluetooth connection");
-
-		in = btc.openInputStream();
-		out = btc.openOutputStream();
+		btc = Bluetooth.waitForConnection(30000, NXTConnection.PACKET);
 		
-		connected = true;
+		if(btc == null) {
+			throw new BluetoothCommunicationException("Timed out while waiting for a Bluetooth connection");
+		} else {
+			System.out.println("Received Bluetooth connection");
+
+			in = btc.openInputStream();
+			out = btc.openOutputStream();
+			
+			connected = true;
+		}
 	}
 
-	public void closeConnection() {
+	public void closeConnection() throws IOException, BluetoothCommunicationException {
+		System.out.println("Sending exit message to Dice");
+		this.send(EXIT_MESSAGE);
+		
+		this.terminate();
+	}
+	
+	private void terminate() {
+		System.out.println("Closing connection to Dice");
 		isRunning = false;
 		connected = false;
 	}

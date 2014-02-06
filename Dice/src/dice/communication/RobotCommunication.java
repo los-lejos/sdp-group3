@@ -33,7 +33,7 @@ public class RobotCommunication {
 			try {
 				attacker.closeConnection();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error closing attacker connection: " + e.getMessage());
 			}
 		}
 		
@@ -41,7 +41,7 @@ public class RobotCommunication {
 			try {
 				defender.closeConnection();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error closing defender connection: " + e.getMessage());
 			}
 		}
 	}
@@ -52,7 +52,7 @@ public class RobotCommunication {
 			robot.handshake();
 			robot.start();
 		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
 		}
 	}
 
@@ -64,9 +64,9 @@ public class RobotCommunication {
 				defender.send(instruction);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
+			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
 		}
 	}
 }

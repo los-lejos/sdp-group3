@@ -86,9 +86,11 @@ public class BluetoothRobotConnection extends Thread {
     			try {
     				this.receiveMessages();
     			} catch(IOException e) {
-    				e.printStackTrace();
+    				System.out.println("Error (" + nxtInfo.name + "): " + e.getMessage());
+    				this.terminate();
     			} catch (BluetoothCommunicationException e) {
-    				e.printStackTrace();
+    				System.out.println("Error (" + nxtInfo.name + "): " + e.getMessage());
+    				this.terminate();
     			}
     		}
     		
@@ -97,7 +99,7 @@ public class BluetoothRobotConnection extends Thread {
 				out.close();
 				nxtConn.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error during termination (" + nxtInfo.name + "): " + e.getMessage());
 			}
 			
         }
@@ -107,7 +109,13 @@ public class BluetoothRobotConnection extends Thread {
 		byte[] res = new byte[RobotInstructions.LENGTH];
 		in.read(res);
 		
-		if(!Arrays.equals(res, EXIT_MESSAGE)) {
+		if(Arrays.equals(res, EXIT_MESSAGE)) {
+			// If we weren't the ones who initiated the termination
+			if(this.connected) {
+				System.out.println(this.nxtInfo.name + " disconnecting");
+				this.terminate();
+			}
+		} else {
 			synchronized(instructionCallbacks) {	
 				byte instructionId = res[0];
 				RobotCommunicationCallback callback = instructionCallbacks[instructionId];
@@ -126,7 +134,7 @@ public class BluetoothRobotConnection extends Thread {
 		boolean connected = nxtConn.connectTo(nxtInfo, NXTComm.PACKET);
 		
 		if (!connected) {
-			throw new BluetoothCommunicationException("Failed to connect to " + nxtInfo.name);
+			throw new BluetoothCommunicationException("Failed to connect to " + nxtInfo.name + " (is it switched on?)");
 		}
 
 	    out = nxtConn.getOutputStream();
@@ -160,9 +168,17 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	public void closeConnection() throws IOException {
-		isRunning = false;
-		connected = false;
+		if(!this.connected) return;
+		
+		this.terminate();
 		
 		this.send(EXIT_MESSAGE);
+	}
+	
+	private void terminate() {
+		System.out.println(this.nxtInfo.name + " bluetooth connection terminating");
+		
+		isRunning = false;
+		connected = false;
 	}
 }
