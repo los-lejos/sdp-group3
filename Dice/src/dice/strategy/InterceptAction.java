@@ -5,7 +5,7 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 
-/*
+/**
  * @author Joris S. Urbaitis
  */
 
@@ -26,11 +26,12 @@ public class InterceptAction extends StrategyAction {
 	}
 
 	@Override
-	public RobotInstruction getInstruction() {
+	public RobotInstruction getInstruction(WorldState state) {
 		return new RobotInstruction(
 				RobotInstructions.MOVE_TO,
 				this.x,
 				this.y,
+				(byte) 0,
 				this.getTargetRobot(),
 				this.getCallback());
 	}

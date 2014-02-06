@@ -94,7 +94,7 @@ public class WorldState {
 
 
     // pitch cell centers
-    public Position getCellCenter(PitchZone zone) {
+    public Vector2 getCellCenter(PitchZone zone) {
         double y = width / 2.0;
         double x;
 
@@ -116,7 +116,7 @@ public class WorldState {
 
         }
 
-        return new Position(x, y);
+        return new Vector2(x, y);
     }
 
     

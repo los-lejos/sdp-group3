@@ -1,10 +1,10 @@
 package dice.state;
 
 public class Goal {
-	private Position topPost;
-	private Position bottomPost;
+	private Vector2 topPost;
+	private Vector2 bottomPost;
 
-	public Goal(Position top, Position bottom) {
+	public Goal(Vector2 top, Vector2 bottom) {
 		topPost = top;
 		bottomPost = bottom;
     }
@@ -13,11 +13,11 @@ public class Goal {
     	return bottomPost.Y - topPost.Y;
     }
     
-    public Position getTopPost() {
+    public Vector2 getTopPost() {
     	return topPost;
     }
 
-    public Position getBottomPost() {
+    public Vector2 getBottomPost() {
     	return bottomPost;
     }
 

@@ -24,7 +24,7 @@ import shared.RobotInstructions;
 public abstract class Robot {
 
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 12;
+	private static final int FRONT_SENSOR_CUTOFF = 8;
 
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -55,7 +55,16 @@ public abstract class Robot {
 			}
 		});
 
-		conn.openConnection();
+		// Try waiting for a Bluetooth connection
+		try {
+			conn.openConnection();
+		} catch (BluetoothCommunicationException e1) {
+			// This is likely a timeout
+			System.out.println("Error: " + e1.getMessage());
+			System.out.println("Exiting");
+			return;
+		}
+		
 		conn.start();
 
 		while(!quit) {
@@ -63,15 +72,15 @@ public abstract class Robot {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
 				handleInstruction(currentInstruction);
-			}
-			
-			// Respond that the instruction has been completed
-			try {
-				conn.send(currentInstruction.getCompletedResponse());
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (BluetoothCommunicationException e) {
-				e.printStackTrace();
+				
+				// Respond that the instruction has been completed
+				try {
+					conn.send(currentInstruction.getCompletedResponse());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BluetoothCommunicationException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
@@ -88,7 +97,14 @@ public abstract class Robot {
 		}
 
 		System.out.println("Exiting");
-		conn.closeConnection();
+		
+		try {
+			conn.closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void handleInstruction(IssuedInstruction instruction) {
@@ -96,21 +112,28 @@ public abstract class Robot {
 		instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
-			byte headingA = instructionParameters[0];
-			byte headingB = instructionParameters[1];
-			int heading = (10 * headingA) + headingB;
-			int distance = instructionParameters[2];
-			moveTo(heading, distance);
+			if(instructionParameters.length == 3) {
+				byte headingA = instructionParameters[0];
+				byte headingB = instructionParameters[1];
+				int heading = (10 * headingA) + headingB;
+				int distance = instructionParameters[2];
+				moveTo(heading, distance);
+			} else {
+				System.out.println("Error: not enough parameters for instruction MOVE_TO");
+			}
 		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
-			byte headingA = instructionParameters[0];
-			byte headingB = instructionParameters[1];
-			int heading = (10 * headingA) + headingB;
-			kickToward(heading);
+			if(instructionParameters.length == 2) {
+				byte headingA = instructionParameters[0];
+				byte headingB = instructionParameters[1];
+				int heading = (10 * headingA) + headingB;
+				kickToward(heading);
+			} else {
+				System.out.println("Error: not enough parameters for instruction KICK_TOWARD");
+			}
 		}
 	}
 	
     abstract void moveTo(int heading, int distance);
-    
     abstract void kickToward(int heading);
     abstract void grab();
 
