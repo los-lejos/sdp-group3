@@ -9,8 +9,11 @@ import java.io.IOException;
 public class BluetoothRobotCommunicator implements RobotCommunicator {
 
 	private BluetoothRobotConnection conn;
+	private RobotType robotType;
 
 	public void init(RobotType robot) {
+		this.robotType = robot;
+		
 		if(conn != null) {
 			System.out.println("Communicator already initialized");
 			return;
@@ -46,9 +49,9 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		try {
 			conn.send(instruction);
 		} catch (IOException e) {
-			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
+			System.out.println("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
-			System.out.println("Error sending instruction to " + instruction.getRobotType().toString() + ": " + e.getMessage());
+			System.out.println("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		}
 	}
 }

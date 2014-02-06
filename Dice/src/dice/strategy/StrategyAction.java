@@ -2,7 +2,6 @@ package dice.strategy;
 
 import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotInstruction;
-import dice.communication.RobotType;
 import dice.state.WorldState;
 
 /*
@@ -12,15 +11,12 @@ import dice.state.WorldState;
 public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	
 	private RobotCommunicationCallback callback;
-	private RobotType target;
 	
 	private boolean completed = false;
 	
 	private int cachedUtility = 0;
 	
-	public StrategyAction(RobotType target) {
-		this.target = target;
-
+	public StrategyAction() {
 		callback = new RobotCommunicationCallback() {
 			public void onError() {
 				completed = true;
@@ -56,10 +52,6 @@ public abstract class StrategyAction implements Comparable<StrategyAction>  {
 		return completed;
 	}
 
-	public RobotType getTargetRobot() {
-		return target;
-	}
-	
 	@Override
     public int compareTo(StrategyAction a) {
 		Integer a1Utility = this.getCachedUtility();

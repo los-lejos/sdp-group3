@@ -13,10 +13,6 @@ import dice.state.WorldState;
 public class ShootAction extends StrategyAction {
 	
 	byte xL,yL,xR,yR,xC,yC; //TODO set -L,-R and -C to be coordinates of opponents left, right and center goal.
-	
-	public ShootAction(RobotType target) {
-		super(target);
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -42,7 +38,6 @@ public class ShootAction extends StrategyAction {
 			(byte) shootAtx,
 			(byte) shootAty,
 			(byte) 0,
-			this.getTargetRobot(),
 			this.getCallback()
 			);
 		/*if (state.getOurAttacker().getPos().X<3) { //TODO set threshold for left, right and center

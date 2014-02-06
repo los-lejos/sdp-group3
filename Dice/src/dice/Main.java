@@ -122,7 +122,7 @@ public class Main {
 				}
 			};
 			
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3, type, callback);
+			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3, callback);
 			
 			if(type == RobotType.ATTACKER) {
 				this.attackerComms.sendInstruction(instruction);

@@ -1,7 +1,6 @@
 package dice.strategy;
 
 import dice.communication.RobotCommunicator;
-import dice.communication.RobotType;
 import dice.state.WorldState;
 
 /**
@@ -24,14 +23,14 @@ public class StrategyEvaluator {
 	public StrategyEvaluator(RobotCommunicator attackerComms, RobotCommunicator defenderComms) {
 		// Populate attacker actions
 		attacker = new RobotStrategyState(attackerComms);
-		defender.addAction(new BlockAction(RobotType.ATTACKER));
-		attacker.addAction(new InterceptAction(RobotType.ATTACKER));
-		attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		defender.addAction(new BlockAction());
+		attacker.addAction(new InterceptAction());
+		attacker.addAction(new ShootAction());
 		
 		// Populate defender actions
 		defender = new RobotStrategyState(defenderComms);
-		defender.addAction(new BlockAction(RobotType.DEFENDER));
-		defender.addAction(new InterceptAction(RobotType.DEFENDER));
+		defender.addAction(new BlockAction());
+		defender.addAction(new InterceptAction());
 	}
 
 	/*

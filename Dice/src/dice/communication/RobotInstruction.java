@@ -7,13 +7,11 @@ import shared.RobotInstructions;
  */
 
 public class RobotInstruction {
-	
-	private RobotType robotType;
+
 	private byte[] instruction;
 	private RobotCommunicationCallback callback;
 	
-	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3, RobotType robotType, RobotCommunicationCallback callback) {
-		this.robotType = robotType;
+	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3, RobotCommunicationCallback callback) {
 		this.callback = callback;
 		
 		// Position 0 in the instruction is reserved for the unique id of this instruction
@@ -23,11 +21,7 @@ public class RobotInstruction {
 		this.instruction[3] = param2;
 		this.instruction[4] = param3;
 	}
-	
-	public RobotType getRobotType() {
-		return robotType;
-	}
-	
+
 	public byte[] getInstruction() {
 		return instruction;
 	}
