@@ -12,6 +12,8 @@ import dice.communication.RobotType;
 
 /*
  * @author Joris S. Urbaitis
+ * @author Robin Scott
+ *
  */
 
 public class Main {
@@ -112,12 +114,27 @@ public class Main {
 	private static void startVision(String[] cmd) {
 		String options = Arrays.toString(cmd);               
 		options = options.substring(1, options.length()-1).replaceAll(",", "");
-		String cmd2 = "python vision.py " + options;
+		String pythonCmd = "python vision/vision.py " + options;
+		String s = null;
+		
 		try {
-			Runtime.getRuntime().exec(cmd2);
+			Process p = Runtime.getRuntime().exec(pythonCmd);
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+			// read the output
+			while ((s = stdInput.readLine()) != null) {
+				System.out.println(s);
+			}
+			// read any errors
+			while ((s = stdError.readLine()) != null) {
+				System.out.println(s);
+			}
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("exception occured");
 			e.printStackTrace();
 		}
+
 	}
 }
