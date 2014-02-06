@@ -55,7 +55,16 @@ public abstract class Robot {
 			}
 		});
 
-		conn.openConnection();
+		// Try waiting for a Bluetooth connection
+		try {
+			conn.openConnection();
+		} catch (BluetoothCommunicationException e1) {
+			// This is likely a timeout
+			System.out.println("Error: " + e1.getMessage());
+			System.out.println("Exiting");
+			return;
+		}
+		
 		conn.start();
 
 		while(!quit) {
@@ -103,16 +112,24 @@ public abstract class Robot {
 		instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
-			byte headingA = instructionParameters[0];
-			byte headingB = instructionParameters[1];
-			int heading = (10 * headingA) + headingB;
-			int distance = instructionParameters[2];
-			moveTo(heading, distance);
+			if(instructionParameters.length == 3) {
+				byte headingA = instructionParameters[0];
+				byte headingB = instructionParameters[1];
+				int heading = (10 * headingA) + headingB;
+				int distance = instructionParameters[2];
+				moveTo(heading, distance);
+			} else {
+				System.out.println("Error: not enough parameters for instruction MOVE_TO");
+			}
 		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
-			byte headingA = instructionParameters[0];
-			byte headingB = instructionParameters[1];
-			int heading = (10 * headingA) + headingB;
-			kickToward(heading);
+			if(instructionParameters.length == 2) {
+				byte headingA = instructionParameters[0];
+				byte headingB = instructionParameters[1];
+				int heading = (10 * headingA) + headingB;
+				kickToward(heading);
+			} else {
+				System.out.println("Error: not enough parameters for instruction KICK_TOWARD");
+			}
 		}
 	}
 	
