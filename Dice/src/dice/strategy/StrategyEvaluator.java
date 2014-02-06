@@ -1,6 +1,7 @@
 package dice.strategy;
 
 import dice.communication.RobotCommunicator;
+import dice.communication.RobotType;
 import dice.state.WorldState;
 
 /**
@@ -18,27 +19,81 @@ import dice.state.WorldState;
 
 public class StrategyEvaluator {
 	
+	public enum StrategyType {
+		MATCH,
+		SHOOTOUT,
+		M3_DEFENDER,
+		M3_ATTACKER
+	}
+	
 	private RobotStrategyState attacker, defender;
+	private StrategyType type;
 
-	public StrategyEvaluator(RobotCommunicator attackerComms, RobotCommunicator defenderComms) {
-		// Populate attacker actions
-		attacker = new RobotStrategyState(attackerComms);
-		attacker.addAction(new BlockAction());
-		attacker.addAction(new InterceptAction());
-		attacker.addAction(new ShootAction());
+	public StrategyEvaluator() {
+		attacker = new RobotStrategyState();
+		defender = new RobotStrategyState();
+	}
+	
+	public void setType(StrategyType type) {
+		this.type = type;
 		
-		// Populate defender actions
-		defender = new RobotStrategyState(defenderComms);
-		defender.addAction(new BlockAction());
-		defender.addAction(new InterceptAction());
+		this.resetAttackerActions();
+		this.resetDefenderActions();
+	}
+	
+	private void resetAttackerActions() {
+		attacker.clearActions();
+		
+		if(this.type == StrategyType.MATCH) {
+			attacker.addAction(new BlockAction());
+			attacker.addAction(new InterceptAction());
+			attacker.addAction(new ShootAction());
+		} else if(this.type == StrategyType.SHOOTOUT) {
+			
+		} else if(this.type == StrategyType.M3_ATTACKER) {
+			
+		} else if(this.type == StrategyType.M3_DEFENDER) {
+			
+		}
+	}
+	
+	private void resetDefenderActions() {
+		defender.clearActions();
+		
+		if(this.type == StrategyType.MATCH) {
+			defender.addAction(new BlockAction());
+			defender.addAction(new InterceptAction());
+		} else if(this.type == StrategyType.SHOOTOUT) {
+			
+		} else if(this.type == StrategyType.M3_ATTACKER) {
+			
+		} else if(this.type == StrategyType.M3_DEFENDER) {
+			
+		}
+	}
+	
+	public void setCommunicator(RobotType type, RobotCommunicator comms) {
+		if(type == RobotType.ATTACKER) {
+			attacker.setCommunicator(comms);
+		} else {
+			defender.setCommunicator(comms);
+		}
 	}
 
 	/*
 	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
-		StrategyAction bestAttackerAction = attacker.getBestAction(state);
-		StrategyAction bestDefenderAction = defender.getBestAction(state);
+		StrategyAction bestAttackerAction = null;
+		StrategyAction bestDefenderAction = null;
+		
+		if(attacker.actionsAvailable()) {
+			bestAttackerAction = attacker.getBestAction(state);
+		}
+		
+		if(defender.actionsAvailable()) {
+			bestDefenderAction = defender.getBestAction(state);
+		}
 
 		// Flag that, if set, causes the new action to be sent to the robot
 		// regardless of what it is doing right now
@@ -46,18 +101,18 @@ public class StrategyEvaluator {
 		
 		// Action overrides	
 		// if defender is passing, attacker needs to receive
-//		if (bestDefenderAction instanceof PassAction) {
+//		if (bestDefenderAction != null && bestDefenderAction instanceof PassAction) {
 //			attackerOverride = true;
 //			bestAttackerAction = new RecievePassAction(RobotType.ATTACKER);
 //		}
 		
 		
 		// Check if we should send actions to the robots
-		if(defenderOverride || defender.needsNewAction(state)) {
+		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
 			defender.setCurrentAction(bestDefenderAction, state);
 		}
 		
-		if(attackerOverride || attacker.needsNewAction(state)) {
+		if(bestAttackerAction != null && (attackerOverride || attacker.needsNewAction(state))) {
 			attacker.setCurrentAction(bestAttackerAction, state);
 		}
 	}
