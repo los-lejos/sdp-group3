@@ -1,5 +1,6 @@
 package tests.strategy;
 
+import dice.Log;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
@@ -19,7 +20,7 @@ public class MockRobotCommunicator implements RobotCommunicator {
 
 	@Override
 	public void sendInstruction(RobotInstruction instruction) {
-		System.out.println("Sending instruction " + instruction.toString() + " to " + robotType.toString());
+		Log.logError("Sending instruction " + instruction.toString() + " to " + robotType.toString());
 	}
 	
 }

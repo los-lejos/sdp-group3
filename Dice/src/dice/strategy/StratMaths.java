@@ -31,7 +31,7 @@ final class StratMaths {
 		return Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
 	}
 	
-	protected static boolean willCollideWithBall() {
+	protected static boolean willCollideWithBall(GameObject target) {
 		//TODO
 		return false;
 	}

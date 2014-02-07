@@ -1,12 +1,15 @@
 package dice.strategy;
 
-import java.strategy.StrategyAction;
-
 import dice.communication.RobotInstruction;
+import dice.communication.RobotType;
 import dice.state.WorldState;
 
 public class FaceBallAction extends StrategyAction {
 	
+
+	public FaceBallAction(RobotType targetRobot) {
+		super(targetRobot);
+	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -15,7 +18,7 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (StratMaths.willCollideWithBall()) {
+		if (StratMaths.willCollideWithBall(getTargetObject(state))) {
 			return 2;
 		} else {
 			return 0;
@@ -24,9 +27,10 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		long rotation = (long) getTargetObject(state).getRotationRelativeTo(state.getBall());
 		return RobotInstruction.CreateMoveTo(
-				//TODO,
-				0, 
+				rotation,
+				(byte) 0, 
 				this.getCallback());
 	}
 

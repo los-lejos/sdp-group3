@@ -13,8 +13,12 @@ import dice.state.WorldState;
 
 public class ShootAction extends StrategyAction {
 	
-	Goal opGoal;
+	public ShootAction(RobotType targetRobot) {
+		super(targetRobot);
+	}
 
+	Goal opGoal;
+	
 	@Override
 	public boolean isPossible(WorldState state) {
 		if (WorldState.getBallPossession() == OUR_ATTACKER) {
@@ -33,7 +37,8 @@ public class ShootAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		
 		return RobotInstruction.CreateShootTo(
-				StratMaths.cartesianToPolarTheta(opGoal.getGoalCenter()),
+				StratMaths.cartesianToPolarTheta(
+				opGoal.getGoalCenter()),
 				this.getCallback());
 		}
 	}

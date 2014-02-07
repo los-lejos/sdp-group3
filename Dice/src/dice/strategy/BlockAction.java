@@ -1,6 +1,7 @@
 package dice.strategy;
 
 import dice.communication.RobotInstruction;
+import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -12,6 +13,10 @@ import dice.state.WorldState;
  */
 public class BlockAction extends StrategyAction {
 	
+
+	public BlockAction(RobotType targetRobot) {
+		super(targetRobot);
+	}
 
 	private Vector2 whereToBlock;
 

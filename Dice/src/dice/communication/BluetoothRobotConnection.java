@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import dice.Log;
+
 import shared.RobotInstructions;
 
 import lejos.pc.comm.NXTComm;
@@ -80,16 +82,16 @@ public class BluetoothRobotConnection extends Thread {
 	@Override
 	public void run() {
 		if (!connected) {
-        	System.out.println("Cannot start bluetooth communications thread without connecting");
+			Log.logError("Cannot start bluetooth communications thread without connecting");
         } else {
         	while(isRunning) {
     			try {
     				this.receiveMessages();
     			} catch(IOException e) {
-    				System.out.println("Error (" + nxtInfo.name + "): " + e.getMessage());
+    				Log.logError("Error (" + nxtInfo.name + "): " + e.getMessage());
     				this.terminate();
     			} catch (BluetoothCommunicationException e) {
-    				System.out.println("Error (" + nxtInfo.name + "): " + e.getMessage());
+    				Log.logError("Error (" + nxtInfo.name + "): " + e.getMessage());
     				this.terminate();
     			}
     		}
@@ -99,7 +101,7 @@ public class BluetoothRobotConnection extends Thread {
 				out.close();
 				nxtConn.close();
 			} catch (IOException e) {
-				System.out.println("Error during termination (" + nxtInfo.name + "): " + e.getMessage());
+				Log.logError("Error during termination (" + nxtInfo.name + "): " + e.getMessage());
 			}
 			
         }
@@ -112,7 +114,7 @@ public class BluetoothRobotConnection extends Thread {
 		if(Arrays.equals(res, EXIT_MESSAGE)) {
 			// If we weren't the ones who initiated the termination
 			if(this.connected) {
-				System.out.println(this.nxtInfo.name + " disconnecting");
+				Log.logError(this.nxtInfo.name + " disconnecting");
 				this.terminate();
 			}
 		} else {
@@ -130,7 +132,7 @@ public class BluetoothRobotConnection extends Thread {
 	}
 
 	public void openConnection() throws BluetoothCommunicationException {
-		System.out.println("Attempting to connect to robot " + nxtInfo.name);
+		Log.logError("Attempting to connect to robot " + nxtInfo.name);
 		boolean connected = nxtConn.connectTo(nxtInfo, NXTComm.PACKET);
 		
 		if (!connected) {
@@ -142,7 +144,7 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	public void handshake() throws BluetoothCommunicationException {
-		System.out.println("Sending handshake to " + nxtInfo.name);
+		Log.logError("Sending handshake to " + nxtInfo.name);
 
 		try {
 			this.send(HANDSHAKE_MESSAGE);
@@ -158,7 +160,7 @@ public class BluetoothRobotConnection extends Thread {
 		}
 
 		if(Arrays.equals(response, HANDSHAKE_RESPONSE)) {
-			System.out.println("Handshake completed with " + nxtInfo.name);
+			Log.logError("Handshake completed with " + nxtInfo.name);
 		}
 		else {
 			throw new BluetoothCommunicationException("Handshake failed with " + nxtInfo.name);
@@ -176,7 +178,7 @@ public class BluetoothRobotConnection extends Thread {
 	}
 	
 	private void terminate() {
-		System.out.println(this.nxtInfo.name + " bluetooth connection terminating");
+		Log.logError(this.nxtInfo.name + " bluetooth connection terminating");
 		
 		isRunning = false;
 		connected = false;

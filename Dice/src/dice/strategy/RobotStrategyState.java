@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import dice.communication.RobotCommunicator;
+import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.WorldState;
 
 /**
@@ -22,8 +24,13 @@ public class RobotStrategyState {
 	private List<StrategyAction> possibleActions = new ArrayList<StrategyAction>();
 	
 	private RobotCommunicator robotComms;
+	private RobotType robotType;
+	
+	public RobotStrategyState(RobotType robotType) {
+		this.robotType = robotType;
+	}
 
-	public RobotStrategyState(RobotCommunicator robotComms) {
+	public void setCommunicator(RobotCommunicator robotComms) {
 		this.robotComms = robotComms;
 	}
 	
@@ -31,7 +38,17 @@ public class RobotStrategyState {
 		actions.add(action);
 	}
 	
+	public void clearActions() {
+		this.actions.clear();
+	}
+	
+	public boolean actionsAvailable() {
+		return this.actions.size() > 0;
+	}
+	
 	public StrategyAction getBestAction(WorldState state) {
+		if(!this.actionsAvailable()) return null;
+
 		possibleActions.clear();
 		
 		for(StrategyAction action : this.actions) {

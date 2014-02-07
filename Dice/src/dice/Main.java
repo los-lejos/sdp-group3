@@ -10,6 +10,10 @@ import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.WorldState;
+import dice.strategy.StrategyEvaluator;
+import dice.strategy.StrategyEvaluator.StrategyType;
+import dice.vision.SocketVisionReader;
 
 /*
  * @author Joris S. Urbaitis
@@ -26,13 +30,30 @@ public class Main {
 	}
 	
 	private BufferedReader br;
+	
 	private RobotCommunicator attackerComms, defenderComms;
+	private StrategyEvaluator strategy;
+	private WorldState worldState;
+	private SocketVisionReader visionReader;
 
 	public void init() {
+		Log.init();
 		br = new BufferedReader(new InputStreamReader(System.in));
+		
+		worldState = WorldState.init();
+		this.attackerComms = new BluetoothRobotCommunicator();
+		this.defenderComms = new BluetoothRobotCommunicator();
+
+		strategy = new StrategyEvaluator();
+		strategy.setType(StrategyType.M3_ATTACKER);
+		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
+		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
+		
+		this.visionReader = new SocketVisionReader(worldState, strategy);
 	}
 	
 	public void cleanup() {
+		Log.close();
 		if(this.attackerComms != null) {
 			this.attackerComms.close();
 		}
@@ -40,14 +61,16 @@ public class Main {
 		if(this.defenderComms != null) {
 			this.defenderComms.close();
 		}
+		
+		this.visionReader.stop();
 	}
 	
 	public void run() {
-		System.out.println("Ready");
+		Log.logInfo("Ready");
 		String[] cmd = null;
 		
 		do {
-			System.out.print("> ");
+			Log.logPrint("> ");
 			
 			// Split on whitespace
 			try {
@@ -63,22 +86,22 @@ public class Main {
 				execSend(cmd);
 			}
 			else if(cmd[0].equals("help")) {
-				System.out.println("Robots are specified as 'a' for attacker/OptimusPrime and 'd' for defender/Ball-E");
-				System.out.println("List of commands:");
-				System.out.println("connect <robot> - starts up a bluetooth connection with the robot");
-				System.out.println("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
-				System.out.println("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+				Log.logInfo("Robots are specified as 'a' for attacker/OptimusPrime and 'd' for defender/Ball-E");
+				Log.logInfo("List of commands:");
+				Log.logInfo("connect <robot> - starts up a bluetooth connection with the robot");
+				Log.logInfo("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
+				Log.logError("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
 			}
 			else if(cmd[0].equals("vision")) {
 				startVision(cmd);		
 			} 
 			else if(!cmd[0].equals("quit")) {
-				System.out.println("Unrecognized command");
+				Log.logError("Unrecognized command");
 			}
 			
 		} while(cmd == null || !cmd[0].equals("quit"));
-
-		System.out.println("Exiting");
+		
+		Log.logInfo("Exiting");
 	}
 	
 	private void execConnect(String[] cmd) {
@@ -86,10 +109,8 @@ public class Main {
 		
 		if(type != null) {
 			if(type == RobotType.ATTACKER) {
-				this.attackerComms = new BluetoothRobotCommunicator();
 				this.attackerComms.init(RobotType.ATTACKER);
 			} else {
-				this.defenderComms = new BluetoothRobotCommunicator();
 				this.defenderComms.init(RobotType.DEFENDER);
 			}
 		}
@@ -108,17 +129,17 @@ public class Main {
 			RobotCommunicationCallback callback = new RobotCommunicationCallback() {
 				@Override
 				public void onError() {
-					System.out.println("\nError occured while sending instruction:\n" + display);
+					Log.logError("\nError occured while sending instruction:\n" + display);
 				}
 	
 				@Override
 				public void onTimeout() {
-					System.out.println("\nTimeout occured while sending instruction:\n" + display);
+					Log.logError("\nTimeout occured while sending instruction:\n" + display);
 				}
 	
 				@Override
 				public void onDone() {
-					System.out.println("\nRobot sent completion response for instruction:\n" + display);
+					Log.logError("\nRobot sent completion response for instruction:\n" + display);
 				}
 			};
 			
@@ -139,7 +160,7 @@ public class Main {
 			return RobotType.ATTACKER;
 		}
 		
-		System.out.println("Invalid robot type. Accepted are 'a' for attacker and 'd' for defender");
+		Log.logError("Invalid robot type. Accepted are 'a' for attacker and 'd' for defender");
 		
 		return null;
 	}
@@ -157,15 +178,15 @@ public class Main {
 
 			// read the output
 			while ((s = stdInput.readLine()) != null) {
-				System.out.println(s);
+				Log.logError(s);
 			}
 			// read any errors
 			while ((s = stdError.readLine()) != null) {
-				System.out.println(s);
+				Log.logError(s);
 			}
 			
 		} catch (IOException e) {
-			System.out.println("exception occured");
+			Log.logError("exception occured");
 			e.printStackTrace();
 		}
 
