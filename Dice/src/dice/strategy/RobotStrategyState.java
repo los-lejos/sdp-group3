@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dice.Log;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.GameObject;
@@ -56,6 +57,11 @@ public class RobotStrategyState {
 				action.updateUtility(state);
 				possibleActions.add(action);
 			}
+		}
+		
+		if(possibleActions.size() == 0) {
+			Log.logError("No possible actions for " + this.robotType.toString());
+			return null;
 		}
 		
 		Collections.sort(possibleActions);
