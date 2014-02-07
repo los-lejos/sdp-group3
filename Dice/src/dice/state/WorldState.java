@@ -187,4 +187,7 @@ public class WorldState {
     	return possession;
     }
 
+    public void setBallPossession(BallPossession newPossession) {
+        this.possession = newPossession;
+    }
 }

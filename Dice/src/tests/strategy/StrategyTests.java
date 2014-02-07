@@ -21,10 +21,10 @@ public class StrategyTests {
 		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
 		
 		RobotCommunicator attackerComms = new MockRobotCommunicator();
-		attackerComms.init(RobotType.ATTACKER);
+		attackerComms.init(RobotType.ATTACKER, null);
 		
 		RobotCommunicator defenderComms = new MockRobotCommunicator();
-		defenderComms.init(RobotType.DEFENDER);		
+		defenderComms.init(RobotType.DEFENDER, null);		
 		
 		StrategyEvaluator strat = new StrategyEvaluator();
 		strat.setType(StrategyType.MATCH);

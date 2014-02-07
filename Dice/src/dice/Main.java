@@ -8,9 +8,11 @@ import java.util.Arrays;
 import dice.communication.BluetoothRobotCommunicator;
 import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
+import dice.communication.RobotEventListener;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.state.WorldState.BallPossession;
 import dice.strategy.StrategyEvaluator;
 import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
@@ -35,6 +37,38 @@ public class Main {
 	private StrategyEvaluator strategy;
 	private WorldState worldState;
 	private SocketVisionReader visionReader;
+	
+	private RobotEventListener attackerEventListener = new RobotEventListener() {
+		@Override
+		public void onBallCaught() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.OUR_ATTACKER);
+			}
+		}
+
+		@Override
+		public void onBallReleased() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.NONE);
+			}
+		}
+	};
+	
+	private RobotEventListener defenderEventListener = new RobotEventListener() {
+		@Override
+		public void onBallCaught() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.OUR_DEFENDER);
+			}
+		}
+
+		@Override
+		public void onBallReleased() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.NONE);
+			}
+		}
+	};
 
 	public void init() {
 		Log.init();
@@ -109,9 +143,9 @@ public class Main {
 		
 		if(type != null) {
 			if(type == RobotType.ATTACKER) {
-				this.attackerComms.init(RobotType.ATTACKER);
+				this.attackerComms.init(RobotType.ATTACKER, this.attackerEventListener);
 			} else {
-				this.defenderComms.init(RobotType.DEFENDER);
+				this.defenderComms.init(RobotType.DEFENDER, this.defenderEventListener);
 			}
 		}
 	}

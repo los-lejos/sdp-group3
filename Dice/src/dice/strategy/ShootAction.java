@@ -1,10 +1,9 @@
 package dice.strategy;
 
-import shared.RobotInstructions;
+
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Goal;
-import dice.state.Vector2;
 import dice.state.WorldState;
 
 /**
@@ -17,15 +16,15 @@ public class ShootAction extends StrategyAction {
 		super(targetRobot);
 	}
 
-	Goal opGoal;
+	Goal opGoal; //TODO set opponents goal
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		//if (WorldState.getBallPossession() == OUR_ATTACKER) {
+		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) {
 			return true;
-		//} else {
-		//	return false;
-		//}
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -36,11 +35,9 @@ public class ShootAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		
-		//return RobotInstruction.CreateShootTo(
-		//		StratMaths.cartesianToPolarTheta(
-		//		opGoal.getGoalCenter()),
-		//		this.getCallback());
-		//}
-		return null;
+		return RobotInstruction.CreateShootTo(
+				StratMaths.cartesianToPolarTheta(
+				opGoal.getGoalCenter()),
+				this.getCallback());
+		}
 	}
-}

@@ -18,10 +18,15 @@ import shared.RobotInstructions;
 
 /*
  * Super class for fields/methods common to both robots.
+ * eg. Instruction handling, sensors, message passing.
  * run() method contains main robot loop.
  */
 
 public abstract class Robot {
+	
+	private enum State {
+		READY, MOVE_TO, KICK_TOWARD, EXIT
+	}
 
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 8;
@@ -34,6 +39,9 @@ public abstract class Robot {
     private final BluetoothDiceConnection conn;
     private byte instructionType;
     private byte[] instructionParameters;
+    private Thread movementThread;
+    private int heading, distance;
+    private State currentState;
     private boolean quit;
     protected boolean hasBall;
     
@@ -66,6 +74,10 @@ public abstract class Robot {
 		}
 		
 		conn.start();
+		
+		currentState = State.READY;
+		movementThread = new MovementThread();
+		movementThread.run();
 
 		while(!quit) {
 			if(currentInstruction != newInstruction) {
@@ -84,7 +96,9 @@ public abstract class Robot {
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-				// TODO Handle boundary problem. Reverse? Notify DICE?
+				// Provisional: just stop and wait
+				movementThread.interrupt();
+				System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
 			if (objectAtFrontSensor()) {
@@ -108,6 +122,17 @@ public abstract class Robot {
 
 		System.out.println("Exiting");
 		
+		// Kill movement thread
+		currentState = State.EXIT;
+		
+		// Wait for thread to die
+		try {
+			movementThread.join();
+		} catch (InterruptedException e1) {
+			System.out.println("EXCEPTION when waiting for movement thread to exit.");
+			// e1.printStackTrace();
+		}
+		
 		try {
 			conn.closeConnection();
 		} catch (IOException e) {
@@ -125,9 +150,14 @@ public abstract class Robot {
 			if (instructionParameters.length == 3) {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
-				int heading = (10 * headingA) + headingB;
-				int distance = instructionParameters[2];
-				moveTo(heading, distance);
+				heading = (10 * headingA) + headingB;
+				distance = instructionParameters[2];
+				
+				// If we're doing something, stop.
+				movementThread.interrupt();
+				
+				// GOGOGO
+				currentState = State.MOVE_TO;
 			} else {
 				System.out.println("Error: wrong parameters for MOVE_TO");
 			}
@@ -135,8 +165,14 @@ public abstract class Robot {
 			if (instructionParameters.length == 2) {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
-				int heading = (10 * headingA) + headingB;
-				kickToward(heading);
+				heading = (10 * headingA) + headingB;
+				
+				// If we're doing something, stop.
+				movementThread.interrupt();
+				
+				// Tell movement thread to kick things
+				currentState = State.KICK_TOWARD;
+				
 				// Notify DICE that we no longer have the ball
 				byte[] releaseBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
 				try {
@@ -151,10 +187,6 @@ public abstract class Robot {
 			}
 		}
 	}
-	
-    abstract void moveTo(int heading, int distance);
-    abstract void kickToward(int heading);
-    abstract void grab();
 
     private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
@@ -170,6 +202,40 @@ public abstract class Robot {
     
     protected boolean hasBall() {
     	return hasBall;
+    }
+    
+    abstract void moveTo(int heading, int distance);
+    abstract void kickToward(int heading);
+    abstract void grab();
+    abstract void stop();
+    
+    private class MovementThread extends Thread {
+    	
+    	public void run() {
+    		boolean running = true;
+    		
+    		while (running && !MovementThread.interrupted()) {
+    			if (currentState == State.KICK_TOWARD) {
+    				kickToward(heading);
+    				currentState = State.READY;
+    			} else if (currentState == State.MOVE_TO) {
+    				moveTo(heading, distance);
+    				currentState = State.READY;
+    			}
+    			
+    			if (currentState == State.EXIT) {
+    				stop();
+    				break;
+    			}
+    		}
+    		
+    		while (MovementThread.interrupted()) {
+				if (currentState != State.READY) {
+					stop();
+					currentState = State.READY;
+				}
+			}
+    	}
     }
     
 }

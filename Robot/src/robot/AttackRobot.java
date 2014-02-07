@@ -77,4 +77,9 @@ public class AttackRobot extends Robot {
 		}
 	}
 
+	@Override
+	void stop() {
+		pilot.stop();
+	}
+
 }
