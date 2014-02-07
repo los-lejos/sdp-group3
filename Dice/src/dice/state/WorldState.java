@@ -183,7 +183,6 @@ public class WorldState {
         return ballZone;
     }
 
-
     public BallPossession getBallPossession() {
     	return possession;
     }
