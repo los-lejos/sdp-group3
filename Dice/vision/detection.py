@@ -27,10 +27,7 @@ class Detection:
     shape_sizes = { 'ball': [10, 160, 175],
                     'yellow': [50, 95, 110],
                     'blue': [50, 95, 110],
-                    'dot': [20, 40, 50] }
-#(8, 16, 100),
-#          'yellow'         : (30, 54, 169),
-#          'blue'         : (30, 54, 166),
+                    'dot': [20, 40, 80] }
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -57,7 +54,6 @@ class Detection:
         blue = frame.copy()
 
         for i in range(0, 4):
-            #crop(x, y=None, w=None, h=None, centered=False, smart=False)
             x = int(self._scale*self.areas[i][0]*self._pitch_w)
             y = 0
             w = int(self._scale*self.areas[i][1]*self._pitch_w) - x
@@ -122,13 +118,12 @@ class Detection:
         if blobs is None:
             return None
 
-        #size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
-        size_matched_blobs = [(1, b) for b in blobs]
+        size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
         
-        if dot:
-            a = len(size_matched_blobs)
-            size_matched_blobs = filter(lambda (_, b): b.isCircle(tolerance=0.1), size_matched_blobs)
-            print 'blobs1={0} blobs2={1}'.format(a, len(size_matched_blobs))
+        #if dot:
+        #    a = len(size_matched_blobs)
+        #    size_matched_blobs = filter(lambda (_, b): b.isCircle(tolerance=0.8), size_matched_blobs)
+        #    print 'blobs1={0} blobs2={1}'.format(a, len(size_matched_blobs))
 
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
                                 size_matched_blobs, (9999, None))
@@ -144,51 +139,58 @@ class Detection:
         return sys.maxint
 
     def __clarify_coords(self, entity, image):
-        """Given the coordinates of the colored part of 
+        """Given the coordinates of the colored part of 'i' find the dot,
+        calculate the angle and update coordinates
         """
-        radius = int(23*self._scale)
+        radius = int(23.0*self._scale)
         x, y = entity.get_local_coords()
+        # if coordinates are negative there is no object
         if x == -1: return
+        # crop out a rectangle to look for the dot
         x1 = max(x - radius, 0)
         y1 = max(y - radius, 0)
         x2 = min(x + radius, image.width)
         y2 = min(y + radius, image.height)
-        #layer_thingy = Image((self._pitch_w, self._pitch_h))
-        #layer_thingy.dl().rectangle((crop_x, crop_y), (crop_w, crop_h), Color.RED)
-        #self._gui.update_layer('crop_thingy', layer_thingy)
         cropped_img = image.crop((x1, y1), (x2, y2))
         if cropped_img == None: return
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
+        # set entity.rect for drawing
+        x_offset = int(self._scale * self._pitch_w * self.areas[entity.which][0])
+        entity.rect = ((x1 + x_offset, y1), (x2 - x1, y2 - y1))
+        # find the dot
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img_threshold, size, dot=True)
+        entity.dot = tuple(map(lambda x: int(x), entity_blob.centroid()))
 
         if entity_blob is None:
             return
-
+        # calculate the angle
         dot_x, dot_y = entity_blob.centroid()
-        delta_x = float(abs(dot_x - x))
-        delta_y = float(abs(dot_y - y))
-
-        if x > dot_x and y > dot_y:
-            entity.set_angle(math.atan(delta_y/delta_x))
-        elif dot_x > x and y > dot_y:
-            entity.set_angle(math.pi+math.atan(delta_y/delta_x))
-        elif x > dot_x and dot_y > y:
-            entity.set_angle(2*math.pi-math.atan(delta_y/delta_x))
-        elif dot_x > x and y > dot_y:
-            entity.set_angle(0.5*math.pi+math.atan(delta_x/delta_y))
-
         dot_local_x = dot_x + x1
         dot_local_y = dot_y + y1
+        
+        delta_x = float(abs(dot_local_x - x))
+        delta_y = float(abs(dot_local_y - y))
+
+        if x > dot_local_x and y > dot_local_y:
+            entity.set_angle(math.atan(delta_y/delta_x))
+        elif dot_local_x > x and y > dot_local_y:
+            entity.set_angle(math.pi-math.atan(delta_y/delta_x))
+        elif x > dot_local_x and dot_local_y > y:
+            entity.set_angle(2*math.pi-math.atan(delta_y/delta_x))
+        elif dot_local_x > x and y > dot_local_y:
+            entity.set_angle(0.5*math.pi+math.atan(delta_x/delta_y))
+        # update coordinates of the centre of the robot
         entity.clarify_coords(dot_local_x, dot_local_y)
 
 class Entity:
 
     def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None, areas = None, scale = None):
 
-        self._coordinates = (-1, -1)       # coordinates in 580x320 coordinate system
+        self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
         self._local_coords = (-1, -1) # coordinates in the relevant area of the frame
         self._frame_coords = (-1, -1) # coordinates in the frame
+        self._colour_frame_coords = (-1, -1)
         self._angle = None
         self._scale = scale
         self._has_angle = False
@@ -197,27 +199,22 @@ class Entity:
         self._colour_order = colour_order
         self._areas = areas
         self.which = which
+        self.rect = None
+        self.dot = None
         
         if not entity_blob is None:
-            self._entity_blob = entity_blob
+            x_local, y_local = map(lambda x: int(x), entity_blob.centroid())
+            self._local_coords = (x_local, y_local)
             if which == BALL:
-                x_local, y_local = entity_blob.centroid()
-                self._local_coords = (x_local, y_local)
-                x_frame = x_local
-                self._frame_coords = (x_frame, y_local)
-                x = int((x_frame/float(self._pitch_w))*580)
-                y = int(y_local/float(self._pitch_h)*320)
-                self._coordinates = (x, y)
-                self._coordinates = (x, y)
+                self._frame_coords = (x_local, y_local)
             elif which >= 0 and which < 4:
                 self._has_angle = True
-                x_local, y_local = entity_blob.centroid()
-                self._local_coords = (x_local, y_local)
                 x_frame = x_local + int(areas[which][0]*self._pitch_w*scale)
                 self._frame_coords = (x_frame, y_local)
-                x = int((x_frame/float(self._pitch_w))*580)
-                y = int(y_local/float(self._pitch_h)*320)
-                self._coordinates = (x, y)
+                self._colour_frame_coords = self._frame_coords
+            x = int(self._frame_coords[0]/float(self._pitch_w)*580)
+            y = int(self._frame_coords[1]/float(self._pitch_h)*320)
+            self._coordinates = (x, y)
 
     def get_coordinates(self):
         return self._coordinates
@@ -240,8 +237,8 @@ class Entity:
         frame_x, frame_y = self.get_frame_coords()
         dot_frame_x = dot_local_x + int(self._areas[self.which][0]*self._pitch_w*self._scale)
         dot_frame_y = dot_local_y
-        frame_x = (frame_x + dot_frame_x)/2
-        frame_y = (frame_y + dot_frame_y)/2
+        frame_x = int((frame_x + dot_frame_x)/2)
+        frame_y = int((frame_y + dot_frame_y)/2)
         self._frame_coords = (frame_x, frame_y)
         
         x, y = self.get_coordinates()
@@ -257,25 +254,31 @@ class Entity:
         If angle is true then orientation will also be drawn
         """
         if self.get_coordinates()[0] == -1: return
+        if not self._colour_frame_coords[0] == -1:
+            layer.circle(self._colour_frame_coords, radius=2, filled=1)
+        if not self.rect is None:
+            layer.rectangle(self.rect[0], self.rect[1], color=Color.RED)
+        if not self.dot is None:
+            layer.circle((self.rect[0][0]+self.dot[0], self.rect[0][1]+self.dot[1]), radius=2, filled=1)
         if self.which >= 0 and self.which < 4:
             x, y = self.get_frame_coords()
             layer.circle((x, y), radius=2, filled=1)
-
             if self._colour_order[self.which] == 'b':
                 colour = Color.BLUE
             else:
                 colour = Color.YELLOW
             layer.circle((x, y), radius=int(25*self._scale), color=colour, width=2)
-            # TODO improve what's below
             angle = self.get_angle()
             if not angle is None:
-                endx = x + int(25.0*self._scale * math.cos(angle))
-                endy = y + int(25.0*self._scale * math.sin(angle))
-                degrees = abs(self._angle - math.pi)  / math.pi * 180 
+                endx = x + int(25.0 * self._scale * math.cos(angle))
+                endy = y + int(25.0 * self._scale * math.sin(angle))
                 layer.line((x, y), (endx, endy), antialias=False)
+                degrees = abs(self._angle - math.pi)  / math.pi * 180
+                layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
         elif self.which == BALL:
             w = layer.width
             h = layer.height
             x, y = self.get_frame_coords()
             layer.line((x, 0), (x, h), antialias=False, color=Color.RED)
             layer.line((0, y), (w, y), antialias=False, color=Color.RED)
+
