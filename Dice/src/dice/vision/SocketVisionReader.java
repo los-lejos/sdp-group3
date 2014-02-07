@@ -128,7 +128,10 @@ public class SocketVisionReader {
 				double yBall = Double.parseDouble(tokens[14]); // y
                 Vector2 ballPos = new Vector2(xBall, yBall);
 
-                this.world.updateState(firstPos, d1, secondPos, d2, thirdPos, d3, fourthPos, d4, ballPos);
+                synchronized(this.world) {
+                	this.world.updateState(firstPos, d1, secondPos, d2, thirdPos, d3, fourthPos, d4, ballPos);
+                }
+                
                 this.strategy.onNewState(this.world);
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
 				double pitchWidth = Double.parseDouble(tokens[1]);

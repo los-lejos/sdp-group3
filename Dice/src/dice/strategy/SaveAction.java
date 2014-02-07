@@ -3,6 +3,7 @@ package dice.strategy;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
+import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
@@ -11,14 +12,16 @@ import dice.state.WorldState;
  * 
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
-public class InterceptAction extends StrategyAction {
+public class SaveAction extends StrategyAction {
 	
 
-	public InterceptAction(RobotType targetRobot) {
+	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 
 	private Vector2 whereToBlock;
+	Goal ourGoal; // TODO set our Goal
+	double ourGoalX = ourGoal.getGoalCenter().X;
 
 
 	@Override
@@ -30,7 +33,7 @@ public class InterceptAction extends StrategyAction {
 	@Override
 	protected int calculateUtility(WorldState state) {
 		GameObject ball = state.getBall();
-//		whereToBlock = new Vector2(x,ball.projectPath().getY(x));
+//		whereToBlock = new Vector2(ourGoalX,ball.projectPath().getCoordinateAtX(ourGoalX).Y);
 		boolean canReachBall = StratMaths.canReach(whereToBlock, getTargetObject(state));
 		if (canReachBall && !StratMaths.willCollideWithBall(getTargetObject(state))) {
 			return 2;
