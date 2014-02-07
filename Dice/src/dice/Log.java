@@ -52,6 +52,10 @@ public class Log extends Thread {
 	
 	public void setIsRunning(boolean isRunning) {
 		this.isRunning = isRunning;
+		
+		if(!this.isRunning) {
+			messageQueue.offer("Exiting Logger");
+		}
 	}
 	
 	@Override

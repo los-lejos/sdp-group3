@@ -9,6 +9,7 @@ import java.util.Scanner;
 import dice.Log;
 import dice.state.WorldState;
 import dice.state.GameObject;
+import dice.strategy.StrategyEvaluator;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
@@ -29,24 +30,30 @@ public class SocketVisionReader extends Reader {
 	private static final String ENTITY_BIT = "E";
 	private static final String PITCH_SIZE_BIT = "P";
 	private static final String GOAL_POS_BIT = "G";
+	
+	private StrategyEvaluator strategy;
 	private WorldState world;
 
 	private SocketThread thread;
 
-	public SocketVisionReader() {
+	public SocketVisionReader(WorldState world, StrategyEvaluator strategy) {
+		this.strategy = strategy;
+		this.world = world;
 		thread = new SocketThread();
 		thread.start();
 	}
 
 	public void stop() {
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-        	e.printStackTrace();
-        }
+        thread.setIsRunning(false);
     }
 
 	class SocketThread extends Thread {
+		
+		private boolean isRunning = false;
+		
+		public void setIsRunning(boolean isRunning) {
+			this.isRunning = isRunning;
+		}
 
 		@Override
 		public void run() {
@@ -54,7 +61,7 @@ public class SocketVisionReader extends Reader {
 			try {
 				ServerSocket server = new ServerSocket(PORT);
 
-				while (true) {
+				while (isRunning) {
 					Socket socket = server.accept();
 
 					Log.logError("Client connected.");
@@ -62,7 +69,7 @@ public class SocketVisionReader extends Reader {
 					Scanner scanner = new Scanner(new BufferedInputStream(
 							socket.getInputStream()));
 
-					while (scanner.hasNextLine()) {
+					while (scanner.hasNextLine() && isRunning) {
 						try {
 							parse(scanner.nextLine());
 						} catch (java.util.NoSuchElementException e) {
@@ -119,21 +126,6 @@ public class SocketVisionReader extends Reader {
 				propagate(x1, y1, d1, x2, y2, d2, x3, y3,
 						Long.parseLong(tokens[9]));
 
-				// if this is the first time we have heard about the
-				// world, initialize the world state
-				if (world == null) {
-					// first yellow
-					GameObject opponentDefender = new GameObject(x1, y1, 0.0);
-					GameObject ourAttacker = new GameObject(x2, y2, 0.0);
-					GameObject opponentAttacker = new GameObject(x3, y3, 0.0);
-					GameObject ourDefender = new GameObject(x4, y4, 0.0);
-					GameObject ball = new GameObject(xBall, yBall, 0.0);
-					//world = new WorldState(opponentDefender, ourAttacker,
-					//                       opponentAttacker, ourDefender,
-					//                       ball); // stuff
-                }
-
-
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
 
 				propagatePitchSize(Double.parseDouble(tokens[1]),
@@ -153,9 +145,4 @@ public class SocketVisionReader extends Reader {
 		}
 
 	}
-
-	public static void main(String[] args) {
-		SocketVisionReader svr = new SocketVisionReader();
-	}
-
 }

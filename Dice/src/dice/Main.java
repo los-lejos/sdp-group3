@@ -10,6 +10,10 @@ import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.WorldState;
+import dice.strategy.StrategyEvaluator;
+import dice.strategy.StrategyEvaluator.StrategyType;
+import dice.vision.SocketVisionReader;
 
 /*
  * @author Joris S. Urbaitis
@@ -26,11 +30,26 @@ public class Main {
 	}
 	
 	private BufferedReader br;
+	
 	private RobotCommunicator attackerComms, defenderComms;
+	private StrategyEvaluator strategy;
+	private WorldState worldState;
+	private SocketVisionReader visionReader;
 
 	public void init() {
 		Log.init();
 		br = new BufferedReader(new InputStreamReader(System.in));
+		
+		worldState = WorldState.init();
+		this.attackerComms = new BluetoothRobotCommunicator();
+		this.defenderComms = new BluetoothRobotCommunicator();
+
+		strategy = new StrategyEvaluator();
+		strategy.setType(StrategyType.M3_ATTACKER);
+		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
+		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
+		
+		this.visionReader = new SocketVisionReader(worldState, strategy);
 	}
 	
 	public void cleanup() {
@@ -42,6 +61,8 @@ public class Main {
 		if(this.defenderComms != null) {
 			this.defenderComms.close();
 		}
+		
+		this.visionReader.stop();
 	}
 	
 	public void run() {
@@ -79,7 +100,7 @@ public class Main {
 			}
 			
 		} while(cmd == null || !cmd[0].equals("quit"));
-
+		
 		Log.logInfo("Exiting");
 	}
 	
@@ -88,10 +109,8 @@ public class Main {
 		
 		if(type != null) {
 			if(type == RobotType.ATTACKER) {
-				this.attackerComms = new BluetoothRobotCommunicator();
 				this.attackerComms.init(RobotType.ATTACKER);
 			} else {
-				this.defenderComms = new BluetoothRobotCommunicator();
 				this.defenderComms.init(RobotType.DEFENDER);
 			}
 		}

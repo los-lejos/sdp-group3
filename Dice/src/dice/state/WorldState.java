@@ -44,7 +44,16 @@ public class WorldState {
     private double width;
 
     private BallPossession possession;
-
+    
+    // Utility to create and return a new WorldState
+    public static WorldState init() {
+    	GameObject opponentDefender = new GameObject(0, 0, 0.0);
+		GameObject ourAttacker = new GameObject(0, 0, 0.0);
+		GameObject opponentAttacker = new GameObject(0, 0, 0.0);
+		GameObject ourDefender = new GameObject(0, 0, 0.0);
+		GameObject ball = new GameObject(0, 0, 0.0);
+		return new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
+    }
 
     // populate the world. First all robots and the
     // ball must be created
