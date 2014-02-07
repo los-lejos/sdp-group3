@@ -29,6 +29,8 @@ public class BluetoothRobotConnection extends Thread {
 	private RobotCommunicationCallback[] instructionCallbacks;
 	private byte currentInstructionCallback = -1;
 	
+	private RobotEventListener eventListener;
+	
 	private boolean connected = false;
 	private boolean isRunning = true;
 
@@ -38,7 +40,9 @@ public class BluetoothRobotConnection extends Thread {
 	private InputStream in;
 	private OutputStream out;
 	
-	public BluetoothRobotConnection(RobotType robot) {
+	public BluetoothRobotConnection(RobotType robot, RobotEventListener eventListener) {
+		this.eventListener = eventListener;
+		
 		if(robot == RobotType.ATTACKER) {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
 		} else {
@@ -120,12 +124,19 @@ public class BluetoothRobotConnection extends Thread {
 		} else {
 			synchronized(instructionCallbacks) {	
 				byte instructionId = res[0];
-				RobotCommunicationCallback callback = instructionCallbacks[instructionId];
-				if(callback != null) {
-					callback.onDone();
-				}
-				else {
-					throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
+				
+				if(instructionId == RobotInstructions.CAUGHT_BALL) {
+					eventListener.onBallCaught();
+				} else if(instructionId == RobotInstructions.RELEASED_BALL) {
+					eventListener.onBallReleased();
+				} else {
+					RobotCommunicationCallback callback = instructionCallbacks[instructionId];
+					if(callback != null) {
+						callback.onDone();
+					}
+					else {
+						throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
+					}
 				}
 			}
 		}
