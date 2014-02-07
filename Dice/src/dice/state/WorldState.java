@@ -55,6 +55,17 @@ public class WorldState {
 		return new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
     }
 
+    public void updateState(Vector2 a, Vector2 b, Vector2 c,
+                            Vector2 d, Vector2 ball) {
+        opponentDefender.setPos(a);
+        ourAttacker.setPos(b);
+        opponentAttacker.setPos(c);
+        ourDefender.setPos(d);
+
+        ball.setPos(ball);
+    }
+
+
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
@@ -146,6 +157,25 @@ public class WorldState {
     public GameObject getBall() {
     	return ball;
     }
+
+    public PitchZone getBallZone() {
+        PitchZone ballZone;
+        double ballX = ball.getPos().X;
+
+        if (ballX >= origin && ballX <= firstDivision)
+            ballZone = PitchZone.OUR_DEFEND_ZONE;
+        else if (ballX <= secondDivision)
+            ballZone = PitchZone.OPP_ATTACK_ZONE;
+        else if (ballX <= thirdDivision)
+            ballZone = PitchZone.OUR_ATTACK_ZONE;
+        else if (ballX <= end)
+            ballZone = PitchZone.OPP_DEFEND_ZONE;
+        else
+            return null;
+        
+        return ballZone;
+    }
+
 
     public BallPossession getBallPossession() {
     	return possession;
