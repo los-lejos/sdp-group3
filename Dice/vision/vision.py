@@ -1,62 +1,67 @@
-from __future__ import print_function
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+Vision subsystem for System Design Project 2014, group 3.
+Based on work by group 6, SDP 2013.
+
+Main class
+
+Sends data (coordinates of robots and the ball) to localhost over TCP.
+"""
+
 import sys
 import os
 import time
-import math
 import socket
-
 from optparse import OptionParser
-
-from SimpleCV import Image, Camera, VirtualCamera
-from preprocess import Preprocessor
-from features import Features
+from SimpleCV import Camera, VirtualCamera
+from preprocessor import Preprocessor
+from gui import Gui, ThresholdGui
 from threshold import Threshold
-from filter import Filter
-from display import Gui, ThresholdGui
+from detection import Detection, Entity
 
-HOST = 'localhost' 
+__author__ = "Ingvaras Merkys"
+
+HOST = 'localhost'
 PORT = 28541
-
-# Distinct between field size line or entity line
-ENTITY_BIT = 'E';
-BALL_BIT = 'O';
-BLUE_BIT = 'B';
-YELLOW_BIT = 'Y';
-PITCH_SIZE_BIT  = 'P';
+ENTITY_BIT = 'E'
+PITCH_SIZE_BIT = 'P'
+BALL = 4
 
 class Vision:
-    
-    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, resetThresholds, displayBlur, normalizeAtStartup, noDribbling):
-               
+
+    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, colour_order, file_input=None):
+
         self.running = True
         self.connected = False
-   
-        self.stdout = stdout 
+        self.scale = scale
+        self.stdout = stdout
 
-        if sourcefile is None:  
-            self.cap = Camera()
+        if file_input is None:
+            self.cam = Camera(prop_set = {"width": 720, "height": 540})
         else:
-            filetype = 'video'
-            if sourcefile.endswith(('jpg', 'png')):
-                filetype = 'image'
+            file_type = 'video'
+            if file_input.endswith(('jpg', 'png')):
+                file_type = 'image'
+            self.cam = VirtualCamera(file_input, file_type)
 
-            self.cap = VirtualCamera(sourcefile, filetype)
-        
-        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
-        self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        try:
+            calibration_path = os.path.join('calibration', 'pitch{0}'.format(pitch_num))
+            self.cam.loadCalibration(os.path.join(sys.path[0], calibration_path))
+        except TypeError:
+            print 'Calibration file not found.'
 
-        self.preprocessor = Preprocessor(pitchnum, resetPitchSize)
-        if self.preprocessor.hasPitchSize:
+        self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
+        if self.preprocessor.has_pitch_size:
             self.gui = Gui(self.preprocessor.pitch_size)
         else:
             self.gui = Gui()
-        self.threshold = Threshold(pitchnum, resetThresholds, displayBlur, normalizeAtStartup)
-        self.thresholdGui = ThresholdGui(self.threshold, self.gui)
-        self.features = Features(self.gui, self.threshold)
-        self.filter = Filter(noDribbling)
-        
-        eventHandler = self.gui.getEventHandler()
-        eventHandler.addListener('q', self.quit)
+        self.threshold = Threshold(pitch_num, reset_thresholds)
+        self.threshold_gui = ThresholdGui(self.threshold, self.gui, pitch_num = pitch_num)
+        self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num)
+        self.event_handler = self.gui.get_event_handler()
+        self.event_handler.add_listener('q', self.quit)
 
         while self.running:
             try:
@@ -65,14 +70,15 @@ class Vision:
                 else:
                     self.connected = True
 
-                if self.preprocessor.hasPitchSize:
-                    self.outputPitchSize()
-                    self.gui.setShowMouse(False)
+                if self.preprocessor.has_pitch_size:
+                    self.output_pitch_size()
+                    self.gui.set_show_mouse(False)
                 else:
-                    eventHandler.setClickListener(self.setNextPitchCorner)
+                    self.event_handler.set_click_listener(self.set_next_pitch_corner)
 
                 while self.running:
-                    self.doStuff()
+                    self.process_frame()
+                    
 
             except socket.error:
                 self.connected = False
@@ -80,142 +86,113 @@ class Vision:
                 # just wait for it to come available.
                 time.sleep(1)
                 print("Connection error, sleeping 1s...")
-
                 # Strange things seem to happen to X sometimes if the
                 # display isn't updated for a while
-                self.doStuff()
+                self.process_frame()
 
         if not self.stdout:
             self.socket.close()
-        
-    def connect(self):
-        print("Attempting to connect...")
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect( (HOST, PORT) )
-        self.connected = True
-        print("Successfully connected")
 
-    def quit(self):
-        self.running = False
-        
-    def doStuff(self):
-        if self.cap.getCameraMatrix is None:
-            frame = self.cap.getImage()
+    def process_frame(self):
+        """Get frame, detect objects and display frame
+        """
+        # This is where calibration comes in
+        if self.cam.getCameraMatrix is None:
+            frame = self.cam.getImage()
         else:
-            frame = self.cap.getImageUndistort()
+            frame = self.cam.getImageUndistort()
 
-        frame = self.preprocessor.preprocess(frame)
-        
-        self.gui.updateLayer('raw', frame)
+        frame = self.preprocessor.preprocess(frame, self.scale)
+        self.gui.update_layer('raw', frame)
 
-        if self.preprocessor.hasPitchSize:
-            ents = self.features.extractFeatures(frame)
-            self.outputEnts(ents)
+        if self.preprocessor.has_pitch_size:
+            entities = self.detection.detect_objects(frame, self.preprocessor.pitch_size)
+            self.output_entities(entities)
 
-        self.gui.loop()
+        self.gui.process_update()
 
-    def setNextPitchCorner(self, where):
-        self.preprocessor.setNextPitchCorner(where)
-        
-        if self.preprocessor.hasPitchSize:
-            print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
-            self.outputPitchSize()
-            self.gui.setShowMouse(False)
-            self.gui.updateLayer('corner', None)
+    def set_next_pitch_corner(self, where):
+
+        self.preprocessor.set_next_pitch_corner(where)
+
+        if self.preprocessor.has_pitch_size:
+           #print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
+            self.output_pitch_size()
+            self.gui.set_show_mouse(False)
+            self.gui.update_layer('corner', None)
         else:
-            self.gui.drawCrosshair(where, 'corner')
-    
-    def outputPitchSize(self):
-        print(self.preprocessor.pitch_size)
-        self.send('{0} {1} {2} \n'.format(
-                PITCH_SIZE_BIT, self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
+            self.gui.draw_crosshair(where, 'corner')
 
-    def outputEnts(self, ents):
+    def output_pitch_size(self):
 
-        # Messyyy
-        if not self.connected or not self.preprocessor.hasPitchSize:
+        self.send('{0} {1} {2} \n'.format(PITCH_SIZE_BIT,
+                                          self.preprocessor.pitch_size[0],
+                                          self.preprocessor.pitch_size[1]))
+
+    def output_entities(self, entities):
+
+        if not self.connected or not self.preprocessor.has_pitch_size:
             return
 
         self.send('{0} '.format(ENTITY_BIT))
-        for name in ['yellow1', 'blue1', 'yellow2', 'blue2', 'ball']:
-            entity = ents[name]
-            x, y = entity.coordinates()
-            x += self.features.Areas[name][0]
 
-            self.send('{0} {1} '.format(x, y))
+        for i in range(0, 4):
+            entity = entities[i]
+            x, y = entity.get_coordinates()
+            angle = -1 if entity.get_angle() is None else entity.get_angle()
+            self.send('{0} {1} {2} '.format(x, y, angle))
 
-            # The rest of the system needs (0, 0) at the bottom left
-            if y != -1:
-                y = self.preprocessor.pitch_size[1] - y
+        x, y = entities[BALL].get_coordinates()
+        self.send('{0} {1} '.format(x, y))
+        self.send(str(int(time.time() * 1000)) + "\n")
 
-            if name == 'ball':
-                angle = -1
-            else:
-                angle = 360 - (((entity.angle() * (180/math.pi)) - 360) % 360)
-            self.filter.change(name, x, y, angle)
-
-            #coords = self.filter.update()
-
-        #for name in ['yellow', 'blue', 'ball']:
-        #   if name == 'ball':
-        #        self.send('{0} {1} '.format(coords[name][0], coords[name][1]))
-        #    else:
-        #        self.send('{0} {1} {2} '.format(coords[name][0], coords[name][1], coords[name][2]))
-
-        self.send(str(int(time.time() * 1000)) + " \n")
-        
     def send(self, string):
         if self.stdout:
             sys.stdout.write(string)
         else:
             self.socket.send(string)
 
-class OptParser(OptionParser):
-    """
-    The default OptionParser exits with exit code 2
-    if OptionParser.error() is called. Unfortunately this
-    screws up our vision restart script which tries to indefinitely
-    restart the vision system with bad options. This just exits with
-    0 instead so everything works.
-    """
-    def error(self, msg):
-        self.print_usage(sys.stderr)
-        self.exit(0, "%s: error: %s\n" % (self.get_prog_name(), msg))
+    def connect(self):
+        print('Attempting to connect...')
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((HOST, PORT))
+        self.connected = True
+        print('Successfully connected.')
+
+    def quit(self):
+        self.running = False
 
 if __name__ == "__main__":
 
-    parser = OptParser()
+    parser = OptionParser()
 
     parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH', default='0',
                       help='PITCH should be 0 for main pitch, 1 for the other pitch')
 
-    parser.add_option('-f', '--file', dest='file', metavar='FILE',
-                      help='Use FILE as input instead of capturing from Camera')
-
     parser.add_option('-s', '--stdout', action='store_true', dest='stdout', default=False,
                       help='Send output to stdout instead of using a socket')
 
-    parser.add_option('-r', '--reset', action='store_true', dest='resetPitchSize', default=False,
+    parser.add_option('-r', '--reset', action='store_true', dest='reset_pitch_size', default=False,
                       help='Don\'t restore the last run\'s saved pitch size')
 
-    parser.add_option('-t', '--thresholds', action='store_true', dest='resetThresholds', default=False,
-                      help='Don\'t restore the last run\'s saved thresholds and blur values')
+    parser.add_option('-t', '--thresholds', action='store_true', dest='reset_thresholds', default=False,
+                      help='Don\'t restore the last run\'s saved thresholds')
 
-    parser.add_option('-b', '--blur', action='store_true', dest='displayBlur', default=False,
-                      help='Display blurred stream')
-                      
-    parser.add_option('-n', '--normalize', action='store_true', dest='normalizeAtStartup', default=False,
-                      help='Normalize at startup')
+    parser.add_option('-c', '--scale', dest='scale', type='float', metavar='SCALE', default=1.0,
+                      help='Scale down the image in preprocessing stage')
 
-    parser.add_option('-d', '--no-dribbling', action='store_true', dest='noDribbling', default=False,
-                      help='Disable robot-is-dribbling-the-ball filter')
+    parser.add_option('-i', '--colour-order', dest='colour_order', type='string', metavar='COLOUR_ORDER', default='yybb',
+                      help=('COLOUR_ORDER - the way different colour robots are put from left to right '
+                            '(e. g. "--colour-order=yybb" for sequence yellow-yellow-blue-blue)'))
 
-    (options, args) = parser.parse_args()
+    parser.add_option('-f', '--file', dest='file_input', type='string', metavar='FILE', help='File input, can be a video or image.')
 
-    if options.pitch not in [0,1]:
-        parser.error('Pitch must be 0 or 1')
+    (opts, args) = parser.parse_args()
 
-    Vision(options.pitch, options.stdout, options.file, options.resetPitchSize, options.resetThresholds, options.displayBlur, options.normalizeAtStartup, options.noDribbling)
+    if opts.pitch not in [0, 1]:
+        parser.error('Pitch must be 0 or 1.')
 
+    if opts.colour_order not in ['yybb', 'bbyy', 'ybby', 'byyb', 'ybyb', 'byby']:
+        parser.error('Invalid colour ordering specified.')
 
-
+    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.colour_order, file_input=opts.file_input)
