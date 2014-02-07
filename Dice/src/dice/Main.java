@@ -173,17 +173,17 @@ public class Main {
 		
 		try {
 			Process p = Runtime.getRuntime().exec(pythonCmd);
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			//BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
 			// read the output
-			while ((s = stdInput.readLine()) != null) {
-				Log.logError(s);
-			}
+			//while ((s = stdInput.readLine()) != null) {
+			//	Log.logError(s);
+			//}
 			// read any errors
-			while ((s = stdError.readLine()) != null) {
-				Log.logError(s);
-			}
+			//while ((s = stdError.readLine()) != null) {
+			//	Log.logError(s);
+			//}
 			
 		} catch (IOException e) {
 			Log.logError("exception occured");
