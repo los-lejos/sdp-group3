@@ -12,6 +12,7 @@ Detects objects.
 import sys
 import math
 import cv
+import time
 from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
 from threshold import Threshold
 
@@ -24,9 +25,9 @@ class Detection:
 
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
-    shape_sizes = { 'ball': [10, 160, 175],
-                    'yellow': [50, 95, 110],
-                    'blue': [50, 95, 110],
+    shape_sizes = { 'ball': [20, 160, 175],
+                    'yellow': [50, 110, 150],
+                    'blue': [50, 110, 150],
                     'dot': [20, 40, 80] }
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
@@ -160,10 +161,9 @@ class Detection:
         # find the dot
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img_threshold, size, dot=True)
+        if entity_blob is None: return
         entity.dot = tuple(map(lambda x: int(x), entity_blob.centroid()))
 
-        if entity_blob is None:
-            return
         # calculate the angle
         dot_x, dot_y = entity_blob.centroid()
         dot_local_x = dot_x + x1
@@ -172,14 +172,16 @@ class Detection:
         delta_x = float(abs(dot_local_x - x))
         delta_y = float(abs(dot_local_y - y))
 
-        if x > dot_local_x and y > dot_local_y:
+        if x >= dot_local_x and y >= dot_local_y:
             entity.set_angle(math.atan(delta_y/delta_x))
-        elif dot_local_x > x and y > dot_local_y:
+        elif x <= dot_local_x and y >= dot_local_y:
             entity.set_angle(math.pi-math.atan(delta_y/delta_x))
-        elif x > dot_local_x and dot_local_y > y:
+        elif x >= dot_local_x and y <= dot_local_y:
             entity.set_angle(2*math.pi-math.atan(delta_y/delta_x))
-        elif dot_local_x > x and y > dot_local_y:
-            entity.set_angle(0.5*math.pi+math.atan(delta_x/delta_y))
+        elif x <= dot_local_x and y <= dot_local_y:
+            entity.set_angle(1.5*math.pi-math.atan(delta_x/delta_y))
+        else:
+            print 'wat'
         # update coordinates of the centre of the robot
         entity.clarify_coords(dot_local_x, dot_local_y)
 
