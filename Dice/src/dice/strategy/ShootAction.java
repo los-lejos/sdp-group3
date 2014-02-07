@@ -1,10 +1,9 @@
 package dice.strategy;
 
-import shared.RobotInstructions;
+
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Goal;
-import dice.state.Vector2;
 import dice.state.WorldState;
 
 /**
@@ -17,7 +16,7 @@ public class ShootAction extends StrategyAction {
 		super(targetRobot);
 	}
 
-	Goal opGoal; //TODO setter
+	Goal opGoal; //TODO set opponents goal
 	
 	@Override
 	public boolean isPossible(WorldState state) {
