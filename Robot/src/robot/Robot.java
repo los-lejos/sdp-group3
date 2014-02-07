@@ -112,23 +112,23 @@ public abstract class Robot {
 		instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
-			if(instructionParameters.length == 3) {
+			if (instructionParameters.length == 3) {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
 				int heading = (10 * headingA) + headingB;
 				int distance = instructionParameters[2];
 				moveTo(heading, distance);
 			} else {
-				System.out.println("Error: not enough parameters for instruction MOVE_TO");
+				System.out.println("Error: wrong parameters for MOVE_TO");
 			}
 		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
-			if(instructionParameters.length == 2) {
+			if (instructionParameters.length == 2) {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
 				int heading = (10 * headingA) + headingB;
 				kickToward(heading);
 			} else {
-				System.out.println("Error: not enough parameters for instruction KICK_TOWARD");
+				System.out.println("Error: wrong parameters for KICK_TOWARD");
 			}
 		}
 	}

@@ -1,12 +1,24 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+Vision subsystem for System Design Project 2014, group 3.
+Based on work by group 6, SDP 2013.
+
+Some static functions for saving/loading files.
+"""
+
 import sys
 import os
 import cPickle
 
-def dumpToFile(obj, path):
+__author__ = 'Ingvaras Merkys'
+
+def dump_to_file(obj, path):
     """
     Dump an object to a file specified by path
     """
-    path = getRealPath(path)
+    path = get_real_path(path)
 
     # Ensure directories exist
     d = os.path.dirname(path)
@@ -14,20 +26,21 @@ def dumpToFile(obj, path):
         os.makedirs(d)
 
     f = open(path, 'w')
+
     try:
         cPickle.dump(obj, f)
-
     except Exception, e:
         raise e
     finally:
         f.close()
 
-def loadFromFile(path):
+def load_from_file(path):
 
-    if not fileExists(path):
+    if not file_exists(path):
         return None
 
-    f = open(getRealPath(path), 'r')
+    f = open(get_real_path(path), 'r')
+
     try:
         return cPickle.load(f)
     except Exception, e:
@@ -35,13 +48,12 @@ def loadFromFile(path):
     finally:
         f.close()
 
-def fileExists(path):
-    return os.path.exists(getRealPath(path))
+def file_exists(path):
+    return os.path.exists(get_real_path(path))
 
-def getRealPath(path):
+def get_real_path(path):
     """
-    Gets a file path relative to the directory that
-    this script is being run from
+    Gets a file path relative to the directory that this script is being run from
     """
-
     return os.path.join(sys.path[0], path)
+

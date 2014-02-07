@@ -13,10 +13,10 @@ public class InterceptAction extends StrategyAction {
 
 	private byte x, y;
 	
-	public InterceptAction(RobotType target) {
-		super(target);
+	public InterceptAction(RobotType targetRobot) {
+		super(targetRobot);
 	}
-	
+
 	public boolean isPossible(WorldState state) {
 		return true;
 	}
@@ -32,7 +32,6 @@ public class InterceptAction extends StrategyAction {
 				this.x,
 				this.y,
 				(byte) 0,
-				this.getTargetRobot(),
 				this.getCallback());
 	}
 }

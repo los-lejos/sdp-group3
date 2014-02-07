@@ -6,11 +6,10 @@ import dice.state.WorldState;
 
 public class BlockAction extends StrategyAction {
 
-	public BlockAction(RobotType target) {
-		super(target);
-		// TODO Auto-generated constructor stub
+	public BlockAction(RobotType targetRobot) {
+		super(targetRobot);
 	}
-
+	
 	@Override
 	public boolean isPossible(WorldState state) {
 		// TODO Auto-generated method stub
