@@ -51,7 +51,7 @@ public class StrategyEvaluator {
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
-			
+			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.M3_DEFENDER) {
 			
 		}
