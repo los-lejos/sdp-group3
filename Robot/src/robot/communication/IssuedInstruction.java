@@ -1,5 +1,9 @@
 package robot.communication;
 
+import java.util.Arrays;
+
+import shared.RobotInstructions;
+
 /*
  * @author Joris S. Urbaitis
  */
@@ -30,7 +34,15 @@ public class IssuedInstruction {
 	
 	public byte[] getParameters() {
 		byte[] parameters = {this.param1, this.param2, this.param3};
-		return parameters;
+		if (type == RobotInstructions.MOVE_TO) {
+			return parameters;
+		} else if (type == RobotInstructions.KICK_TOWARD) {
+			byte[] truncParams = Arrays.copyOfRange(parameters, 0, 2);
+			return truncParams;
+		} else {
+			System.out.println("Bad instruction.");
+			return parameters;
+		}
 	}
 	
 }
