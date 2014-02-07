@@ -9,6 +9,7 @@ import java.util.Scanner;
 import dice.Log;
 import dice.state.WorldState;
 import dice.state.GameObject;
+import dice.state.Vector2;
 import dice.strategy.StrategyEvaluator;
 
 /**
@@ -100,26 +101,31 @@ public class SocketVisionReader extends Reader {
 				// leftmost defender
 				double x1 = Double.parseDouble(tokens[1]); // x
 				double y1 = Double.parseDouble(tokens[2]); // y
+                Vector2 firstPos = new Vector2(x1, y1);
 				double d1 = Double.parseDouble(tokens[3]); // angle
 
                 // left attacker
 				double x2 = Double.parseDouble(tokens[4]); // x
 				double y2 = Double.parseDouble(tokens[5]); // y
+                Vector2 secondPos = new Vector2(x2, y2);
 				double d2 = Double.parseDouble(tokens[6]); // angle
 
 				// right attacker
 				double x3 = Double.parseDouble(tokens[7]); // x
 				double y3 = Double.parseDouble(tokens[8]); // y
+                Vector2 thirdPos = new Vector2(x3, y3);
 				double d3 = Double.parseDouble(tokens[9]); // angle
 
                 // rightmost defender
 				double x4 = Double.parseDouble(tokens[10]); // x
 				double y4 = Double.parseDouble(tokens[11]); // y
+                Vector2 fourthPos = new Vector2(x4, y4);
 				double d4 = Double.parseDouble(tokens[12]); // angle
 
 				// ball
 				double xBall = Double.parseDouble(tokens[13]); // x
 				double yBall = Double.parseDouble(tokens[14]); // y
+                Vector2 ballPos = new Vector2(xBall, yBall);
 
 
 				// +timestamp

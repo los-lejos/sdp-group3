@@ -40,17 +40,19 @@ public class GameObject {
     // decides if a new position for the object is viable given its
     // past positions
     private boolean validatePos(Vector2 position) {
-        Vector2 velocities = this.getSpeed();
-        if (velocities != null) {
+        Vector2 velocity = this.getVelocity();
+        if (velocity != null) {
             double dt = position.T - getPos().T;
 
             // run the projection function to get an estimate
             // of the new position
-            Vector2 estimate = projectPosition(dt);
+            double newX = position.X + getVelocity().X;
+            double newY = position.Y + getVelocity().Y;
+            Vector2 estimate = new Vector2(newX, newY);
             double xDiff = Math.abs(position.X - estimate.X);
             double yDiff = Math.abs(position.Y - estimate.Y);
-            if (xDiff > Math.abs(velocities.X) * DELTA ||
-                yDiff > Math.abs(velocities.Y) * DELTA) {
+            if (xDiff > Math.abs(velocity.X) * DELTA ||
+                yDiff > Math.abs(velocity.Y) * DELTA) {
                 return false;
             } else {
                 return true;
@@ -69,42 +71,6 @@ public class GameObject {
         else
         	return null;
     }
-
-    // get the projected position t milliseconds from
-    // now. Obviously this is less likely to be correct
-    // further in the future.
-    // Obviously, this doesn't return a time component because it
-    // hasn't happened.
-    //
-    // returns null if there aren't enough positions taken yet
-    public Vector2 projectPosition(double t) {
-        Vector2 velocities = this.getSpeed();
-        if (velocities != null) {
-            Vector2 lastPos = positions.get(positions.size() - 1);
-            double newX = lastPos.X + velocities.X * t;
-            double newY = lastPos.Y + velocities.Y * t;
-
-            return new Vector2(newX, newY);
-        } else {
-            return null;
-        }
-    }
-
-    // project a *path* forwards from the current position
-    public Path projectPositionPath(double t) {
-        Vector2 velocity = this.getVelocity();
-
-        if (velocity != null) {
-            Vector2 lastPos = positions.get(positions.size() - 1);
-            double newX = lastPos.X + velocities.X * t;
-            double newY = lastPos.Y + velocities.Y * t;
-
-            return new Vector2(newX, newY);
-        } else {
-            return null;
-        }
-    }
-
 
     // this returns a "position" which is really just a 2D
     // vector representing the X and Y velocities

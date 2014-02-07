@@ -55,6 +55,17 @@ public class WorldState {
 		return new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
     }
 
+    public void updateState(Vector2 a, Vector2 b, Vector2 c,
+                            Vector2 d, Vector2 ball) {
+        opponentDefender.setPos(a);
+        ourAttacker.setPos(b);
+        opponentAttacker.setPos(c);
+        ourDefender.setPos(d);
+
+        ball.setPos(ball);
+    }
+
+
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
