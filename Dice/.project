@@ -10,14 +10,15 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>org.lejos.nxt.ldt.leJOSBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.lejos.nxt.ldt.leJOSNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Shared</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Shared</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

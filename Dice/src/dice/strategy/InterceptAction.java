@@ -1,10 +1,11 @@
 package dice.strategy;
 
+import shared.RobotInstructions;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 
-/*
+/**
  * @author Joris S. Urbaitis
  */
 
@@ -12,12 +13,10 @@ public class InterceptAction extends StrategyAction {
 
 	private byte x, y;
 	
-	public InterceptAction(RobotType target, byte x, byte y) {
-		super(target);
-		this.x = x;
-		this.y = y;
+	public InterceptAction(RobotType targetRobot) {
+		super(targetRobot);
 	}
-	
+
 	public boolean isPossible(WorldState state) {
 		return true;
 	}
@@ -27,12 +26,12 @@ public class InterceptAction extends StrategyAction {
 	}
 
 	@Override
-	public RobotInstruction getInstruction() {
+	public RobotInstruction getInstruction(WorldState state) {
 		return new RobotInstruction(
-				RobotInstruction.MOVE_TO,
+				RobotInstructions.MOVE_TO,
 				this.x,
 				this.y,
-				this.getTargetRobot(),
+				(byte) 0,
 				this.getCallback());
 	}
 }

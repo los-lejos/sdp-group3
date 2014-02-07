@@ -1,57 +1,119 @@
 package dice.strategy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import dice.communication.RobotCommunication;
+import dice.communication.RobotCommunicator;
+import dice.communication.RobotType;
 import dice.state.WorldState;
 
-/*
- * @author Joris S. Urbaitis
- */
-
-/*
+/**
  * Keep track of what both robots are doing
  * When new state is received from vision or a robot completes an action,
  * use StrategyEvaluator to get a sorted list of actions by utility
  * 
  * If the robots are not performing actions or are performing actions that are now impossible / useless
  * send them new directives, otherwise leave it
+ * 
+ * @author Joris S. Urbaitis
+ * @author Andrew Johnston
+ * @author Sam Stern
  */
 
 public class StrategyEvaluator {
 	
-	// Actions currently assigned to the robots
-	StrategyAction defenderAction, attackerAction;
+	public enum StrategyType {
+		MATCH,
+		SHOOTOUT,
+		M3_DEFENDER,
+		M3_ATTACKER
+	}
 	
-	private List<StrategyAction> possibleActions = new ArrayList<StrategyAction>();
-	
+	private RobotStrategyState attacker, defender;
+	private StrategyType type;
+
 	public StrategyEvaluator() {
+		attacker = new RobotStrategyState(RobotType.ATTACKER);
+		defender = new RobotStrategyState(RobotType.DEFENDER);
+	}
+	
+	public void setType(StrategyType type) {
+		this.type = type;
 		
+		this.resetAttackerActions();
+		this.resetDefenderActions();
+	}
+	
+	private void resetAttackerActions() {
+		attacker.clearActions();
+		
+		if(this.type == StrategyType.MATCH) {
+			attacker.addAction(new BlockAction(RobotType.ATTACKER));
+			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		} else if(this.type == StrategyType.SHOOTOUT) {
+			
+		} else if(this.type == StrategyType.M3_ATTACKER) {
+			
+		} else if(this.type == StrategyType.M3_DEFENDER) {
+			
+		}
+	}
+	
+	private void resetDefenderActions() {
+		defender.clearActions();
+		
+		if(this.type == StrategyType.MATCH) {
+			defender.addAction(new BlockAction(RobotType.DEFENDER));
+			defender.addAction(new InterceptAction(RobotType.DEFENDER));
+		} else if(this.type == StrategyType.SHOOTOUT) {
+			
+		} else if(this.type == StrategyType.M3_ATTACKER) {
+			
+		} else if(this.type == StrategyType.M3_DEFENDER) {
+			
+		}
+	}
+	
+	public void setCommunicator(RobotType type, RobotCommunicator comms) {
+		if(type == RobotType.ATTACKER) {
+			attacker.setCommunicator(comms);
+		} else {
+			defender.setCommunicator(comms);
+		}
 	}
 
 	/*
-	 * Returns possible actions sorted by their utility from best to worst.
+	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
-		possibleActions.clear();
+		StrategyAction bestAttackerAction = null;
+		StrategyAction bestDefenderAction = null;
 		
-		// Take possible moves, ex:
-		// check to see if opponent's defending robot will get to the ball before it leaves the zone
-		//	if yes, move attacking robot to intercept the ball
-		//	if no, move to either middle of zone or inbetween
+		if(attacker.actionsAvailable()) {
+			bestAttackerAction = attacker.getBestAction(state);
+		}
 		
-		// add those possible actions to a list together with their utility values
-		// choose the best one
-		
-		StrategyAction bestAttackerAction = null, bestDefenderAction = null;
-		
+		if(defender.actionsAvailable()) {
+			bestDefenderAction = defender.getBestAction(state);
+		}
+
 		// Flag that, if set, causes the new action to be sent to the robot
 		// regardless of what it is doing right now
 		boolean attackerOverride = false, defenderOverride = false;
-
-		if(defenderOverride || defenderAction == null || defenderAction.isCompleted() || !defenderAction.isPossible(state)) {
-			RobotCommunication.getInstance().sendInstruction(bestDefenderAction.getInstruction());
+		
+		// Action overrides	
+		// if defender is passing, attacker needs to receive
+//		if (bestDefenderAction != null && bestDefenderAction instanceof PassAction) {
+//			attackerOverride = true;
+//			bestAttackerAction = new RecievePassAction(RobotType.ATTACKER);
+//		}
+		
+		
+		// Check if we should send actions to the robots
+		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
+			defender.setCurrentAction(bestDefenderAction, state);
+		}
+		
+		if(bestAttackerAction != null && (attackerOverride || attacker.needsNewAction(state))) {
+			attacker.setCurrentAction(bestAttackerAction, state);
 		}
 	}
 }

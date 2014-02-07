@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
-import dice.state.RobotState;
+
+import dice.Log;
 import dice.state.WorldState;
-import dice.state.Ball;
+import dice.state.GameObject;
+import dice.strategy.StrategyEvaluator;
 
 /**
  * @author Ingvaras Merkys (based on code by sdp-group6, 2013)
+ * @author Craig Wilkinson
  * 
  *         SocketVisionReader: Captures input from vision system.
  * 
@@ -27,24 +30,30 @@ public class SocketVisionReader extends Reader {
 	private static final String ENTITY_BIT = "E";
 	private static final String PITCH_SIZE_BIT = "P";
 	private static final String GOAL_POS_BIT = "G";
+	
+	private StrategyEvaluator strategy;
 	private WorldState world;
 
 	private SocketThread thread;
 
-	public SocketVisionReader() {
+	public SocketVisionReader(WorldState world, StrategyEvaluator strategy) {
+		this.strategy = strategy;
+		this.world = world;
 		thread = new SocketThread();
 		thread.start();
 	}
 
 	public void stop() {
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-        	e.printStackTrace();
-        }
+        thread.setIsRunning(false);
     }
 
 	class SocketThread extends Thread {
+		
+		private boolean isRunning = false;
+		
+		public void setIsRunning(boolean isRunning) {
+			this.isRunning = isRunning;
+		}
 
 		@Override
 		public void run() {
@@ -52,22 +61,22 @@ public class SocketVisionReader extends Reader {
 			try {
 				ServerSocket server = new ServerSocket(PORT);
 
-				while (true) {
+				while (isRunning) {
 					Socket socket = server.accept();
 
-					System.out.println("Client connected.");
+					Log.logError("Client connected.");
 
 					Scanner scanner = new Scanner(new BufferedInputStream(
 							socket.getInputStream()));
 
-					while (scanner.hasNextLine()) {
+					while (scanner.hasNextLine() && isRunning) {
 						try {
 							parse(scanner.nextLine());
 						} catch (java.util.NoSuchElementException e) {
-							System.out.println("No input from camera!");
+							Log.logError("No input from camera!");
 						}
 					}
-					System.out.println("Client disconnected");
+					Log.logError("Client disconnected");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -117,21 +126,6 @@ public class SocketVisionReader extends Reader {
 				propagate(x1, y1, d1, x2, y2, d2, x3, y3,
 						Long.parseLong(tokens[9]));
 
-				// if this is the first time we have heard about the
-				// world, initialize the world state
-				if (world == null) {
-					// first yellow
-					RobotState opponentDefender = new RobotState(x1, y1);
-					RobotState ourAttacker = new RobotState(x2, y2);
-					RobotState opponentAttacker = new RobotState(x3, y3);
-					RobotState ourDefender = new RobotState(x4, y4);
-					Ball ball = new Ball(xBall, yBall);
-					world = new WorldState(opponentDefender, ourAttacker,
-					                       opponentAttacker, ourDefender,
-					                       ball); // stuff
-                }
-
-
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
 
 				propagatePitchSize(Double.parseDouble(tokens[1]),
@@ -151,9 +145,4 @@ public class SocketVisionReader extends Reader {
 		}
 
 	}
-
-	public static void main(String[] args) {
-		SocketVisionReader svr = new SocketVisionReader();
-	}
-
 }

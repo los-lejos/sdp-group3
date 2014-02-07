@@ -3,22 +3,26 @@ package dice.strategy;
 import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.WorldState;
 
 /*
  * @author Joris S. Urbaitis
  */
 
-public abstract class StrategyAction {
+public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	
 	private RobotCommunicationCallback callback;
-	private RobotType target;
 	
 	private boolean completed = false;
 	
-	public StrategyAction(RobotType target) {
-		this.target = target;
-
+	private int cachedUtility = 0;
+	
+	protected RobotType targetRobot;
+	
+	public StrategyAction(RobotType targetRobot) {
+		this.targetRobot = targetRobot;
+		
 		callback = new RobotCommunicationCallback() {
 			public void onError() {
 				completed = true;
@@ -35,8 +39,24 @@ public abstract class StrategyAction {
 	}
 
 	public abstract boolean isPossible(WorldState state);
-	public abstract int calculateUtility(WorldState state);
-	public abstract RobotInstruction getInstruction();
+	protected abstract int calculateUtility(WorldState state);
+	public abstract RobotInstruction getInstruction(WorldState state);
+	
+	protected GameObject getTargetObject(WorldState state) {
+		if(this.targetRobot == RobotType.ATTACKER) {
+			return state.getOurAttacker();
+		} else {
+			return state.getOurDefender();
+		}
+	}
+	
+	public void updateUtility(WorldState state) {
+		this.cachedUtility = this.calculateUtility(state);
+	}
+	
+	public int getCachedUtility() {
+		return this.cachedUtility;
+	}
 	
 	public RobotCommunicationCallback getCallback() {
 		return callback;
@@ -45,8 +65,11 @@ public abstract class StrategyAction {
 	public boolean isCompleted() {
 		return completed;
 	}
-	
-	public RobotType getTargetRobot() {
-		return target;
-	}
+
+	@Override
+    public int compareTo(StrategyAction a) {
+		Integer a1Utility = this.getCachedUtility();
+		Integer a2Utility = a.getCachedUtility();
+        return a1Utility.compareTo(a2Utility);
+    }
 }
