@@ -45,8 +45,8 @@ public class StrategyEvaluator {
 		attacker.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
@@ -61,8 +61,8 @@ public class StrategyEvaluator {
 		defender.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			defender.addAction(new BlockAction(RobotType.DEFENDER));
 			defender.addAction(new InterceptAction(RobotType.DEFENDER));
+			defender.addAction(new BlockAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {

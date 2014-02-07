@@ -11,11 +11,6 @@ import dice.state.Vector2;
  */
 
 final class StratMaths {
-
-	protected static Vector2 getShootVector() {
-		//TODO
-		return null;
-	}
 	
 	protected static boolean canReach(Vector2 v, GameObject o) {
 		//TODO
