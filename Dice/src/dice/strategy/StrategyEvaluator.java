@@ -30,8 +30,8 @@ public class StrategyEvaluator {
 	private StrategyType type;
 
 	public StrategyEvaluator() {
-		attacker = new RobotStrategyState();
-		defender = new RobotStrategyState();
+		attacker = new RobotStrategyState(RobotType.ATTACKER);
+		defender = new RobotStrategyState(RobotType.DEFENDER);
 	}
 	
 	public void setType(StrategyType type) {
@@ -45,9 +45,9 @@ public class StrategyEvaluator {
 		attacker.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			attacker.addAction(new BlockAction());
-			attacker.addAction(new InterceptAction());
-			attacker.addAction(new ShootAction());
+			attacker.addAction(new BlockAction(RobotType.ATTACKER));
+			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
@@ -61,8 +61,8 @@ public class StrategyEvaluator {
 		defender.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			defender.addAction(new BlockAction());
-			defender.addAction(new InterceptAction());
+			defender.addAction(new BlockAction(RobotType.DEFENDER));
+			defender.addAction(new InterceptAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
