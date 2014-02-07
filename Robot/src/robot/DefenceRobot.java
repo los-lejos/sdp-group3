@@ -54,4 +54,9 @@ public class DefenceRobot extends Robot {
 			System.out.println("Bad GRAB attempt.");
 		}
 	}
+
+	@Override
+	void stop() {
+		pilot.stop();
+	}
 }
