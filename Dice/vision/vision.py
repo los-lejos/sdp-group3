@@ -37,10 +37,9 @@ class Vision:
         self.connected = False
         self.scale = scale
         self.stdout = stdout
-        self.cam = Camera()
 
-        if file_input is None:  
-            self.cam = Camera()
+        if file_input is None:
+            self.cam = Camera(prop_set = {"width": 720, "height": 540})
         else:
             file_type = 'video'
             if file_input.endswith(('jpg', 'png')):
@@ -101,8 +100,7 @@ class Vision:
         if self.cam.getCameraMatrix is None:
             frame = self.cam.getImage()
         else:
-            #frame = self.cam.getImageUndistort()
-            frame = self.cam.getImage()
+            frame = self.cam.getImageUndistort()
 
         frame = self.preprocessor.preprocess(frame, self.scale)
         self.gui.update_layer('raw', frame)
