@@ -30,15 +30,15 @@ public class BlockAction extends StrategyAction {
 	@Override
 	protected int calculateUtility(WorldState state) {
 		GameObject ball = state.getBall();
-		whereToBlock = new Vector2(x,ball.projectPath().getY(x));
-		boolean canReachBall = StratMaths.canReach(whereToBlock,state.getOurDefender());
-		if (canReachBall && !StratMaths.willCollideWithBall()) {
+		//whereToBlock = new Vector2(x,ball.projectPath().getY(x));
+		//boolean canReachBall = StratMaths.canReach(whereToBlock,state.getOurDefender());
+		//if (canReachBall && !StratMaths.willCollideWithBall()) {
 			return 2;
-		} else if (canReachBall && StratMaths.willCollideWithBall()){
-			return 0;
-		} else {
-			return 1;
-		}
+		//} else if (canReachBall && StratMaths.willCollideWithBall()){
+		//	return 0;
+		//} else {
+		//	return 1;
+		//}
 	}
 
 	@Override
