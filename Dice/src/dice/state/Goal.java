@@ -21,4 +21,9 @@ public class Goal {
     	return bottomPost;
     }
 
+    public Vector2 getGoalCenter() {
+        double centerY = (topPost.Y + bottomPost.Y) / 2.0;
+        return new Vector2(getTopPost().X, centerY);
+    }
+
 }
