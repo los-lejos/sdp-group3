@@ -17,7 +17,7 @@ final class StratMaths {
 		return null;
 	}
 	
-	protected static boolean canBlock(Vector2 v, GameObject o) {
+	protected static boolean canReach(Vector2 v, GameObject o) {
 		//TODO
 		return true;
 		
