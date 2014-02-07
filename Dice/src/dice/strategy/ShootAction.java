@@ -17,15 +17,15 @@ public class ShootAction extends StrategyAction {
 		super(targetRobot);
 	}
 
-	Goal opGoal;
+	Goal opGoal; //TODO setter
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		//if (WorldState.getBallPossession() == OUR_ATTACKER) {
+		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) {
 			return true;
-		//} else {
-		//	return false;
-		//}
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -36,11 +36,9 @@ public class ShootAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		
-		//return RobotInstruction.CreateShootTo(
-		//		StratMaths.cartesianToPolarTheta(
-		//		opGoal.getGoalCenter()),
-		//		this.getCallback());
-		//}
-		return null;
+		return RobotInstruction.CreateShootTo(
+				StratMaths.cartesianToPolarTheta(
+				opGoal.getGoalCenter()),
+				this.getCallback());
+		}
 	}
-}
