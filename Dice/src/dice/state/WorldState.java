@@ -55,12 +55,19 @@ public class WorldState {
 		return new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
     }
 
-    public void updateState(Vector2 a, Vector2 b, Vector2 c,
-                            Vector2 d, Vector2 ball) {
+    public void updateState(Vector2 a, double aAngle, Vector2 b, double bAngle,
+    		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
         opponentDefender.setPos(a);
+        opponentDefender.setRotation(aAngle);
+        
         ourAttacker.setPos(b);
+        ourAttacker.setRotation(bAngle);
+        
         opponentAttacker.setPos(c);
+        opponentAttacker.setRotation(cAngle);
+        
         ourDefender.setPos(d);
+        ourDefender.setRotation(dAngle);
 
         ball.setPos(ball);
     }

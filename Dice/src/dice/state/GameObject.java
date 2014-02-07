@@ -24,6 +24,10 @@ public class GameObject {
 
     	this.rotation = rotation;
     }
+    
+    public void setRotation(double rotation) {
+    	this.rotation = rotation;
+    }
 
     public void setPos(double xPos, double yPos, double t) {
     	Vector2 position = new Vector2(xPos, yPos);

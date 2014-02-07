@@ -31,6 +31,7 @@ public abstract class Robot {
 	private final UltrasonicSensor BALL_SENSOR;
 
     private IssuedInstruction currentInstruction, newInstruction;
+    private final BluetoothDiceConnection conn;
     private byte instructionType;
     private byte[] instructionParameters;
     private boolean quit;
@@ -40,10 +41,7 @@ public abstract class Robot {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
-    }
-
-	public void run() {
-		final BluetoothDiceConnection conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
+    	conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
 			@Override
 			public void onNewInstruction(IssuedInstruction instruction) {
 				newInstruction = instruction;
@@ -54,7 +52,9 @@ public abstract class Robot {
 				quit = true;
 			}
 		});
+    }
 
+	public void run() {
 		// Try waiting for a Bluetooth connection
 		try {
 			conn.openConnection();
@@ -89,6 +89,16 @@ public abstract class Robot {
 			
 			if (objectAtFrontSensor()) {
 				grab();
+				
+				// Notify DICE that we have the ball
+				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
+				try {
+					conn.send(hasBallResponse);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BluetoothCommunicationException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if(Button.readButtons() != 0) {
@@ -127,6 +137,15 @@ public abstract class Robot {
 				byte headingB = instructionParameters[1];
 				int heading = (10 * headingA) + headingB;
 				kickToward(heading);
+				// Notify DICE that we no longer have the ball
+				byte[] releaseBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
+				try {
+					conn.send(releaseBallResponse);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BluetoothCommunicationException e) {
+					e.printStackTrace();
+				}
 			} else {
 				System.out.println("Error: wrong parameters for KICK_TOWARD");
 			}
