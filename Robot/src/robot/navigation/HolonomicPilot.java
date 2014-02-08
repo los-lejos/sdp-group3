@@ -32,8 +32,8 @@ public class HolonomicPilot {
 	private int wheelDiameter; // Needed for odometry.
 	// private int forwardSpeed; // Speed for going forwards/backwards - assigned to lateralMotor
 	// private int lateralSpeed; // Speed for going left/right - assigned to forwardMotor
-	private int forwardSpeed; // Speed for going forwards/backwards - assigned to forwardMotor
-	private int lateralSpeed; // Speed for going left/right - assigned to lateralMotor	
+	private double forwardSpeed; // Speed for going forwards/backwards - assigned to forwardMotor
+	private double lateralSpeed; // Speed for going left/right - assigned to lateralMotor	
 	private int acceleration; // there is only one variable because it is only sensible to add acceleration to the back/forward movement
 	private RegulatedMotor forwardMotor;
 	private RegulatedMotor lateralMotor;
@@ -134,11 +134,11 @@ public class HolonomicPilot {
 		if (!immediateReturn) waitComplete();
 	}
 	
-	public void setTravelSpeed(int speedF, int speedL) {
+	public void setTravelSpeed(double speedF, double speedL) {
 		// lateralMotor.setSpeed(speedF);
 		// forwardMotor.setSpeed(speedL);
-		forwardMotor.setSpeed(speedF);
-		lateralMotor.setSpeed(speedL);
+		forwardMotor.setSpeed((int) speedF);
+		lateralMotor.setSpeed((int) speedL);
 		this.forwardSpeed = speedF;
 		this.lateralSpeed = speedL;
 	}
@@ -153,11 +153,11 @@ public class HolonomicPilot {
 	}
 
 	
-	public int getForwardSpeed() {
+	public double getForwardSpeed() {
 		return forwardSpeed;
 	}
 	
-	public int getLateralSpeed() {
+	public double getLateralSpeed() {
 		return lateralSpeed;
 	}
 

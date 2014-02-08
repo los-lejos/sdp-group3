@@ -18,6 +18,7 @@ import shared.RobotInstructions;
 
 /*
  * Super class for fields/methods common to both robots.
+ * eg. Instruction handling, sensors, message passing.
  * run() method contains main robot loop.
  */
 
@@ -32,8 +33,7 @@ public abstract class Robot {
 
     private IssuedInstruction currentInstruction, newInstruction;
     private final BluetoothDiceConnection conn;
-    private byte instructionType;
-    private byte[] instructionParameters;
+    private MovementThread movementThread;
     private boolean quit;
     protected boolean hasBall;
     
@@ -67,24 +67,20 @@ public abstract class Robot {
 		
 		conn.start();
 
+		movementThread = new MovementThread(this, conn);
+		movementThread.start();
+
 		while(!quit) {
 			if(currentInstruction != newInstruction) {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
-				handleInstruction(currentInstruction);
-				
-				// Respond that the instruction has been completed
-				try {
-					conn.send(currentInstruction.getCompletedResponse());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
+				movementThread.setInstruction(currentInstruction);
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-				// TODO Handle boundary problem. Reverse? Notify DICE?
+				// Provisional: just stop and wait
+				this.movementThread.stopMovement();
+				System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
 			if (objectAtFrontSensor()) {
@@ -108,6 +104,9 @@ public abstract class Robot {
 
 		System.out.println("Exiting");
 		
+		// Kill movement thread
+		this.movementThread.exit();
+		
 		try {
 			conn.closeConnection();
 		} catch (IOException e) {
@@ -117,45 +116,6 @@ public abstract class Robot {
 		}
 	}
 	
-	public void handleInstruction(IssuedInstruction instruction) {
-		instructionType = instruction.getType();
-		instructionParameters = instruction.getParameters();
-		
-		if (instructionType == RobotInstructions.MOVE_TO) {
-			if (instructionParameters.length == 3) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				int heading = (10 * headingA) + headingB;
-				int distance = instructionParameters[2];
-				moveTo(heading, distance);
-			} else {
-				System.out.println("Error: wrong parameters for MOVE_TO");
-			}
-		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
-			if (instructionParameters.length == 2) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				int heading = (10 * headingA) + headingB;
-				kickToward(heading);
-				// Notify DICE that we no longer have the ball
-				byte[] releaseBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
-				try {
-					conn.send(releaseBallResponse);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.out.println("Error: wrong parameters for KICK_TOWARD");
-			}
-		}
-	}
-	
-    abstract void moveTo(int heading, int distance);
-    abstract void kickToward(int heading);
-    abstract void grab();
-
     private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
@@ -172,4 +132,10 @@ public abstract class Robot {
     	return hasBall;
     }
     
+    abstract boolean isMoving();
+    abstract void rotate(int heading);
+    abstract void move(int distance);
+    abstract void grab();
+    abstract void stop();
+    abstract void kick();
 }
