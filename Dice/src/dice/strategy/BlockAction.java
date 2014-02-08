@@ -45,8 +45,7 @@ public class BlockAction extends StrategyAction {
 		whereToMove.setPos(getTargetObject(state).getPos().X,state.getBall().getPos().Y);
 		return RobotInstruction.CreateMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToMove), 
-				StratMaths.cartestanToPolarR(whereToMove), 
-				this.getCallback());
+				StratMaths.cartestanToPolarR(whereToMove));
 	}
 
 }

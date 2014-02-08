@@ -6,8 +6,8 @@ import java.util.List;
 
 import dice.Log;
 import dice.communication.RobotCommunicator;
+import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
-import dice.state.GameObject;
 import dice.state.WorldState;
 
 /**
@@ -16,7 +16,8 @@ import dice.state.WorldState;
 
 public class RobotStrategyState {
 	// Currently assigned action
-	private StrategyAction action;
+	private IssuedAction issuedAction;
+	private StrategyAction strategyAction;
 	
 	// List of actions the robot can perform
 	private List<StrategyAction> actions = new ArrayList<StrategyAction>();
@@ -69,11 +70,15 @@ public class RobotStrategyState {
 	}
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {
-		this.action = action;
-		robotComms.sendInstruction(action.getInstruction(state));
+		this.issuedAction = new IssuedAction();
+		this.strategyAction = action;
+		
+		RobotInstruction instruction = action.getInstruction(state);
+		instruction.setCallback(issuedAction.getCallback());
+		robotComms.sendInstruction(instruction);
 	}
 	
 	public boolean needsNewAction(WorldState state) {
-		return action == null || action.isCompleted() || !action.isPossible(state);
+		return issuedAction == null || issuedAction.isCompleted() || !strategyAction.isPossible(state);
 	}
 }

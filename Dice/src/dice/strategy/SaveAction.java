@@ -48,8 +48,7 @@ public class SaveAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.CreateMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToBlock),
-				StratMaths.cartestanToPolarR(whereToBlock),
-				this.getCallback());
+				StratMaths.cartestanToPolarR(whereToBlock));
 	}
 
 }

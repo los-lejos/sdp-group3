@@ -37,7 +37,6 @@ public class ShootAction extends StrategyAction {
 		
 		return RobotInstruction.CreateShootTo(
 				StratMaths.cartesianToPolarTheta(
-				opGoal.getGoalCenter()),
-				this.getCallback());
+				opGoal.getGoalCenter()));
 		}
 	}

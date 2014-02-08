@@ -133,6 +133,7 @@ public class BluetoothRobotConnection extends Thread {
 					RobotCommunicationCallback callback = instructionCallbacks[instructionId];
 					if(callback != null) {
 						callback.onDone();
+						instructionCallbacks[instructionId] = null;
 					}
 					else {
 						throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);

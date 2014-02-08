@@ -27,11 +27,11 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		long rotation = (long) getTargetObject(state).getRotationRelativeTo(state.getBall());
+		double rotation = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall()));
+
 		return RobotInstruction.CreateMoveTo(
-				rotation,
-				(byte) 0, 
-				this.getCallback());
+				(long) rotation,
+				(byte) 0);
 	}
 
 }
