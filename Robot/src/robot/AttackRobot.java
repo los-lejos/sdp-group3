@@ -52,14 +52,16 @@ public class AttackRobot extends Robot {
 		}
 		
 		System.out.println("Rotating " + angle + " degrees.");
-		pilot.rotate(-angle);
+		pilot.rotate(-angle, true);
+		while (pilot.isMoving() && !interrupted);
 		pilot.travel(distance * 10, true);
 	}
 
 	@Override
 	protected void kickToward(int heading) {
 		if (this.hasBall()) {
-			pilot.rotate(heading);
+			pilot.rotate(heading, true);
+			while (pilot.isMoving() && !interrupted);
 			kickMotor.rotate(50, true);
 			this.hasBall = false;
 		} else {

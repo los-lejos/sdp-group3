@@ -43,7 +43,7 @@ public abstract class Robot {
     private int heading, distance;
     private State currentState;
     private boolean quit;
-    protected boolean hasBall;
+    protected boolean hasBall, interrupted;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
@@ -97,7 +97,10 @@ public abstract class Robot {
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				movementThread.interrupt();
+				currentState = State.READY;
+				interrupted = true;
+				stop();
+				interrupted = false;
 				System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
@@ -146,17 +149,18 @@ public abstract class Robot {
 		instructionType = instruction.getType();
 		instructionParameters = instruction.getParameters();
 		
+		// If we're doing something, stop.
+		currentState = State.READY;
+		interrupted = true;
+		stop();
+		interrupted = false;
+		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
 				heading = (10 * headingA) + headingB;
 				distance = instructionParameters[2];
-				
-				// If we're doing something, stop.
-				movementThread.interrupt();
-				
-				// GOGOGO
 				currentState = State.MOVE_TO;
 			} else {
 				System.out.println("Error: wrong parameters for MOVE_TO");
@@ -166,11 +170,6 @@ public abstract class Robot {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
 				heading = (10 * headingA) + headingB;
-				
-				// If we're doing something, stop.
-				movementThread.interrupt();
-				
-				// Tell movement thread to kick things
 				currentState = State.KICK_TOWARD;
 				
 				// Notify DICE that we no longer have the ball
@@ -214,7 +213,7 @@ public abstract class Robot {
     	public void run() {
     		boolean running = true;
     		
-    		while (running && !MovementThread.interrupted()) {
+    		while (running) {
     			if (currentState == State.KICK_TOWARD) {
     				kickToward(heading);
     				currentState = State.READY;
@@ -228,13 +227,6 @@ public abstract class Robot {
     				break;
     			}
     		}
-    		
-    		while (MovementThread.interrupted()) {
-				if (currentState != State.READY) {
-					stop();
-					currentState = State.READY;
-				}
-			}
     	}
     }
     
