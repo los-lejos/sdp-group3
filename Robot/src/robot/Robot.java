@@ -23,10 +23,6 @@ import shared.RobotInstructions;
  */
 
 public abstract class Robot {
-	
-	private enum State {
-		READY, MOVE_TO, KICK_TOWARD, EXIT
-	}
 
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 8;
@@ -37,13 +33,9 @@ public abstract class Robot {
 
     private IssuedInstruction currentInstruction, newInstruction;
     private final BluetoothDiceConnection conn;
-    private byte instructionType;
-    private byte[] instructionParameters;
-    private Thread movementThread;
-    private int heading, distance;
-    private State currentState;
+    private MovementThread movementThread;
     private boolean quit;
-    protected boolean hasBall, interrupted;
+    protected boolean hasBall;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
@@ -74,33 +66,20 @@ public abstract class Robot {
 		}
 		
 		conn.start();
-		
-		currentState = State.READY;
-		movementThread = new MovementThread();
-		movementThread.run();
+
+		movementThread = new MovementThread(this, conn);
+		movementThread.start();
 
 		while(!quit) {
 			if(currentInstruction != newInstruction) {
 				System.out.println("Getting new instruction");
 				currentInstruction = newInstruction;
-				handleInstruction(currentInstruction);
-				
-				// Respond that the instruction has been completed
-				try {
-					conn.send(currentInstruction.getCompletedResponse());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
+				movementThread.setInstruction(currentInstruction);
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				currentState = State.READY;
-				interrupted = true;
-				stop();
-				interrupted = false;
+				this.movementThread.stopMovement();
 				System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
@@ -126,15 +105,7 @@ public abstract class Robot {
 		System.out.println("Exiting");
 		
 		// Kill movement thread
-		currentState = State.EXIT;
-		
-		// Wait for thread to die
-		try {
-			movementThread.join();
-		} catch (InterruptedException e1) {
-			System.out.println("EXCEPTION when waiting for movement thread to exit.");
-			// e1.printStackTrace();
-		}
+		this.movementThread.exit();
 		
 		try {
 			conn.closeConnection();
@@ -145,48 +116,6 @@ public abstract class Robot {
 		}
 	}
 	
-	public void handleInstruction(IssuedInstruction instruction) {
-		instructionType = instruction.getType();
-		instructionParameters = instruction.getParameters();
-		
-		// If we're doing something, stop.
-		currentState = State.READY;
-		interrupted = true;
-		stop();
-		interrupted = false;
-		
-		if (instructionType == RobotInstructions.MOVE_TO) {
-			if (instructionParameters.length == 3) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				heading = (10 * headingA) + headingB;
-				distance = instructionParameters[2];
-				currentState = State.MOVE_TO;
-			} else {
-				System.out.println("Error: wrong parameters for MOVE_TO");
-			}
-		} else if (instructionType == RobotInstructions.KICK_TOWARD) {
-			if (instructionParameters.length == 2) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				heading = (10 * headingA) + headingB;
-				currentState = State.KICK_TOWARD;
-				
-				// Notify DICE that we no longer have the ball
-				byte[] releaseBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
-				try {
-					conn.send(releaseBallResponse);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.out.println("Error: wrong parameters for KICK_TOWARD");
-			}
-		}
-	}
-
     private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
@@ -203,31 +132,10 @@ public abstract class Robot {
     	return hasBall;
     }
     
-    abstract void moveTo(int heading, int distance);
-    abstract void kickToward(int heading);
+    abstract boolean isMoving();
+    abstract void rotate(int heading);
+    abstract void move(int distance);
     abstract void grab();
     abstract void stop();
-    
-    private class MovementThread extends Thread {
-    	
-    	public void run() {
-    		boolean running = true;
-    		
-    		while (running) {
-    			if (currentState == State.KICK_TOWARD) {
-    				kickToward(heading);
-    				currentState = State.READY;
-    			} else if (currentState == State.MOVE_TO) {
-    				moveTo(heading, distance);
-    				currentState = State.READY;
-    			}
-    			
-    			if (currentState == State.EXIT) {
-    				stop();
-    				break;
-    			}
-    		}
-    	}
-    }
-    
+    abstract void kick();
 }
