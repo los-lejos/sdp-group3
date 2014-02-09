@@ -30,4 +30,8 @@ final class StratMaths {
 		//TODO
 		return false;
 	}
+	
+	protected static Double getBetweenY(GameObject ball, Vector2 ourGoal) {
+		return (ball.getPos().Y +ourGoal.Y)/2;
+	}
 }
