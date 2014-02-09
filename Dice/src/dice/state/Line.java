@@ -32,10 +32,40 @@ public class Line {
             double x = (c2 - c1) / (m1 - m2);
             double y = m1 * x + c1;
 
-            result = new Vector2(x, y);
+            // we've actually only calculated an intersection
+            // of infinite length lines here, now we
+            // must check that the point is within the bounds
+            // of both lines
+            Vector2 maybeResult = new Vector2(x, y);
+            System.out.println("Intersection found at: ("
+                + String.valueOf(x) + ","
+                + String.valueOf(y) + ").");
+
+            if (withinBounds(maybeResult)
+                    && otherLine.withinBounds(maybeResult))
+                result = maybeResult;
         }
 
         return result;
+    }
+
+    // we don't actually have to calculate whether the point
+    // is on the line itself, as this function is only
+    // used when we know the lines intersect at the point
+    public boolean withinBounds(Vector2 point) {
+        // is there a better way to do this?
+
+        // return true if the X and Y coordinates of the point
+        // are between those of the start and end points
+        if ((point.X >= startPoint.X && point.X <= endPoint.X) ||
+            (point.X <= startPoint.X && point.X >= endPoint.X)) {
+            if ((point.Y >= startPoint.Y && point.Y <= endPoint.Y) ||
+                (point.Y <= startPoint.Y && point.Y >= endPoint.Y)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // answer in radians
