@@ -9,13 +9,14 @@ public class Line {
         this.endPoint = endPoint;
     }
 
+    // may return Infinity
     public double getGradient() {
         return (endPoint.Y - startPoint.Y) /
                (endPoint.X - startPoint.X);
     }
 
     public double getYIntersect() {
-        return startPoint.Y / (getGradient() * startPoint.X);
+        return startPoint.Y - (getGradient() * startPoint.X);
     }
 
     public Vector2 intersect(Line otherLine) {
