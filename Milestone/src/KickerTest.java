@@ -1,9 +1,5 @@
-import lejos.nxt.Button;
-import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.robotics.RegulatedMotor;
 
 
 public class KickerTest {
@@ -23,12 +19,35 @@ public class KickerTest {
 		Thread.sleep(1000);
 		Motor.C.stop();
 */
-		NXTMotor mamkamu = new NXTMotor(MotorPort.C);
+		NXTMotor mamkamu = new NXTMotor(MotorPort.B);
 		
-		mamkamu.setPower(100);
-		mamkamu.forward();
+		mamkamu.setPower(200);
+		mamkamu.backward();
+		Thread.sleep(1000);
 		
-		Button.waitForAnyPress();
+		//Button.waitForAnyPress();
+		
+		// IC2 Motor test
+		// DO NOT SEND 0x03 STATE TO ANY REGISTER!
+//		I2CPort I2Cport; //Create a I2C port
+//		I2Cport = SensorPort.S4; //Assign port
+//		I2Cport.i2cEnable(I2CPort.STANDARD_MODE);
+//		//Initialize port in standard mode
+//		I2CSensor I2Csensor = new I2CSensor(I2Cport);
+//		//Creates an I2CSensor
+//
+//		byte forward = (byte)1;
+//		byte backward = (byte)2;
+//		byte off = (byte)0;
+//		byte speed = (byte)255;
+//		I2Csensor.setAddress(0xB4);
+//		I2Csensor.sendData(0x01,backward);
+//		I2Csensor.sendData(0x02,speed);
+//		Thread.sleep(500);
+//		//I2Csensor.sendData(0x01,forward);
+//		//Thread.sleep(600);
+//		I2Csensor.sendData(0x01,off);
+//		I2Csensor.sendData(0x02,off);
 	}
 	
 }
