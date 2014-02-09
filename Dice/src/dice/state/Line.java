@@ -38,4 +38,12 @@ public class Line {
         return result;
     }
 
+    // answer in radians
+    public double angleOfIncidence(Line otherLine) {
+        double alpha = Math.atan(getGradient());
+        double beta = Math.atan(otherLine.getGradient());
+
+        return beta - alpha;
+    }
+
 }
