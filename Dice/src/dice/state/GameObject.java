@@ -79,14 +79,12 @@ public class GameObject {
     // project a path based on the rotation of the object
     // of course, this won't work for the ball. To project
     // the ball position, you should use the velocity
-    /*public Path projectPath() {
+    public Path projectPath() {
         Path result = new Path();
 
         //result.add(getPos());
         return result;
-
-        
-    }*/
+    }
 
     // returns null if the object hasn't travelled for more than
     // two frames
