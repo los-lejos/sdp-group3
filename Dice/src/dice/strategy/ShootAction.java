@@ -4,6 +4,7 @@ package dice.strategy;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Goal;
+import dice.state.Vector2;
 import dice.state.WorldState;
 
 /*
@@ -34,9 +35,8 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		
+		Vector2 aimTarget = StratMaths.relativePos(this.getTargetObject(state), opGoal.getGoalCenter());
 		return RobotInstruction.CreateShootTo(
-				StratMaths.cartesianToPolarTheta(
-				opGoal.getGoalCenter()));
+				StratMaths.cartesianToPolarTheta(aimTarget));
 		}
 	}

@@ -32,4 +32,14 @@ final class StratMaths {
 	protected static Double getBetweenY(GameObject ball, Vector2 ourGoal) {
 		return (ball.getPos().Y +ourGoal.Y)/2;
 	}
+	
+	protected static Vector2 relativePos(GameObject referenceFrame, GameObject obj) {
+		Vector2 rfPos = referenceFrame.getPos();
+		Vector2 objPos = obj.getPos();
+		return new Vector2(objPos.X-rfPos.X,objPos.Y-rfPos.Y);
+	}
+	protected static Vector2 relativePos(GameObject referenceFrame, Vector2 objPos) {
+		Vector2 rfPos = referenceFrame.getPos();
+		return new Vector2(objPos.X-rfPos.X,objPos.Y-rfPos.Y);
+	}
 }
