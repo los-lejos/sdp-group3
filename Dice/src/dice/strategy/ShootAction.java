@@ -6,7 +6,7 @@ import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.WorldState;
 
-/**
+/*
  * @author Sam Stern
  */
 

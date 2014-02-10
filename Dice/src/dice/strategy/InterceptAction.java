@@ -1,17 +1,21 @@
 package dice.strategy;
 
+
+
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.Vector2;
 import dice.state.WorldState;
 
-public class FaceBallAction extends StrategyAction {
+public class InterceptAction extends StrategyAction {
 	
-	/*
-	 * @author Sam Stern
-	 */
-	
+/*
+ * @author Sam Stern
+ * 
+ * extrapolate position of the ball and move to that position
+ */
 
-	public FaceBallAction(RobotType targetRobot) {
+	public InterceptAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 
@@ -23,19 +27,18 @@ public class FaceBallAction extends StrategyAction {
 	@Override
 	protected int calculateUtility(WorldState state) {
 		if (StratMaths.willCollideWithBall(getTargetObject(state))) {
-			return 2;
-		} else {
 			return 0;
+		} else {
+			return 2;
 		}
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		double rotation = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall()));
-
+		Vector2 whereToIntercept = new Vector2(0,0); // 
 		return RobotInstruction.CreateMoveTo(
-				(long) rotation,
-				(byte) 0);
+				StratMaths.cartesianToPolarTheta(whereToIntercept),
+				StratMaths.cartestanToPolarR(whereToIntercept));
 	}
 
 }

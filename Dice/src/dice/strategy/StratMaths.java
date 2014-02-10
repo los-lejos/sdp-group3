@@ -6,8 +6,6 @@ import dice.state.Vector2;
 
 /*
  * @author Sam Stern
- * 
- * class containing methods which determine where to kick the ball.
  */
 
 final class StratMaths {
