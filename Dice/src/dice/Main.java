@@ -75,7 +75,7 @@ public class Main {
 		br = new BufferedReader(new InputStreamReader(System.in));
 		
 		worldState = WorldState.init();
-        worldState.setSide(Side.LEFT);
+        worldState.setSide(WorldState.Side.LEFT);
 		this.attackerComms = new BluetoothRobotCommunicator();
 		this.defenderComms = new BluetoothRobotCommunicator();
 
