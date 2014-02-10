@@ -16,7 +16,8 @@ final class StratMaths {
 	}
 	
 	public static Vector2 whereToIntercept(GameObject target, GameObject ball) {
-		return ball.projectPath.getCoordinateAt();
+//		return ball.projectPath.getCoordinateAt();
+		return null;
 	}
 	
 	protected static byte cartestanToPolarR(Vector2 v) {
