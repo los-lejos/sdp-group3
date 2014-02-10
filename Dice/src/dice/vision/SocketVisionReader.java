@@ -134,11 +134,14 @@ public class SocketVisionReader {
                 
                 this.strategy.onNewState(this.world);
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
-				double pitchWidth = Double.parseDouble(tokens[1]);
-				double pitchHeight = Double.parseDouble(tokens[2]);
+                /*double origin = Double.parseDouble[tokens[1]);
+                double first = Double.parseDouble[tokens[1]);
+                double second = Double.parseDouble[tokens[1]);
+                double third = Double.parseDouble[tokens[1]);
+                double end = Double.parseDouble[tokens[1]);
 				
 				//TODO vision sends different data from this method, so need to sync
-				//world.calibratePitch(origin, first, second, third, end);
+				world.calibratePitch(origin, first, second, third, end);*/
 			}
 			// We probably need this, but don't think vision is sending this right now
 			//else if (tokens[0].equals(GOAL_POS_BIT)) {
