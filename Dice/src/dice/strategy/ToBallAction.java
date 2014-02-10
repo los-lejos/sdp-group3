@@ -5,7 +5,6 @@ import dice.communication.RobotType;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
-public class ToBallAction extends StrategyAction {
 
 /*
  * @author Sam Stern
@@ -13,8 +12,9 @@ public class ToBallAction extends StrategyAction {
  * move to current ball position
  */
 
+public class ToBallAction extends StrategyAction {
+
 	public ToBallAction(RobotType targetRobot) {
-		
 		super(targetRobot);
 	}
 

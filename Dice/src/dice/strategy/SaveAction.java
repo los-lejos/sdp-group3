@@ -23,7 +23,6 @@ public class SaveAction extends StrategyAction {
 	Goal ourGoal; // TODO set our Goal
 	double ourGoalX = ourGoal.getGoalCenter().X;
 
-
 	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
