@@ -43,6 +43,16 @@ public class WorldState {
     private double end;
     private double width;
 
+    // lines which represent the outer edge
+    private Line top;
+    private Line topRight;
+    private Line right;
+    private Line bottomRight;
+    private Line bottom;
+    private Line bottomLeft;
+    private Line left;
+    private Line topLeft;
+
     private BallPossession possession;
     
     // Utility to create and return a new WorldState
@@ -87,12 +97,17 @@ public class WorldState {
     // do this once at the beginning, so we have an "accurate"
     // representation of the pitch divisions (the pitch may be nudged
     // slightly).
-    public void calibratePitch(double origin, double first, double second, double third, double end) {
-        this.origin = origin;
-        this.firstDivision = first;
-        this.secondDivision = second;
-        this.thirdDivision = third;
-        this.end = end;
+    public void calibratePitch(Line top, Line topRight, Line right
+                               Line bottomRight, Line bottom,
+                               Line bottomLeft, Line left, Line topLeft) {
+        this.top = top;
+        this.topRight = topRight;
+        this.right = right;
+        this.bottomRight = bottomRight;
+        this.bottom = bottom;
+        this.bottomLeft = bottomLeft;
+        this.left = left;
+        this.topLeft = topLeft;
     }
 
     // pitch geometry getters
