@@ -44,27 +44,33 @@ public class GameObject {
     // decides if a new position for the object is viable given its
     // past positions
     private boolean validatePos(Vector2 position) {
-        Vector2 velocity = this.getVelocity();
-        if (velocity != null) {
-            double dt = position.T - getPos().T;
+        // only do the check if the new position isn't already
+        // invalid
+        if (position.X == -1) {
+            return false;
+        } else {
+            Vector2 velocity = this.getVelocity();
+            if (velocity != null) {
+                double dt = position.T - getPos().T;
 
-            // run the projection function to get an estimate
-            // of the new position
-            double newX = position.X + getVelocity().X;
-            double newY = position.Y + getVelocity().Y;
-            Vector2 estimate = new Vector2(newX, newY);
-            double xDiff = Math.abs(position.X - estimate.X);
-            double yDiff = Math.abs(position.Y - estimate.Y);
-            if (xDiff > Math.abs(velocity.X) * DELTA ||
-                yDiff > Math.abs(velocity.Y) * DELTA) {
-                return false;
+                // run the projection function to get an estimate
+                // of the new position
+                double newX = position.X + getVelocity().X;
+                double newY = position.Y + getVelocity().Y;
+                Vector2 estimate = new Vector2(newX, newY);
+                double xDiff = Math.abs(position.X - estimate.X);
+                double yDiff = Math.abs(position.Y - estimate.Y);
+                if (xDiff > Math.abs(velocity.X) * DELTA ||
+                    yDiff > Math.abs(velocity.Y) * DELTA) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
+                // if the object is "new", then assume the position makes
+                // sense
                 return true;
             }
-        } else {
-            // if the object is "new", then assume the position makes
-            // sense
-            return true;
         }
     }
 
@@ -117,5 +123,10 @@ public class GameObject {
             return theta - rotation;
         else
             return rotation - theta;
+    }
+
+    // convert radians to degrees
+    public static double asDegrees(double radians) {
+        return 360 * (radians / (2.0 * Math.PI));
     }
 }
