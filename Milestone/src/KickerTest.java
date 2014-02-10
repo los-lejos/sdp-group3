@@ -1,34 +1,43 @@
 import lejos.nxt.Button;
-import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.robotics.RegulatedMotor;
 
 
 public class KickerTest {
+	
+	public static void travel(NXTMotor motor, int power, double distance, String direction) throws Exception{
+		motor.setPower(power); // between 0% and 100%
+		if (direction.equals("left")){
+			motor.forward();
+		} else if (direction.equals("right")){
+			motor.backward();
+		} else {
+			System.out.println("Unknown direction");
+		}				
+		Thread.sleep((int) (distance*1000/59.4)); // the speed of the robot (having considered its current weight) is 59.4cm/sec
+		motor.stop();
+	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws Exception {
 /*
-		RegulatedMotor kickMotor = Motor.A;
-		
+		RegulatedMotor kickMotor = Motor.A;		
 		
 //		kickMotor.setSpeed(kickMotor.getMaxSpeed());
 		kickMotor.setSpeed(100);
-		kickMotor.forward();
-		
+		kickMotor.forward();		
 		
 		Motor.C.setSpeed(200);
 		Motor.C.forward();
 		Thread.sleep(1000);
 		Motor.C.stop();
 */
-		NXTMotor mamkamu = new NXTMotor(MotorPort.C);
-		
-		mamkamu.setPower(100);
-		mamkamu.forward();
+
+		NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
+		travel (lateralMotor, 100, 14.85, "left");
+
 		
 		Button.waitForAnyPress();
+		
 	}
 	
 }
