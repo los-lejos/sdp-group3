@@ -20,12 +20,15 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
+		return true;
+		/*
 		if (((state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE) && (getTargetObject(state) == state.getOurAttacker())) ||
 			(((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) && (getTargetObject(state) == state.getOurDefender())))) {
 			return true;
 		} else {
 			return false;
 		}
+		*/
 	}
 
 	@Override

@@ -7,21 +7,25 @@ import dice.communication.RobotType;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
-public class InterceptAction extends StrategyAction {
-	
 /*
  * @author Sam Stern
  * 
  * extrapolate position of the ball and move to that position
  */
 
+public class InterceptAction extends StrategyAction {
+	
+	Vector2 whereToIntercept;
+	
+	
 	public InterceptAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
+		whereToIntercept  = StratMaths.whereToIntercept(this.getTargetObject(state), state.getBall());
+		return StratMaths.canReach(whereToIntercept, this.getTargetObject(state));
 	}
 
 	@Override
@@ -35,7 +39,6 @@ public class InterceptAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		Vector2 whereToIntercept = new Vector2(0,0); // 
 		return RobotInstruction.CreateMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToIntercept),
 				StratMaths.cartestanToPolarR(whereToIntercept));

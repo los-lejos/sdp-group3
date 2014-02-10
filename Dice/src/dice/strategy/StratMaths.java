@@ -13,7 +13,10 @@ final class StratMaths {
 	protected static boolean canReach(Vector2 v, GameObject o) {
 		//TODO
 		return true;
-		
+	}
+	
+	public static Vector2 whereToIntercept(GameObject target, GameObject ball) {
+		return ball.projectPath.getCoordinateAt();
 	}
 	
 	protected static byte cartestanToPolarR(Vector2 v) {
