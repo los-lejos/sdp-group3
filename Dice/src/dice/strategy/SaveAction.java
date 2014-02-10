@@ -25,7 +25,6 @@ public class SaveAction extends StrategyAction {
 
 
 	@Override
-	// TODO Move content of this method to calculateUtility
 	public boolean isPossible(WorldState state) {
 		return true;
 	}

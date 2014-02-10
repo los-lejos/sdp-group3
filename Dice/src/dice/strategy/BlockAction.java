@@ -33,14 +33,6 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-	/*	if (((state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) && (state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE)) ||
-			((state.getBallPossession() == WorldState.BallPossession.OUR_DEFENDER) && (state.getBallZone() == WorldState.PitchZone.OPP_ATTACK_ZONE) && 
-			(Math.abs(state.getBall().getVelocity().Y) < criticalVel))){
-				return 2;
-			} else {
-				return 0;
-			}
-	*/
 		if ((getTargetObject(state) == state.getOurDefender()) && (state.getBallZone() == WorldState.PitchZone.OPP_ATTACK_ZONE) 
 				&& (Math.abs(state.getBall().getVelocity().Y) < criticalVel)) {
 			return 2;
