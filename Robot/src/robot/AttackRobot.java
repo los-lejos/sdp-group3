@@ -14,13 +14,13 @@ import lejos.robotics.navigation.DifferentialPilot;
 public class AttackRobot extends Robot {
 	
 	private static final int tireDiameterMm = 62;
-	private static final int trackWidthMm = 142;
+	private static final int trackWidthMm = 123;
 	private static final NXTRegulatedMotor kickMotor = Motor.B;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
-	private static final NXTRegulatedMotor leftMotor = Motor.C;
-	private static final NXTRegulatedMotor rightMotor = Motor.A;
+	private static final NXTRegulatedMotor leftMotor = Motor.A;
+	private static final NXTRegulatedMotor rightMotor = Motor.C;
 	private final DifferentialPilot pilot;
 	
 	private float kickSpeed;
