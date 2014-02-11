@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import dice.Log;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.Line;
+import dice.state.BoundedLine;
 import dice.strategy.StrategyEvaluator;
 
 /**
@@ -141,9 +143,8 @@ public class SocketVisionReader {
                 for (int i = 0; i < 8; i++) {
                     int j = i * 2;
                     double x = Double.parseDouble(tokens[j+1]);
-                    double y = World.convertYValue(Double.parseDouble(tokens[j+2]));
+                    double y = WorldState.convertYValue(Double.parseDouble(tokens[j+2]));
                     Vector2 point = new Vector2(x,y);
-                    point.convertYCoordinates();
                     points.add(point);
                 }
 
