@@ -33,12 +33,13 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if ((state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) ||
-				(state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER)) {
-			return 0;
-		} else {
-			return 1;
-		}
+		return 2;
+//		if ((state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) ||
+//				(state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER)) {
+//			return 0;
+//		} else {
+//			return 1;
+//		}
 	}
 
 	@Override
