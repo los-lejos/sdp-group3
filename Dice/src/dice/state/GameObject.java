@@ -24,6 +24,10 @@ public class GameObject {
 
     	this.rotation = rotation;
     }
+    
+    public void setRotation(double rotation) {
+    	this.rotation = rotation;
+    }
 
     public void setPos(double xPos, double yPos, double t) {
     	Vector2 position = new Vector2(xPos, yPos);
@@ -40,25 +44,33 @@ public class GameObject {
     // decides if a new position for the object is viable given its
     // past positions
     private boolean validatePos(Vector2 position) {
-        Vector2 velocities = this.getSpeed();
-        if (velocities != null) {
-            double dt = position.T - getPos().T;
+        // only do the check if the new position isn't already
+        // invalid
+        if (position.X == -1) {
+            return false;
+        } else {
+            Vector2 velocity = this.getVelocity();
+            if (velocity != null) {
+                double dt = position.T - getPos().T;
 
-            // run the projection function to get an estimate
-            // of the new position
-            Vector2 estimate = projectVector2(dt);
-            double xDiff = Math.abs(position.X - estimate.X);
-            double yDiff = Math.abs(position.Y - estimate.Y);
-            if (xDiff > Math.abs(velocities.X) * DELTA ||
-                yDiff > Math.abs(velocities.Y) * DELTA) {
-                return false;
+                // run the projection function to get an estimate
+                // of the new position
+                double newX = position.X + getVelocity().X;
+                double newY = position.Y + getVelocity().Y;
+                Vector2 estimate = new Vector2(newX, newY);
+                double xDiff = Math.abs(position.X - estimate.X);
+                double yDiff = Math.abs(position.Y - estimate.Y);
+                if (xDiff > Math.abs(velocity.X) * DELTA ||
+                    yDiff > Math.abs(velocity.Y) * DELTA) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
+                // if the object is "new", then assume the position makes
+                // sense
                 return true;
             }
-        } else {
-            // if the object is "new", then assume the position makes
-            // sense
-            return true;
         }
     }
 
@@ -70,31 +82,11 @@ public class GameObject {
         	return null;
     }
 
-    // get the projected position t milliseconds from
-    // now. Obviously this is less likely to be correct
-    // further in the future.
-    // Obviously, this doesn't return a time component because it
-    // hasn't happened.
-    //
-    // returns null if there aren't enough positions taken yet
-    public Vector2 projectVector2(double t) {
-        Vector2 velocities = this.getSpeed();
-        if (velocities != null) {
-            Vector2 lastPos = positions.get(positions.size() - 1);
-            double newX = lastPos.X + velocities.X * t;
-            double newY = lastPos.Y + velocities.Y * t;
-
-            return new Vector2(newX, newY);
-        } else {
-            return null;
-        }
-    }
-
     // this returns a "position" which is really just a 2D
     // vector representing the X and Y velocities
     // returns null if the object hasn't travelled for more than
     // two frames
-    private Vector2 getSpeed() {
+    public Vector2 getVelocity() {
         if (positions.size() >= 2) {
             Vector2 lastPos = positions.get(positions.size() - 1);
             Vector2 nextLastPos = positions.get(positions.size() - 2);
@@ -131,5 +123,10 @@ public class GameObject {
             return theta - rotation;
         else
             return rotation - theta;
+    }
+
+    // convert radians to degrees
+    public static double asDegrees(double radians) {
+        return 360 * (radians / (2.0 * Math.PI));
     }
 }

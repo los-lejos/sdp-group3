@@ -13,7 +13,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 	private BluetoothRobotConnection conn;
 	private RobotType robotType;
 
-	public void init(RobotType robot) {
+	public void init(RobotType robot, RobotEventListener eventListener) {
 		this.robotType = robot;
 		
 		if(conn != null) {
@@ -21,7 +21,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			return;
 		}
 
-		conn = new BluetoothRobotConnection(robot);
+		conn = new BluetoothRobotConnection(robot, eventListener);
 		
 		try {
 			conn.openConnection();
@@ -49,6 +49,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		}
 		
 		try {
+			Log.logInfo("Sending isntruction to " + this.robotType.toString());
 			conn.send(instruction);
 		} catch (IOException e) {
 			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());

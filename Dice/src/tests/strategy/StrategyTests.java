@@ -14,20 +14,20 @@ public class StrategyTests {
 	
 	public static void test() {
 		GameObject opponentDefender = new GameObject(0, 0, 0.0);
-		GameObject ourAttacker = new GameObject(0, 0, 0.0);
+		GameObject ourAttacker = new GameObject(1, 1, 0.0);
 		GameObject opponentAttacker = new GameObject(0, 0, 0.0);
 		GameObject ourDefender = new GameObject(0, 0, 0.0);
-		GameObject ball = new GameObject(0, 0, 0.0);
+		GameObject ball = new GameObject(1, 2, 0.0);
 		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
 		
 		RobotCommunicator attackerComms = new MockRobotCommunicator();
-		attackerComms.init(RobotType.ATTACKER);
+		attackerComms.init(RobotType.ATTACKER, null);
 		
 		RobotCommunicator defenderComms = new MockRobotCommunicator();
-		defenderComms.init(RobotType.DEFENDER);		
+		defenderComms.init(RobotType.DEFENDER, null);		
 		
 		StrategyEvaluator strat = new StrategyEvaluator();
-		strat.setType(StrategyType.MATCH);
+		strat.setType(StrategyType.M3_ATTACKER);
 		strat.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strat.setCommunicator(RobotType.DEFENDER, defenderComms);
 		strat.onNewState(state);

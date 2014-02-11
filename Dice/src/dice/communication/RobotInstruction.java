@@ -11,9 +11,22 @@ public class RobotInstruction {
 	private byte[] instruction;
 	private RobotCommunicationCallback callback;
 	
-	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3, RobotCommunicationCallback callback) {
-		this.callback = callback;
+
+	public static RobotInstruction CreateMoveTo(long angle, byte distance) {
+		byte angleUpper = (byte)(angle / 10);
+		byte angleLower = (byte)(angle % 10);
 		
+		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, distance);
+	}
+	
+	public static RobotInstruction CreateShootTo(long angle) {
+		byte angleUpper = (byte)(angle / 10);
+		byte angleLower = (byte)(angle % 10);
+		
+		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, (byte)0);
+	}
+	
+	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3) {
 		// Position 0 in the instruction is reserved for the unique id of this instruction
 		this.instruction = new byte[RobotInstructions.LENGTH];
 		this.instruction[1] = instructionType;
@@ -28,6 +41,10 @@ public class RobotInstruction {
 	
 	public RobotCommunicationCallback getCallback() {
 		return callback;
+	}
+	
+	public void setCallback(RobotCommunicationCallback callback) {
+		this.callback = callback;
 	}
 	
 	@Override

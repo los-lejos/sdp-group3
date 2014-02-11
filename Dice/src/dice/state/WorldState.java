@@ -1,5 +1,6 @@
 package dice.state;
 
+import java.security.InvalidParameterException;
 
 /** The class that will contain all information about the
  * current state of the game.
@@ -20,6 +21,11 @@ public class WorldState {
     	OUR_ATTACKER,
     	OPP_DEFENDER,
     	OPP_ATTACKER
+    }
+
+    public enum Side {
+        LEFT,
+        RIGHT
     }
 
     private GameObject opponentDefender;
@@ -44,6 +50,12 @@ public class WorldState {
     private double width;
 
     private BallPossession possession;
+
+    // we are LEFT if our defender is on the left.
+    private Side ourSide;
+
+    private Goal leftGoal;
+    private Goal rightGoal;
     
     // Utility to create and return a new WorldState
     public static WorldState init() {
@@ -55,6 +67,42 @@ public class WorldState {
 		return new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
     }
 
+    public void updateState(Vector2 a, double aAngle, Vector2 b, double bAngle,
+    		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
+        System.out.println("setting opponent defender pos: ("
+            + String.valueOf(a.X) + ","
+            + String.valueOf(a.Y) + ")");
+        opponentDefender.setPos(a);
+        opponentDefender.setRotation(aAngle);
+        
+        ourAttacker.setPos(b);
+        System.out.println("setting our attacker pos: ("
+            + String.valueOf(b.X) + ","
+            + String.valueOf(b.Y) + ")");
+        ourAttacker.setRotation(bAngle);
+        
+        opponentAttacker.setPos(c);
+        System.out.println("setting opponent attacker pos: ("
+            + String.valueOf(c.X) + ","
+            + String.valueOf(c.Y) + ")");
+        opponentAttacker.setRotation(cAngle);
+        
+        ourDefender.setPos(d);
+        System.out.println("setting our defender pos: ("
+            + String.valueOf(d.X) + ","
+            + String.valueOf(d.Y) + ")");
+        ourDefender.setRotation(dAngle);
+
+        ball.setPos(ball);
+        System.out.println("setting ball pos: ("
+            + String.valueOf(ball.X) + ","
+            + String.valueOf(ball.Y) + ")");
+    }
+
+    public void setSide(Side side) {
+        this.ourSide = side;
+    }
+
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
@@ -64,6 +112,8 @@ public class WorldState {
         this.ourDefender = ourDefender;
         this.ourAttacker = ourAttacker;
         this.ball = ball;
+
+        this.ourSide = ourSide;
     }
 
     // do this once at the beginning, so we have an "accurate"
@@ -77,49 +127,92 @@ public class WorldState {
         this.end = end;
     }
 
-    // pitch geometry getters
-    public double getOrigin() {
-    	return origin;
-    }
+    // 0-3 left to right on vision
+    public PitchZone zoneFromNumber(int number)
+            throws InvalidParameterException {
+        PitchZone result;
+        
+        if (ourSide == Side.LEFT) {
+            switch (number) {
+                case 0:
+                    result = PitchZone.OUR_DEFEND_ZONE;
+                    break;
+                case 1:
+                    result = PitchZone.OPP_ATTACK_ZONE;
+                    break;
+                case 2:
+                    result = PitchZone.OUR_ATTACK_ZONE;
+                    break;
+                case 3:
+                    result = PitchZone.OPP_DEFEND_ZONE;
+                    break;
+                default:
+                    throw new InvalidParameterException("Number must "
+                        + "be between 0 and 3");
+            }
 
-    public double getFirstDivision() {
-    	return firstDivision;
-    }
+        } else {
+            switch (number) {
+                case 0:
+                    result = PitchZone.OPP_DEFEND_ZONE;
+                    break;
+                case 1:
+                    result = PitchZone.OUR_ATTACK_ZONE;
+                    break;
+                case 2:
+                    result = PitchZone.OPP_ATTACK_ZONE;
+                    break;
+                case 3:
+                    result = PitchZone.OUR_DEFEND_ZONE;
+                    break;
+                default:
+                    throw new InvalidParameterException("Number must "
+                        + "be between 0 and 3");
+            }
+        }
 
-    public double getSecondDivision() {
-    	return secondDivision;
+        return result;
     }
-
-    public double getThirdDivision() {
-    	return thirdDivision;
-    }
-
-    public double getEnd() {
-    	return end;
-    }
-
 
     // pitch cell centers
     public Vector2 getCellCenter(PitchZone zone) {
         double y = width / 2.0;
         double x;
 
-        switch (zone) {
-            case OUR_DEFEND_ZONE:
-                x = origin + firstDivision / 2.0;
-                break;
-            case OPP_ATTACK_ZONE:
-                x = firstDivision + secondDivision / 2.0;
-                break;
-        	case OUR_ATTACK_ZONE:
-                x = secondDivision + thirdDivision / 2.0;
-                break;
-            case OPP_DEFEND_ZONE:
-                x = thirdDivision + end / 2.0;
-                break;
-            default:
-                x = -1;
-
+        if (ourSide == Side.LEFT) {
+            switch (zone) {
+                case OUR_DEFEND_ZONE:
+                    x = origin + firstDivision / 2.0;
+                    break;
+                case OPP_ATTACK_ZONE:
+                    x = firstDivision + secondDivision / 2.0;
+                    break;
+                case OUR_ATTACK_ZONE:
+                    x = secondDivision + thirdDivision / 2.0;
+                    break;
+                case OPP_DEFEND_ZONE:
+                    x = thirdDivision + end / 2.0;
+                    break;
+                default:
+                    x = -1;
+            }
+        } else {
+            switch (zone) {
+                case OPP_DEFEND_ZONE:
+                    x = origin + firstDivision / 2.0;
+                    break;
+                case OUR_ATTACK_ZONE:
+                    x = firstDivision + secondDivision / 2.0;
+                    break;
+                case OPP_ATTACK_ZONE:
+                    x = secondDivision + thirdDivision / 2.0;
+                    break;
+                case OUR_DEFEND_ZONE:
+                    x = thirdDivision + end / 2.0;
+                    break;
+                default:
+                    x = -1;
+            }
         }
 
         return new Vector2(x, y);
@@ -147,8 +240,44 @@ public class WorldState {
     	return ball;
     }
 
+    public PitchZone getBallZone() {
+        PitchZone ballZone;
+        double ballX = ball.getPos().X;
+
+        if (ballX >= origin && ballX <= firstDivision)
+            ballZone = PitchZone.OUR_DEFEND_ZONE;
+        else if (ballX <= secondDivision)
+            ballZone = PitchZone.OPP_ATTACK_ZONE;
+        else if (ballX <= thirdDivision)
+            ballZone = PitchZone.OUR_ATTACK_ZONE;
+        else if (ballX <= end)
+            ballZone = PitchZone.OPP_DEFEND_ZONE;
+        else
+            return null;
+        
+        return ballZone;
+    }
+
     public BallPossession getBallPossession() {
     	return possession;
+    }
+
+    public void setBallPossession(BallPossession newPossession) {
+        this.possession = newPossession;
+    }
+
+    public Goal getOurGoal() {
+        if (ourSide == Side.LEFT)
+            return leftGoal;
+        else
+            return rightGoal;
+    }
+
+    public Goal getOppGoal() {
+        if (ourSide == Side.LEFT)
+            return rightGoal;
+        else
+            return leftGoal;
     }
 
 }

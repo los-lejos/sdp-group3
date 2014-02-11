@@ -1,6 +1,5 @@
 package dice.strategy;
 
-import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
@@ -11,31 +10,13 @@ import dice.state.WorldState;
  */
 
 public abstract class StrategyAction implements Comparable<StrategyAction>  {
-	
-	private RobotCommunicationCallback callback;
-	
-	private boolean completed = false;
-	
+
 	private int cachedUtility = 0;
 	
 	protected RobotType targetRobot;
 	
 	public StrategyAction(RobotType targetRobot) {
 		this.targetRobot = targetRobot;
-		
-		callback = new RobotCommunicationCallback() {
-			public void onError() {
-				completed = true;
-			}
-			
-			public void onTimeout() {
-				completed = true;
-			}
-			
-			public void onDone() {
-				completed = true;
-			}
-		};
 	}
 
 	public abstract boolean isPossible(WorldState state);
@@ -56,14 +37,6 @@ public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	
 	public int getCachedUtility() {
 		return this.cachedUtility;
-	}
-	
-	public RobotCommunicationCallback getCallback() {
-		return callback;
-	}
-	
-	public boolean isCompleted() {
-		return completed;
 	}
 
 	@Override

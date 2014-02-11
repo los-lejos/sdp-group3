@@ -8,9 +8,11 @@ import java.util.Arrays;
 import dice.communication.BluetoothRobotCommunicator;
 import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
+import dice.communication.RobotEventListener;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.state.WorldState.BallPossession;
 import dice.strategy.StrategyEvaluator;
 import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
@@ -35,12 +37,45 @@ public class Main {
 	private StrategyEvaluator strategy;
 	private WorldState worldState;
 	private SocketVisionReader visionReader;
+	
+	private RobotEventListener attackerEventListener = new RobotEventListener() {
+		@Override
+		public void onBallCaught() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.OUR_ATTACKER);
+			}
+		}
+
+		@Override
+		public void onBallReleased() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.NONE);
+			}
+		}
+	};
+	
+	private RobotEventListener defenderEventListener = new RobotEventListener() {
+		@Override
+		public void onBallCaught() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.OUR_DEFENDER);
+			}
+		}
+
+		@Override
+		public void onBallReleased() {
+			synchronized(worldState) {
+				worldState.setBallPossession(BallPossession.NONE);
+			}
+		}
+	};
 
 	public void init() {
 		Log.init();
 		br = new BufferedReader(new InputStreamReader(System.in));
 		
 		worldState = WorldState.init();
+        worldState.setSide(WorldState.Side.LEFT);
 		this.attackerComms = new BluetoothRobotCommunicator();
 		this.defenderComms = new BluetoothRobotCommunicator();
 
@@ -109,9 +144,9 @@ public class Main {
 		
 		if(type != null) {
 			if(type == RobotType.ATTACKER) {
-				this.attackerComms.init(RobotType.ATTACKER);
+				this.attackerComms.init(RobotType.ATTACKER, this.attackerEventListener);
 			} else {
-				this.defenderComms.init(RobotType.DEFENDER);
+				this.defenderComms.init(RobotType.DEFENDER, this.defenderEventListener);
 			}
 		}
 	}
@@ -143,7 +178,8 @@ public class Main {
 				}
 			};
 			
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3, callback);
+			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3);
+			instruction.setCallback(callback);
 			
 			if(type == RobotType.ATTACKER) {
 				this.attackerComms.sendInstruction(instruction);
@@ -173,17 +209,17 @@ public class Main {
 		
 		try {
 			Process p = Runtime.getRuntime().exec(pythonCmd);
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			//BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			//BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
 			// read the output
-			while ((s = stdInput.readLine()) != null) {
-				Log.logError(s);
-			}
+			//while ((s = stdInput.readLine()) != null) {
+			//	Log.logError(s);
+			//}
 			// read any errors
-			while ((s = stdError.readLine()) != null) {
-				Log.logError(s);
-			}
+			//while ((s = stdError.readLine()) != null) {
+			//	Log.logError(s);
+			//}
 			
 		} catch (IOException e) {
 			Log.logError("exception occured");

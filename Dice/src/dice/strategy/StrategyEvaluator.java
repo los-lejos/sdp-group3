@@ -46,15 +46,13 @@ public class StrategyEvaluator {
 		
 		if(this.type == StrategyType.MATCH) {
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
-			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
-			
-		} else if(this.type == StrategyType.M3_DEFENDER) {
-			
-		}
+			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
+			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		} 
 	}
 	
 	private void resetDefenderActions() {
@@ -62,13 +60,12 @@ public class StrategyEvaluator {
 		
 		if(this.type == StrategyType.MATCH) {
 			defender.addAction(new BlockAction(RobotType.DEFENDER));
-			defender.addAction(new InterceptAction(RobotType.DEFENDER));
+			defender.addAction(new SaveAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
-		} else if(this.type == StrategyType.M3_ATTACKER) {
-			
 		} else if(this.type == StrategyType.M3_DEFENDER) {
-			
+			defender.addAction(new SaveAction(RobotType.DEFENDER));
+
 		}
 	}
 	
@@ -101,10 +98,6 @@ public class StrategyEvaluator {
 		
 		// Action overrides	
 		// if defender is passing, attacker needs to receive
-//		if (bestDefenderAction != null && bestDefenderAction instanceof PassAction) {
-//			attackerOverride = true;
-//			bestAttackerAction = new RecievePassAction(RobotType.ATTACKER);
-//		}
 		
 		
 		// Check if we should send actions to the robots

@@ -1,37 +1,47 @@
 package dice.strategy;
 
-import shared.RobotInstructions;
+
+
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.Vector2;
 import dice.state.WorldState;
 
-/**
- * @author Joris S. Urbaitis
+/*
+ * @author Sam Stern
+ * 
+ * extrapolate position of the ball and move to that position
  */
 
 public class InterceptAction extends StrategyAction {
-
-	private byte x, y;
+	
+	Vector2 whereToIntercept;
+	
 	
 	public InterceptAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 
+	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
+		whereToIntercept  = StratMaths.whereToIntercept(this.getTargetObject(state), state.getBall());
+		return StratMaths.canReach(whereToIntercept, this.getTargetObject(state));
 	}
-	
-	public int calculateUtility(WorldState state) {
-		return 0;
+
+	@Override
+	protected int calculateUtility(WorldState state) {
+		if (StratMaths.willCollideWithBall(getTargetObject(state))) {
+			return 0;
+		} else {
+			return 2;
+		}
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return new RobotInstruction(
-				RobotInstructions.MOVE_TO,
-				this.x,
-				this.y,
-				(byte) 0,
-				this.getCallback());
+		return RobotInstruction.CreateMoveTo(
+				StratMaths.cartesianToPolarTheta(whereToIntercept),
+				StratMaths.cartestanToPolarR(whereToIntercept));
 	}
+
 }
