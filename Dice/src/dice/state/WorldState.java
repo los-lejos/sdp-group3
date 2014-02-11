@@ -1,6 +1,5 @@
 package dice.state;
 
-
 /** The class that will contain all information about the
  * current state of the game.
  * @author Craig Wilkinson
@@ -82,7 +81,6 @@ public class WorldState {
         ball.setPos(ball);
     }
 
-
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
@@ -97,7 +95,7 @@ public class WorldState {
     // do this once at the beginning, so we have an "accurate"
     // representation of the pitch divisions (the pitch may be nudged
     // slightly).
-    public void calibratePitch(Line top, Line topRight, Line right
+    public void calibratePitch(Line top, Line topRight, Line right,
                                Line bottomRight, Line bottom,
                                Line bottomLeft, Line left, Line topLeft) {
         this.top = top;
@@ -157,7 +155,6 @@ public class WorldState {
 
         return new Vector2(x, y);
     }
-
     
     // getters for the various robots and ball
     public GameObject getOpponentDefender() {
@@ -204,5 +201,13 @@ public class WorldState {
 
     public void setBallPossession(BallPossession newPossession) {
         this.possession = newPossession;
+    }
+
+    public Line getTopLine() {
+        return top;
+    }
+
+    public Line getBottomLine() {
+        return bottom;
     }
 }
