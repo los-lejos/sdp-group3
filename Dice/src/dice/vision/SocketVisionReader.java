@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 import dice.Log;
 import dice.state.Vector2;
@@ -134,14 +136,29 @@ public class SocketVisionReader {
                 
                 this.strategy.onNewState(this.world);
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
-                /*double origin = Double.parseDouble[tokens[1]);
-                double first = Double.parseDouble[tokens[1]);
-                double second = Double.parseDouble[tokens[1]);
-                double third = Double.parseDouble[tokens[1]);
-                double end = Double.parseDouble[tokens[1]);
-				
-				//TODO vision sends different data from this method, so need to sync
-				world.calibratePitch(origin, first, second, third, end);*/
+                List<Vector2> points = new ArrayList<Vector2>();
+
+                for (int i = 0; i < 8; i++) {
+                    int j = i * 2;
+                    double x = Double.parseDouble(tokens[j+1]);
+                    double y = World.convertYValue(Double.parseDouble(tokens[j+2]));
+                    Vector2 point = new Vector2(x,y);
+                    point.convertYCoordinates();
+                    points.add(point);
+                }
+
+                Line top = new BoundedLine(points.get(0), points.get(1));
+                Line topRight = new BoundedLine(points.get(1), points.get(2));
+                Line right = new BoundedLine(points.get(2), points.get(3));
+                Line bottomRight = new BoundedLine(points.get(3), points.get(4));
+                Line bottom = new BoundedLine(points.get(4), points.get(5));
+                Line bottomLeft = new BoundedLine(points.get(5), points.get(6));
+                Line left = new BoundedLine(points.get(6), points.get(7));
+                Line topLeft = new BoundedLine(points.get(7), points.get(0));
+
+                // set the points around the pitch
+				world.calibratePitch(top, topRight, right, bottomRight,
+                                     bottom, bottomLeft, left, topLeft);
 			}
 			// We probably need this, but don't think vision is sending this right now
 			//else if (tokens[0].equals(GOAL_POS_BIT)) {

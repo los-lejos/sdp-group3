@@ -116,7 +116,7 @@ class Vision:
         self.preprocessor.set_next_pitch_corner(where)
 
         if self.preprocessor.has_pitch_size:
-           #print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
+            #print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
             self.output_pitch_size()
             self.gui.set_show_mouse(False)
             self.gui.update_layer('corner', None)
@@ -124,10 +124,11 @@ class Vision:
             self.gui.draw_crosshair(where, 'corner')
 
     def output_pitch_size(self):
-        f = open('pitch_size', 'w')
-        f.write('{0}'.format(self.preprocessor.pitch_points))
-        f.close()
-        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.preprocessor.pitch_points))
+        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.preprocessor.pitch_points_string))
+        #f = open('pitch_size', 'w')
+        #f.write('{0}'.format(self.preprocessor.pitch_points_string))
+        #f.close()
+        
 
     def output_entities(self, entities):
 
