@@ -124,10 +124,10 @@ class Vision:
             self.gui.draw_crosshair(where, 'corner')
 
     def output_pitch_size(self):
-
-        self.send('{0} {1} {2} \n'.format(PITCH_SIZE_BIT,
-                                          self.preprocessor.pitch_size[0],
-                                          self.preprocessor.pitch_size[1]))
+        f = open('pitch_size', 'w')
+        f.write('{0}'.format(self.preprocessor.pitch_points))
+        f.close()
+        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.preprocessor.pitch_points))
 
     def output_entities(self, entities):
 

@@ -12,6 +12,8 @@ Preprocesses the frame (cropping and scaling).
 
 import os
 import cv
+import math
+import sys
 from SimpleCV import Image
 from operator import sub
 import util
@@ -24,6 +26,9 @@ class Preprocessor:
 
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
         self._crop_rect = None
+        self._corner_point = None
+        self.pitch_points = []
+        self._pitch = pitch_num
 
         if not reset_pitch_size:
             self.__load_pitch_size()
@@ -35,10 +40,10 @@ class Preprocessor:
             self.has_pitch_size = True
 
     def __load_pitch_size(self):
-        self._crop_rect = util.load_from_file(self._path_pitch_size)
+        self._crop_rect, self.pitch_points = util.load_from_file(self._path_pitch_size)
 
     def __save_pitch_size(self):
-        util.dump_to_file(self._crop_rect, self._path_pitch_size)
+        util.dump_to_file((self._crop_rect, self.pitch_points), self._path_pitch_size)
 
     def preprocess(self, frame, scale):
         
@@ -50,22 +55,75 @@ class Preprocessor:
 
         assert len(point) == 2, "set_next_pitch_corner takes a tuple (x, y)"
 
-        length = len(self._crop_rect)
+        length_rect = len(self._crop_rect)
 
-        if length == 0:
+        if length_rect == 0:
             self._crop_rect.extend(point)
-        elif length == 2:
-            next = map(sub, point, self._crop_rect)
-            self.has_pitch_size = True
-            self._crop_rect.extend(next)
-            self.__save_pitch_size()
-        else:
             return
-        print "Cropped rectangle {0}".format(self._crop_rect)
+        elif length_rect == 2:
+            next = map(sub, point, self._crop_rect)
+            self._crop_rect.extend(next)
+            return
+
+        if self._corner_point is None and len(self.pitch_points) < 8:
+            self._corner_point = point
+        elif not self._corner_point is None and len(self.pitch_points) < 8:
+            p1, p2 = self.get_corner_points(self._corner_point, point, self._crop_rect)
+            self.pitch_points.extend((p1, p2))
+            self._corner_point = None
+        if len(self.pitch_points) == 8:
+            self.has_pitch_size = True
+            self.__save_pitch_size()
+            print "Pitch corners {0}".format(self.pitch_points)
 
     @property
     def pitch_size(self):
         if not self.has_pitch_size:
             return None
         return (self._crop_rect[2], self._crop_rect[3])
+
+    def get_corner_points(self, p1, p2, crop_rect):
+
+        w = crop_rect[2]
+        h = crop_rect[3]
+
+        x1 = p1[0] - crop_rect[0]
+        y1 = p1[1] - crop_rect[1]
+
+        x2 = p2[0] - crop_rect[0]
+        y2 = p2[1] - crop_rect[1]
+        
+        a = (y1 - y2)/float((x1 - x2))
+        b = y1 - a * x1
+        rect_corners = [(0, (0, 0)), (1, (w - 1, 0)), (2, (0, h - 1)), (3, (w - 1, h - 1))]
+        distances = map(lambda (i, x): (i, self.point_to_line(x, (a, b))), rect_corners)
+        corner_i, _ = reduce(lambda x, y: x if x[1] < y[1] else y, distances, (-1, sys.maxint))
+        if corner_i == 0:
+            p1 = (0, b)
+            p2 = ((0 - b)/a, 0)
+        elif corner_i == 1:
+            p1 = ((0 - b)/a, 0)
+            p2 = (w - 1, a * (w - 1) + b)
+        elif corner_i == 2:
+            p1 = (0, b)
+            p2 = ((h - 1 - b)/a, h - 1)
+        elif corner_i == 3:
+            p1 = ((h - 1 - b)/a , h - 1)
+            p2 = (w - 1, a * (w - 1) + b)
+        else:
+            print 'Unexpected corner index.'
+        p1x = int((float(p1[0])/w)*580)
+        p1y = int((float(p1[1])/h)*320)
+        p2x = int((float(p2[0])/w)*580)
+        p2y = int((float(p2[1])/h)*320)
+        f = open('corners', 'w')
+        f.write('{0} {1} {2}\n'.format(corner_i, (p1x, p1y), (p2x, p2y)))
+        f.close()
+        return ((p1x, p1y), (p2x, p2y))
+
+    def point_to_line(self, p, fn):
+        x, y = p
+        a, b = fn
+        d = abs(y - a * x - b)/math.sqrt(a * a + 1)
+        return d
 
