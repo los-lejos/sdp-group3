@@ -40,7 +40,9 @@ class Preprocessor:
             self.has_pitch_size = True
 
     def __load_pitch_size(self):
-        self._crop_rect, self.pitch_points = util.load_from_file(self._path_pitch_size)
+        things = util.load_from_file(self._path_pitch_size)
+        if not things is None:
+            self._crop_rect, self.pitch_points = things
 
     def __save_pitch_size(self):
         util.dump_to_file((self._crop_rect, self.pitch_points), self._path_pitch_size)
@@ -72,6 +74,7 @@ class Preprocessor:
             self.pitch_points.extend((p1, p2))
             self._corner_point = None
         if len(self.pitch_points) == 8:
+            self.pitch_points = self.sort_points(self.pitch_points)
             self.has_pitch_size = True
             self.__save_pitch_size()
             print "Pitch corners {0}".format(self.pitch_points)
@@ -122,8 +125,13 @@ class Preprocessor:
         return ((p1x, p1y), (p2x, p2y))
 
     def point_to_line(self, p, fn):
+
         x, y = p
         a, b = fn
         d = abs(y - a * x - b)/math.sqrt(a * a + 1)
         return d
 
+    def sort_points(self, points):
+
+        sorted_points = [None, None, None, None, None, None, None, None]
+        return points
