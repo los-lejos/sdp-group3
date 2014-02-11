@@ -62,6 +62,11 @@ public class MovementThread extends Thread {
 				byte headingB = instructionParameters[1];
 				heading = (10 * headingA) + headingB;
 				distance = instructionParameters[2];
+				
+				System.out.println("MOVE_TO");
+				System.out.println("Heading: " + heading);
+				System.out.println("Distance: " + distance);
+				
 				currentState = State.MOVE_TO;
 			} else {
 				System.out.println("Error: wrong parameters for MOVE_TO");
@@ -71,6 +76,10 @@ public class MovementThread extends Thread {
 				byte headingA = instructionParameters[0];
 				byte headingB = instructionParameters[1];
 				heading = (10 * headingA) + headingB;
+				
+				System.out.println("KICK_TOWARD");
+				System.out.println("Heading: " + heading);
+				
 				currentState = State.KICK_TOWARD;
 				
 				// Notify DICE that we no longer have the ball

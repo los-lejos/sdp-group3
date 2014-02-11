@@ -38,31 +38,6 @@ public class AttackRobot extends Robot {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 	}
-
-	protected void moveTo(int heading, int distance) {
-				
-		System.out.println("Rotating " + heading + " degrees.");
-		pilot.rotate(heading, true);
-		//while (pilot.isMoving() && !interrupted);
-		pilot.travel(distance * 10, true);
-		//if (interrupted) stop();
-	}
-
-	protected void kickToward(int heading) {
-		if (this.hasBall()) {
-			kickMotor.setSpeed(kickSpeed);
-			pilot.rotate(heading, true);
-			//while (pilot.isMoving() && !interrupted);
-			//if (!interrupted) {
-				kickMotor.rotate(50, true);
-				this.hasBall = false;
-			//} else {
-				stop();
-			//+}
-		} else {
-			System.out.println("Bad KICK attempt.");
-		}
-	}
 	
 	@Override
 	protected void grab() {
