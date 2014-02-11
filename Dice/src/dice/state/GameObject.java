@@ -16,6 +16,7 @@ public class GameObject {
     private double rotation; // the rotation of the object relative
                              // to 'up' (on the camera)
 
+
     public GameObject(double xPos, double yPos, double rotation) {
     	// add the first position
     	Vector2 position = new Vector2(xPos, yPos);
@@ -82,8 +83,24 @@ public class GameObject {
         	return null;
     }
 
-    // this returns a "position" which is really just a 2D
-    // vector representing the X and Y velocities
+    // project a path based on the rotation of the object
+    // of course, this won't work for the ball. To project
+    // the ball position, you should use the velocity
+    public Path projectPath(WorldState world) {
+        Path result = new Path();
+
+        result.addPoint(getPos());
+
+        double gradient = Math.atan(getRotation() - Math.PI / 2.0);
+        Line newLine = new UnboundedLine(getPos(), gradient);
+        Vector2 intersectionPoint = newLine.intersect(world.getTopLine());
+        if (intersectionPoint == null)
+            intersectionPoint = newLine.intersect(world.getBottomLine());
+        result.addPoint(intersectionPoint);
+
+        return result;
+    }
+
     // returns null if the object hasn't travelled for more than
     // two frames
     public Vector2 getVelocity() {
@@ -128,5 +145,10 @@ public class GameObject {
     // convert radians to degrees
     public static double asDegrees(double radians) {
         return 360 * (radians / (2.0 * Math.PI));
+    }
+
+    // relative to the top of the screen
+    public double getRotation() {
+        return rotation;
     }
 }
