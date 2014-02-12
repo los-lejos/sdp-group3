@@ -20,6 +20,8 @@ __author__ = "Ingvaras Merkys"
 
 BALL = 4
 DOT = 5
+WIDTH = 580
+HEIGHT = 320
 
 class Detection:
 
@@ -40,8 +42,8 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
-        self._pitch_w = 580
-        self._pitch_h = 320
+        self._pitch_w = WIDTH
+        self._pitch_h = HEIGHT
 
     def detect_objects(self, frame, pitch_size):
 
@@ -214,8 +216,8 @@ class Entity:
                 x_frame = x_local + int(areas[which][0]*self._pitch_w*scale)
                 self._frame_coords = (x_frame, y_local)
                 self._colour_frame_coords = self._frame_coords
-            x = int(self._frame_coords[0]/float(self._pitch_w)*580)
-            y = int(self._frame_coords[1]/float(self._pitch_h)*320)
+            x = int(self._frame_coords[0]/float(self._pitch_w)*WIDTH)
+            y = int(self._frame_coords[1]/float(self._pitch_h)*HEIGHT)
             self._coordinates = (x, y)
 
     def get_coordinates(self):
@@ -244,8 +246,8 @@ class Entity:
         self._frame_coords = (frame_x, frame_y)
         
         x, y = self.get_coordinates()
-        x = int((frame_x/float(self._pitch_w))*580)
-        y = int((frame_y/float(self._pitch_h))*580)
+        x = int((frame_x/float(self._pitch_w))*WIDTH)
+        y = int((frame_y/float(self._pitch_h))*HEIGHT)
         self._coordinates = (x, y)
 
     def set_angle(self, angle):
