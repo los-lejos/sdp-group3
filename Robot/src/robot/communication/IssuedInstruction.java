@@ -40,7 +40,9 @@ public class IssuedInstruction {
 			byte[] truncParams = Arrays.copyOfRange(parameters, 0, 2);
 			return truncParams;
 		} else if (type == RobotInstructions.LAT_MOVE_TO) {
-			return Arrays.copyOfRange(parameters, 0, 0);
+			System.out.println("Moving laterally.");
+			return Arrays.copyOfRange(parameters, 0, 1);
+			
 		} else {
 			System.out.println("Bad instruction.");
 			return parameters;
