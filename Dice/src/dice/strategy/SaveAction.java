@@ -14,16 +14,16 @@ import dice.state.WorldState;
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
 public class SaveAction extends StrategyAction {
-	
+	private WorldState world;
+	private Goal ourGoal;
 
 	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
+				
 	}
 
 	private Vector2 whereToBlock;
-	Goal ourGoal; // TODO set our Goal
-	double ourGoalX = ourGoal.getGoalCenter().X;
-
+	
 	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
@@ -31,7 +31,7 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		GameObject ball = state.getBall();
+	/*	GameObject ball = state.getBall();
 		try {
 			whereToBlock = new Vector2(ourGoalX,ball.projectPath(state).getCoordinateAtX(ourGoalX).Y);
 		} catch (InvalidPathException e) {
@@ -45,6 +45,18 @@ public class SaveAction extends StrategyAction {
 		} else {
 			return 1;
 		}
+		*/
+		ourGoal = state.getOurGoal();
+		
+		GameObject ball = state.getBall();
+		try {
+			Vector2 goalCenter = ourGoal.getGoalCenter();
+			whereToBlock = new Vector2(goalCenter.X,ball.projectPath(state).getCoordinateAtX(goalCenter.X).Y);
+		} catch (InvalidPathException e) {
+			e.printStackTrace();
+		}
+		
+		return 2;
 	}
 
 	@Override

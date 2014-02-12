@@ -26,7 +26,7 @@ public class StrategyTests {
 		RobotCommunicator defenderComms = new MockRobotCommunicator();
 		defenderComms.init(RobotType.DEFENDER, null);		
 		
-		StrategyEvaluator strat = new StrategyEvaluator();
+		StrategyEvaluator strat = new StrategyEvaluator(state);
 		strat.setType(StrategyType.M3_ATTACKER);
 		strat.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strat.setCommunicator(RobotType.DEFENDER, defenderComms);

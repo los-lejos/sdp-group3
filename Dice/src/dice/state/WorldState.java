@@ -30,6 +30,7 @@ public class WorldState {
 
     private static int PITCH_HEIGHT = 320;
     private static int PITCH_WIDTH = 580;
+    private static int GOAL_WIDTH = 200;
 
     private GameObject opponentDefender;
     private GameObject opponentAttacker;
@@ -90,8 +91,8 @@ public class WorldState {
 
     public static double convertYValue(double y) {
         double result = -1 * y + PITCH_HEIGHT;
-        if (y != -1)
-        	System.out.println("Converting from " + y + " to " + result);
+      //  if (y != -1)
+       //connect 	System.out.println("Converting from " + y + " to " + result);
     	return result;
     }
 
@@ -115,6 +116,7 @@ public class WorldState {
         
         opponentAttacker.setPos(convertYValue(c));
         opponentAttacker.setRotation(cAngle);
+        System.out.println("Pos: " + convertYValue(c).X + "," + convertYValue(c).Y);
         
         ourDefender.setPos(convertYValue(d));
         ourDefender.setRotation(dAngle);
@@ -142,9 +144,9 @@ public class WorldState {
     // do this once at the beginning, so we have an "accurate"
     // representation of the pitch divisions (the pitch may be nudged
     // slightly).
-    public void calibratePitch(Line top, Line topRight, Line right,
-                               Line bottomRight, Line bottom,
-                               Line bottomLeft, Line left, Line topLeft) {
+    public void calibratePitch(BoundedLine top, BoundedLine topRight, BoundedLine right,
+                               BoundedLine bottomRight, BoundedLine bottom,
+                               BoundedLine bottomLeft, BoundedLine left, BoundedLine topLeft) {
         this.top = top;
         this.topRight = topRight;
         this.right = right;
@@ -153,6 +155,17 @@ public class WorldState {
         this.bottomLeft = bottomLeft;
         this.left = left;
         this.topLeft = topLeft;
+        
+        // construct the goals
+        double middle = (left.getEndPoint().Y + left.getStartPoint().Y) / 2.0;
+        Vector2 goalLeftTop = new Vector2(left.getEndPoint().X, middle+GOAL_WIDTH/2.0);
+        Vector2 goalLeftBottom = new Vector2(left.getEndPoint().X, middle-GOAL_WIDTH/2.0);
+        leftGoal = new Goal(goalLeftTop, goalLeftBottom);
+        
+        middle = (right.getEndPoint().Y + right.getStartPoint().Y) / 2.0;
+        Vector2 goalRightTop = new Vector2(right.getEndPoint().X, middle+GOAL_WIDTH/2.0);
+        Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
+        rightGoal = new Goal(goalRightTop, goalRightBottom);
     }
 
     // 0-3 left to right on vision

@@ -1,0 +1,33 @@
+public class SomeThread extends Thread {
+	
+	public Process pr
+	
+	@Override
+	public void run() {
+	
+		p = Runtime.getRuntime().exec(pythonCmd);
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+		try {	
+			// read the output
+			while ((s = stdInput.readLine()) != null) {
+				Log.logError(s);
+			}
+			// read any errors
+			while ((s = stdError.readLine()) != null) {
+				Log.logError(s);
+			}
+			
+		} catch (IOException e) {
+			Log.logError("exception occured");
+			e.printStackTrace();
+		}
+}
+
+
+
+Usage:
+
+SomeThread whatevs = new SomeThread();
+whatevs.start();

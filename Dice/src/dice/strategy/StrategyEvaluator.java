@@ -28,10 +28,13 @@ public class StrategyEvaluator {
 	
 	private RobotStrategyState attacker, defender;
 	private StrategyType type;
+	private WorldState world;
 
-	public StrategyEvaluator() {
+	public StrategyEvaluator(WorldState world) {
 		attacker = new RobotStrategyState(RobotType.ATTACKER);
 		defender = new RobotStrategyState(RobotType.DEFENDER);
+		
+		this.world = world;
 	}
 	
 	public void setType(StrategyType type) {

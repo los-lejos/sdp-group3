@@ -79,8 +79,8 @@ public class Main {
 		this.attackerComms = new BluetoothRobotCommunicator();
 		this.defenderComms = new BluetoothRobotCommunicator();
 
-		strategy = new StrategyEvaluator();
-		strategy.setType(StrategyType.M3_ATTACKER);
+		strategy = new StrategyEvaluator(worldState);
+		strategy.setType(StrategyType.M3_DEFENDER);
 		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
 		
