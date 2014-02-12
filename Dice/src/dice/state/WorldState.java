@@ -91,9 +91,10 @@ public class WorldState {
 
     public static double convertYValue(double y) {
         double result = -1 * y + PITCH_HEIGHT;
-      //  if (y != -1)
-       //connect 	System.out.println("Converting from " + y + " to " + result);
-    	return result;
+        if (y != -1)
+        	return result;
+        else
+        	return y;
     }
 
     public static Vector2 convertYValue(Vector2 point) {
@@ -116,12 +117,11 @@ public class WorldState {
         
         opponentAttacker.setPos(convertYValue(c));
         opponentAttacker.setRotation(cAngle);
-        System.out.println("Pos: " + convertYValue(c).X + "," + convertYValue(c).Y);
         
         ourDefender.setPos(convertYValue(d));
         ourDefender.setRotation(dAngle);
 
-        ball.setPos(convertYValue(ball));
+        this.ball.setPos(convertYValue(ball));
     }
 
     public void setSide(Side side) {
@@ -166,6 +166,8 @@ public class WorldState {
         Vector2 goalRightTop = new Vector2(right.getEndPoint().X, middle+GOAL_WIDTH/2.0);
         Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
         rightGoal = new Goal(goalRightTop, goalRightBottom);
+        
+        System.out.println("Calibrated pitch.");
     }
 
     // 0-3 left to right on vision
