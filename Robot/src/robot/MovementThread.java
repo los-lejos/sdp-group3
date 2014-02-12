@@ -9,7 +9,7 @@ import shared.RobotInstructions;
 
 public class MovementThread extends Thread {
 	private enum State {
-		READY, MOVE_TO, KICK_TOWARD, EXIT
+		READY, MOVE_TO, KICK_TOWARD, EXIT, MOVE_LAT
 	}
 	
 	protected boolean interrupted = false;
@@ -22,6 +22,7 @@ public class MovementThread extends Thread {
 	private int heading, distance;
     private State currentState = State.READY;
     private Robot robot;
+    private String latDirection;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
     	this.conn = conn;
@@ -94,6 +95,14 @@ public class MovementThread extends Thread {
 			} else {
 				System.out.println("Error: wrong parameters for KICK_TOWARD");
 			}
+		} else if (instructionType == RobotInstructions.LAT_MOVE_TO) {
+			distance = instructionParameters[0];
+			if (distance <= 0)
+				latDirection = "left";
+			else
+				latDirection = "right";
+			
+			currentState = State.MOVE_LAT;
 		}
 	}
 	
@@ -116,6 +125,18 @@ public class MovementThread extends Thread {
 				
 				if(!interrupted) {
 					robot.move(distance);
+				} else {
+					robot.stop();
+				}
+			} else if (currentState == State.MOVE_LAT) {
+				while(robot.isMoving() && !interrupted);
+				
+				if(!interrupted) {
+					try {
+						((DefenceRobot) robot).travelSidewise(90, distance, latDirection);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				} else {
 					robot.stop();
 				}

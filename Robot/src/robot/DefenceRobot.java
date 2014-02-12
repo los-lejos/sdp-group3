@@ -133,6 +133,7 @@ public class DefenceRobot extends Robot {
 	}
 	
 	public void travelSidewise(int power, double distance, String direction) throws Exception{
+		System.out.println("Moving: " + distance + " to the " + direction);
 		lateralMotor.setPower(power); // between 0% and 100%
 		if (direction.equals("left")){
 			lateralMotor.forward();
