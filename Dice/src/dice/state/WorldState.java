@@ -89,7 +89,10 @@ public class WorldState {
     }
 
     public static double convertYValue(double y) {
-        return -1 * y + PITCH_HEIGHT;
+        double result = -1 * y + PITCH_HEIGHT;
+        if (y != -1)
+        	System.out.println("Converting from " + y + " to " + result);
+    	return result;
     }
 
     public static Vector2 convertYValue(Vector2 point) {
