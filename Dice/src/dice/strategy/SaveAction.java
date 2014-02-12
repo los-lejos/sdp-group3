@@ -8,6 +8,7 @@ import dice.state.InvalidPathException;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.state.Path;
+import dice.state.Line;
 
 /*
  * @author Sam Stern
@@ -21,34 +22,16 @@ public class SaveAction extends StrategyAction {
 
 	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
+		
+		goalCenter = new Vector2(570, 160);//ourGoal.getGoalCenter();
+
+		whereToBlock = goalCenter;
 				
 	}
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		Vector2 whereToBlock = null;
-		GameObject ball = null;
-		
-		try {
-			ball = state.getBall();
-			Path path = ball.projectPathFromVelocity(state);
-			if (path == null)
-				System.err.println("Path not initialized.");
-			goalCenter = new Vector2(570, 160);//ourGoal.getGoalCenter();
-			Vector2 result = path.getCoordinateAtX(goalCenter.X);
-			if (result != null)
-				whereToBlock = path.getCoordinateAtX(goalCenter.X);
-			System.out.println(whereToBlock.Y);
-		} catch (InvalidPathException e) {
-			System.err.println("Path not long enough yet: " + e.getMessage());
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		
-		if (ball != null && whereToBlock != null)
-			return true;
-		else
-			return false;
+		return true;
 	}
 
 	@Override
@@ -69,16 +52,33 @@ public class SaveAction extends StrategyAction {
 		}
 		
 		*/
-		System.out.println("Calculating utility.");
 		//Goal ourGoal = state.getOurGoal();
 		
-		
+		try {
+			GameObject ball = state.getBall();
+			Line line = ball.getLineFromVelocity();
+			if (line == null)
+				System.out.println("Line not initialized.");
+			else
+				whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
+			//Vector2 result = path.getCoordinateAtX(goalCenter.X);
+			//if (result != null) {
+				//whereToBlock = result;
+				//System.out.println(whereToBlock.Y);
+			//}
+			
+		//} catch (InvalidPathException e) {
+		//	System.err.println("Path not long enough yet: " + e.getMessage());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		
 		return 2;
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		System.out.println(whereToBlock.X + "," + whereToBlock.Y);
 		return RobotInstruction.CreateMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToBlock),
 				StratMaths.cartestanToPolarR(whereToBlock));

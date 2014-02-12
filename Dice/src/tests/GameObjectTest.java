@@ -11,8 +11,8 @@ public class GameObjectTest {
 
     public static void testRotations() {
         // create a couple of objects
-        GameObject test1 = new GameObject(0, 0, Math.PI/4.0);
-        GameObject test2 = new GameObject(10, 10, 0);
+        GameObject test1 = new GameObject();
+        GameObject test2 = new GameObject();
 
         Log.logError(String.valueOf(test2.getRotationRelativeTo(test1)));
     }

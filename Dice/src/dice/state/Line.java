@@ -36,5 +36,8 @@ public abstract class Line {
         return beta - alpha;
     }
 
+    public double getYValue(double x) {
+    	return getGradient() * x + getYIntersect();
+    }
 
 }

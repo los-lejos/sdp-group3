@@ -17,14 +17,11 @@ public class GameObject {
                              // to 'up' (on the camera)
 
 
-    public GameObject(double xPos, double yPos, double rotation) {
-    	// add the first position
-    	Vector2 position = new Vector2(xPos, yPos);
+    public GameObject() {
     	positions = new ArrayList<Vector2>();
-    	positions.add(position);
     	System.out.println("Initializing object.");
 
-    	this.rotation = rotation;
+    	this.rotation = 0;
     }
     
     public void setRotation(double rotation) {
@@ -184,6 +181,10 @@ public class GameObject {
     // relative to the top of the screen
     public double getRotation() {
         return rotation;
+    }
+    
+    public Line getLineFromVelocity() {
+    	return new UnboundedLine(getPos(), 0);
     }
     
 }

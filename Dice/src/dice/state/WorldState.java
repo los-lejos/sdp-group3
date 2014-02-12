@@ -74,11 +74,11 @@ public class WorldState {
     
     // Utility to create and return a new WorldState
     public static WorldState init() {
-    	GameObject opponentDefender = new GameObject(0, 0, 0.0);
-		GameObject ourAttacker = new GameObject(0, 0, 0.0);
-		GameObject opponentAttacker = new GameObject(0, 0, 0.0);
-		GameObject ourDefender = new GameObject(0, 0, 0.0);
-		GameObject ball = new GameObject(0, 0, 0.0);
+    	GameObject opponentDefender = new GameObject();
+		GameObject ourAttacker = new GameObject();
+		GameObject opponentAttacker = new GameObject();
+		GameObject ourDefender = new GameObject();
+		GameObject ball = new GameObject();
 
 		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
 

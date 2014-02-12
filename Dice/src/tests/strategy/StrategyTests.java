@@ -13,11 +13,11 @@ public class StrategyTests {
 	}
 	
 	public static void test() {
-		GameObject opponentDefender = new GameObject(0, 0, 0.0);
-		GameObject ourAttacker = new GameObject(1, 1, 0.0);
-		GameObject opponentAttacker = new GameObject(0, 0, 0.0);
-		GameObject ourDefender = new GameObject(0, 0, 0.0);
-		GameObject ball = new GameObject(1, 2, 0.0);
+		GameObject opponentDefender = new GameObject();
+		GameObject ourAttacker = new GameObject();
+		GameObject opponentAttacker = new GameObject();
+		GameObject ourDefender = new GameObject();
+		GameObject ball = new GameObject();
 		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
 		
 		RobotCommunicator attackerComms = new MockRobotCommunicator();
