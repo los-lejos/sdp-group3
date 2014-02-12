@@ -99,7 +99,6 @@ public class MovementThread extends Thread {
 			
 			System.out.println("MOVE_LAT");
 			System.out.println("Power: " + distance);
-			
 			currentState = State.MOVE_LAT;
 		}
 	}
