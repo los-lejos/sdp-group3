@@ -28,6 +28,9 @@ public class WorldState {
         RIGHT
     }
 
+    private static int PITCH_HEIGHT = 320;
+    private static int PITCH_WIDTH = 580;
+
     private GameObject opponentDefender;
     private GameObject opponentAttacker;
     private GameObject ourDefender;
@@ -38,10 +41,11 @@ public class WorldState {
     // These represent only the x values of the lines
     // it may be a better idea to use lines here, since the vision
     // may be skewed, or the table rotated slightly
-    // o----f----s----t----e
-    // |    |    |    |    |
-    // |    |    |    |    |
-    // o----f----s----t----e
+    // o----f----s----t----e ^
+    // |    |    |    |    | |
+    // |    |    |    |    | | 320
+    // o----f----s----t----e v
+    // <--------580--------> 
     private double origin;
     private double firstDivision;
     private double secondDivision;
@@ -84,40 +88,35 @@ public class WorldState {
         return result;
     }
 
+    public static double convertYValue(double y) {
+        return -1 * y + PITCH_HEIGHT;
+    }
+
+    public static Vector2 convertYValue(Vector2 point) {
+        double newY = convertYValue(point.Y);
+        return new Vector2(point.X, newY);
+    }
+
+
     public void setTop(Line line) {
         this.top = line;
     }
 
     public void updateState(Vector2 a, double aAngle, Vector2 b, double bAngle,
     		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
-        System.out.println("setting opponent defender pos: ("
-            + String.valueOf(a.X) + ","
-            + String.valueOf(a.Y) + ")");
-        opponentDefender.setPos(a);
+        opponentDefender.setPos(convertYValue(a));
         opponentDefender.setRotation(aAngle);
         
-        ourAttacker.setPos(b);
-        System.out.println("setting our attacker pos: ("
-            + String.valueOf(b.X) + ","
-            + String.valueOf(b.Y) + ")");
+        ourAttacker.setPos(convertYValue(b));
         ourAttacker.setRotation(bAngle);
         
-        opponentAttacker.setPos(c);
-        System.out.println("setting opponent attacker pos: ("
-            + String.valueOf(c.X) + ","
-            + String.valueOf(c.Y) + ")");
+        opponentAttacker.setPos(convertYValue(c));
         opponentAttacker.setRotation(cAngle);
         
-        ourDefender.setPos(d);
-        System.out.println("setting our defender pos: ("
-            + String.valueOf(d.X) + ","
-            + String.valueOf(d.Y) + ")");
+        ourDefender.setPos(convertYValue(d));
         ourDefender.setRotation(dAngle);
 
-        ball.setPos(ball);
-        System.out.println("setting ball pos: ("
-            + String.valueOf(ball.X) + ","
-            + String.valueOf(ball.Y) + ")");
+        ball.setPos(convertYValue(ball));
     }
 
     public void setSide(Side side) {

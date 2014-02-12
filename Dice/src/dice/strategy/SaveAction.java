@@ -4,6 +4,7 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Goal;
+import dice.state.InvalidPathException;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
@@ -31,7 +32,11 @@ public class SaveAction extends StrategyAction {
 	@Override
 	protected int calculateUtility(WorldState state) {
 		GameObject ball = state.getBall();
-//		whereToBlock = new Vector2(ourGoalX,ball.projectPath().getCoordinateAtX(ourGoalX).Y);
+		try {
+			whereToBlock = new Vector2(ourGoalX,ball.projectPath(state).getCoordinateAtX(ourGoalX).Y);
+		} catch (InvalidPathException e) {
+			e.printStackTrace();
+		}
 		boolean canReachBall = StratMaths.canReach(whereToBlock, getTargetObject(state));
 		if (canReachBall && !StratMaths.willCollideWithBall(getTargetObject(state))) {
 			return 2;
