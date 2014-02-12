@@ -32,7 +32,7 @@ public class Path {
         Vector2 result = null;
 
         if (points.size() > 1) {
-            for (int i = 0; i < points.size(); i++) {
+            for (int i = 0; i < points.size() - 1; i++) {
                 Vector2 first = points.get(i);
                 Vector2 second = points.get(i+1);
 

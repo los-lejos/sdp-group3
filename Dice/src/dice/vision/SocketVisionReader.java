@@ -148,14 +148,14 @@ public class SocketVisionReader {
                     points.add(point);
                 }
 
-                Line top = new BoundedLine(points.get(0), points.get(1));
-                Line topRight = new BoundedLine(points.get(1), points.get(2));
-                Line right = new BoundedLine(points.get(2), points.get(3));
-                Line bottomRight = new BoundedLine(points.get(3), points.get(4));
-                Line bottom = new BoundedLine(points.get(4), points.get(5));
-                Line bottomLeft = new BoundedLine(points.get(5), points.get(6));
-                Line left = new BoundedLine(points.get(6), points.get(7));
-                Line topLeft = new BoundedLine(points.get(7), points.get(0));
+                BoundedLine top = new BoundedLine(points.get(0), points.get(1));
+                BoundedLine topRight = new BoundedLine(points.get(1), points.get(2));
+                BoundedLine right = new BoundedLine(points.get(2), points.get(3));
+                BoundedLine bottomRight = new BoundedLine(points.get(3), points.get(4));
+                BoundedLine bottom = new BoundedLine(points.get(4), points.get(5));
+                BoundedLine bottomLeft = new BoundedLine(points.get(5), points.get(6));
+                BoundedLine left = new BoundedLine(points.get(6), points.get(7));
+                BoundedLine topLeft = new BoundedLine(points.get(7), points.get(0));
 
                 // set the points around the pitch
 				world.calibratePitch(top, topRight, right, bottomRight,

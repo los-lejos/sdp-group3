@@ -41,5 +41,13 @@ public class BoundedLine extends Line {
 
         return false;
     }
+    
+    public Vector2 getStartPoint() {
+    	return startPoint;
+    }
+    
+    public Vector2 getEndPoint() {
+    	return endPoint;
+    }
 
 }
