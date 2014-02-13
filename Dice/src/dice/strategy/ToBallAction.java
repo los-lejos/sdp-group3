@@ -46,7 +46,7 @@ public class ToBallAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 ballPos = StratMaths.relativePos(this.getTargetObject(state), state.getBall());
 		return  RobotInstruction.CreateMoveTo(
-				getRotationRelativeTo(ballPos),
+				(long) Math.round(getRotationRelativeTo(ballPos)),
 				StratMaths.cartestanToPolarR(ballPos));
 	}
 
