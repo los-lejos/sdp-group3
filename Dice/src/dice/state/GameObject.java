@@ -155,12 +155,14 @@ public class GameObject {
         }
     }
 
-
-    // code to get the rotation. Currently awaiting vision from python
-    // that contains rotation information
+    // get the rotation relative to another object in radians
     public double getRotationRelativeTo(GameObject obj) {
+        return getRotationRelativeTo(obj.getPos());
+    }
+
+    // get the rotation relative to another position in radians
+    public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
-        Vector2 otherPos = obj.getPos();
 
         double yDiff = myPos.Y - otherPos.Y;
         double xDiff = otherPos.X - myPos.X;
