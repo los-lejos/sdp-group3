@@ -111,6 +111,7 @@ public class MovementThread extends Thread {
 				
 				if(!interrupted) {
 					robot.kick();
+					while(robot.isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}
@@ -120,6 +121,7 @@ public class MovementThread extends Thread {
 				
 				if(!interrupted) {
 					robot.move(distance);
+					while(robot.isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}

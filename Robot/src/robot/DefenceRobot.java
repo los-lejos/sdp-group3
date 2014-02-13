@@ -40,8 +40,8 @@ public class DefenceRobot extends Robot {
 //    	kickSpeed = kickMotor.getMaxSpeed();
 //    	catchSpeed = kickMotor.getMaxSpeed() * 0.3f;
 //    	kickMotor.setSpeed(kickSpeed);
-		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
-		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
+		travelSpeed = pilot.getMaxTravelSpeed();
+		rotateSpeed = pilot.getMaxRotateSpeed() * 0.2;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 		lateralMotor.setPower(0);
@@ -83,7 +83,7 @@ public class DefenceRobot extends Robot {
 	@Override
 	void move(int distance) {
 		this.stopLat();
-		pilot.travel(distance * 10, true);
+		pilot.travel(distance * 30, true);  // empirical (?!)
 	}
 
 	@Override
@@ -94,14 +94,8 @@ public class DefenceRobot extends Robot {
 	
 	public void moveLat(int power) {
 		this.movingLat = true;
-		int newPower = Math.abs(power);
-		
-		if (newPower <= 100) {
-			this.lateralMotor.setPower(newPower);
-		} else {
-			System.out.println("Bad lat power value!: " + power);
-		}
-		
+		this.lateralMotor.setPower(50 * Math.abs(power));
+	
 		if (power < 0) {
 			lateralMotor.forward();
 		} else {
