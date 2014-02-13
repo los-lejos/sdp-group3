@@ -90,47 +90,24 @@ public class DefenceRobot extends Robot {
 	
 	public void moveLat(int power) {
 		this.movingLat = true;
+		int newPower = Math.abs(power);
 		
-		if (Math.abs(power) <= 100) {
-			lateralMotor.setPower(Math.abs(power));
+		if (newPower <= 100) {
+			this.lateralMotor.setPower(newPower);
 		} else {
-			System.out.println("Bad POWER value.");
-			return;
+			System.out.println("Bad lat power value!: " + power);
 		}
 		
-<<<<<<< .merge_file_9MvthU
 		if (power < 0) {
 			lateralMotor.forward();
 		} else {
 			lateralMotor.backward();
 		}
-<<<<<<< HEAD
-=======
-=======
-		
->>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
-		Thread.sleep((int) Math.round((1000 * distance) / (power * alpha)));
-		// The following is an example of "time = distance/speed". It is multiplied by 1000 because "Thread.sleep" is in milliseconds.
-		/*if (power == 100){
-			Thread.sleep((int) (distance*1000/48)); // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
-		} else if (power == 90){
-			Thread.sleep((int) (distance*1000/40.4)); // the speed of the robot (having considered its current weight) is 40.4cm/sec at 90% power									
-		} else if (power == 80){
-			Thread.sleep((int) (distance*1000/33.1)); // the speed of the robot (having considered its current weight) is 33.1cm/sec at 80% power
-		} else if (power == 70){
-			Thread.sleep((int) (distance*1000/29.8)); // the speed of the robot (having considered its current weight) is 29.8cm/sec at 70% power
-		} else {
-			System.out.println("Better stick to values of 100%, 90%, 80%, 70%");
-		}	*/		
-<<<<<<< HEAD
->>>>>>> .merge_file_fIe0uP
-=======
->>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
 	}
 	
 	public void stopLat() {
 		this.movingLat = false;
-		moveLat(0);
+		this.lateralMotor.setPower(0);
 	}
 	
 }
