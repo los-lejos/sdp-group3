@@ -104,7 +104,11 @@ public class DefenceRobot extends Robot {
 		} else {
 			lateralMotor.backward();
 		}
+<<<<<<< HEAD
 =======
+=======
+		
+>>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
 		Thread.sleep((int) Math.round((1000 * distance) / (power * alpha)));
 		// The following is an example of "time = distance/speed". It is multiplied by 1000 because "Thread.sleep" is in milliseconds.
 		/*if (power == 100){
@@ -118,7 +122,10 @@ public class DefenceRobot extends Robot {
 		} else {
 			System.out.println("Better stick to values of 100%, 90%, 80%, 70%");
 		}	*/		
+<<<<<<< HEAD
 >>>>>>> .merge_file_fIe0uP
+=======
+>>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
 	}
 	
 	public void stopLat() {
