@@ -39,50 +39,12 @@ public class DefenceRobot extends Robot {
 //    	kickSpeed = kickMotor.getMaxSpeed();
 //    	catchSpeed = kickMotor.getMaxSpeed() * 0.3f;
 //    	kickMotor.setSpeed(kickSpeed);
-//    	pilot.setTravelSpeed(travelSpeed, travelSpeed);
 		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
 		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
     }
 
-	public void moveTo(int heading, int distance) {
-		// Probably going to be...
-//		pilot.travel(distance, heading, true);
-/*		int angle;
-		
-		if (heading >= 0 && heading < 180) {
-			angle = heading;
-		} else if (heading >= 180 && heading < 360) {
-			angle = heading - 360;
-		} else {
-			angle = 0;
-			System.out.println("Bad heading value.");
-		}
-*/		
-//		System.out.println("Rotating " + angle + " degrees.");
-		System.out.println("Rotating " + heading + " degrees.");
-//		pilot.rotate(-angle, true);
-		pilot.rotate(heading);
-		//while (pilot.isMoving() && !interrupted);
-//		pilot.travel(distance * 10, true);
-		pilot.travel(distance*10);
-		//if (interrupted) stop();
-		pilot.stop();
-	}
-/*
-	protected void kickToward(int heading) {
-		// TODO how is this going to work? Look at this
-		// after robot design complete.
-		if (this.hasBall()) {
-			kickMotor.setSpeed(kickSpeed);
-			kickMotor.rotate(50);
-			this.hasBall = false;
-		} else {
-			System.out.println("Bad KICK attempt.");
-		}
-	}
-*/	
 	@Override
 	protected void grab() {
 //		if (!this.hasBall()) {
@@ -106,19 +68,6 @@ public class DefenceRobot extends Robot {
 
 	@Override
 	void rotate(int heading) {
-/*		int angle;
-		
-		if (heading >= 0 && heading < 180) {
-			angle = heading;
-		} else if (heading >= 180 && heading < 360) {
-			angle = heading - 360;
-		} else {
-			angle = 0;
-			System.out.println("Bad heading value.");
-		}
-		
-		pilot.rotate(angle, true);
-*/
 		pilot.rotate(heading);
 	}
 

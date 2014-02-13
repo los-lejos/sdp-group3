@@ -97,10 +97,6 @@ public class MovementThread extends Thread {
 			}
 		} else if (instructionType == RobotInstructions.LAT_MOVE_TO) {
 			distance = instructionParameters[0];
-			if (distance <= 0)
-				latDirection = "left";
-			else
-				latDirection = "right";
 			
 			currentState = State.MOVE_LAT;
 		}
