@@ -173,6 +173,17 @@ public class GameObject {
             return rotation - theta;
     }
 
+    // get the euclidean distance to the object
+    public double getEuclidean(GameObject obj) {
+        return getEuclidean(obj.getPos());
+    }
+
+    // get the euclidean distance from the object
+    public double getEuclidean(Vector2 position) {
+        return Math.sqrt((position.X - getPos().X) ^ 2 +
+                         (position.Y - getPos().Y) ^ 2);
+    }
+
     // convert radians to degrees
     public static double asDegrees(double radians) {
         return 360 * (radians / (2.0 * Math.PI));

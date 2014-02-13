@@ -44,10 +44,16 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		Vector2 ballPos = StratMaths.relativePos(this.getTargetObject(state), state.getBall());
+		Vector2 ballPos = state.getBall().getPos();
+        GameObject robot;
+        if (this.targetRobot == RobotType.ATTACKER)
+            robot = state.getOurAttacker();
+        else
+            robot = state.getOurDefender();
+
 		return  RobotInstruction.CreateMoveTo(
-				(long) Math.round(getRotationRelativeTo(ballPos)),
-				StratMaths.cartestanToPolarR(ballPos));
+				(long) Math.round(robot.getRotationRelativeTo(ballPos)),
+				robot.getEuclidean(ballPos));
 	}
 
 }
