@@ -21,6 +21,11 @@ public class BlockAction extends StrategyAction {
 	public BlockAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
+	
+	@Override
+	public String getActionType(){
+		return "BlockAction";
+	}
 
 	@Override
 	public boolean isPossible(WorldState state) {

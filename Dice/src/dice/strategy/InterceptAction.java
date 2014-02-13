@@ -21,6 +21,11 @@ public class InterceptAction extends StrategyAction {
 	public InterceptAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
+	
+	@Override
+	public String getActionType(){
+		return "InterceptAction";
+	}
 
 	@Override
 	public boolean isPossible(WorldState state) {

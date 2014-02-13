@@ -18,7 +18,8 @@ public abstract class StrategyAction implements Comparable<StrategyAction>  {
 	public StrategyAction(RobotType targetRobot) {
 		this.targetRobot = targetRobot;
 	}
-
+	
+	public abstract String getActionType();
 	public abstract boolean isPossible(WorldState state);
 	protected abstract int calculateUtility(WorldState state);
 	public abstract RobotInstruction getInstruction(WorldState state);

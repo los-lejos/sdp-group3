@@ -13,11 +13,17 @@ import dice.state.WorldState;
 
 public class ShootAction extends StrategyAction {
 	
+	Goal opGoal; //TODO set opponents goal
+
 	public ShootAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-
-	Goal opGoal; //TODO set opponents goal
+	
+	@Override
+	public String getActionType(){
+		return "ShootAction";
+	}
+	
 	
 	@Override
 	public boolean isPossible(WorldState state) {
