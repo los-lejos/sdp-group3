@@ -19,7 +19,6 @@ public class DefenceRobot extends Robot {
 	
 	private static final int tireDiameterMm = 48; // TODO placeholder value
 	private static final int trackWidthMm = 127;
-	private static final double alpha = 0.47;
 //	private static final NXTRegulatedMotor kickMotor = Motor.B;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
@@ -46,6 +45,7 @@ public class DefenceRobot extends Robot {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 		lateralMotor.setPower(0);
+		lateralMotor.forward();
     }
 
 	@Override
@@ -73,7 +73,11 @@ public class DefenceRobot extends Robot {
 	@Override
 	void rotate(int heading) {
 		this.stopLat();
-		pilot.rotate(heading, true);
+		if (heading >= 0 && heading <= 180) {
+			pilot.rotate(heading, true);
+		} else if (heading > 180 && heading < 360) {
+			pilot.rotate(- (heading - 180), true);
+		}
 	}
 
 	@Override

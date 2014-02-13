@@ -1,15 +1,14 @@
 package robot;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
 import lejos.nxt.UltrasonicSensor;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
-import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -76,7 +75,7 @@ public abstract class Robot {
 
 		while(arnold.isAlive()) {
 			if(currentInstruction != newInstruction) {
-				System.out.println("Getting new instruction");
+				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
 				currentInstruction = newInstruction;
 				movementThread.setInstruction(currentInstruction);
 			}
