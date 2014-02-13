@@ -12,6 +12,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 /*
  * @author Owen Gillespie
+ * @author Pete Stefanov
  */
 
 public class DefenceRobot extends Robot {
@@ -32,10 +33,10 @@ public class DefenceRobot extends Robot {
 //	private float catchSpeed;
 	private double travelSpeed;
 	private double rotateSpeed;
+	private boolean movingLat;
     
     public DefenceRobot() {
     	super(leftLightSensor, rightLightSensor, ballSensor);
-//    	pilot = new HolonomicPilot(tireDiameterMm, forwardMotor, lateralMotor);
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 //    	kickSpeed = kickMotor.getMaxSpeed();
 //    	catchSpeed = kickMotor.getMaxSpeed() * 0.3f;
@@ -44,6 +45,7 @@ public class DefenceRobot extends Robot {
 		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
+		lateralMotor.setPower(0);
     }
 
 	@Override
@@ -59,40 +61,54 @@ public class DefenceRobot extends Robot {
 
 	@Override
 	void stop() {
+		this.stopLat();
 		pilot.stop();
 	}
 
 	@Override
 	boolean isMoving() {
-		return pilot.isMoving();
+		return pilot.isMoving() || this.movingLat;
 	}
 
 	@Override
 	void rotate(int heading) {
-		pilot.rotate(heading);
+		this.stopLat();
+		pilot.rotate(heading, true);
 	}
 
 	@Override
 	void move(int distance) {
-		pilot.travel(distance*10, true);
+		this.stopLat();
+		pilot.travel(distance * 10, true);
 	}
 
 	@Override
 	void kick() {
-		
+		System.out.println("Kicking (not really)");
+		// TODO kicking
 	}
 	
-	public void travelSidewise(int power, double distance, String direction) throws Exception{
-		System.out.println("Moving: " + distance + " to the " + direction);
-		lateralMotor.setPower(power); // between 0% and 100%
-		if (direction.equals("left")){
-			lateralMotor.forward();
-		} else if (direction.equals("right")){
-			lateralMotor.backward();
+	public void moveLat(int power) {
+		this.movingLat = true;
+		
+		if (Math.abs(power) <= 100) {
+			lateralMotor.setPower(Math.abs(power));
 		} else {
-			System.out.println("Unknown direction");
+			System.out.println("Bad POWER value.");
+			return;
 		}
 		
+<<<<<<< .merge_file_9MvthU
+		if (power < 0) {
+			lateralMotor.forward();
+		} else {
+			lateralMotor.backward();
+		}
+<<<<<<< HEAD
+=======
+=======
+		
+>>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
 		Thread.sleep((int) Math.round((1000 * distance) / (power * alpha)));
 		// The following is an example of "time = distance/speed". It is multiplied by 1000 because "Thread.sleep" is in milliseconds.
 		/*if (power == 100){
@@ -106,5 +122,15 @@ public class DefenceRobot extends Robot {
 		} else {
 			System.out.println("Better stick to values of 100%, 90%, 80%, 70%");
 		}	*/		
+<<<<<<< HEAD
+>>>>>>> .merge_file_fIe0uP
+=======
+>>>>>>> 393d923e43715c5d0af4ac03405670ec691f7596
 	}
+	
+	public void stopLat() {
+		this.movingLat = false;
+		moveLat(0);
+	}
+	
 }

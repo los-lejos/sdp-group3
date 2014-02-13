@@ -8,21 +8,18 @@ import robot.communication.IssuedInstruction;
 import shared.RobotInstructions;
 
 public class MovementThread extends Thread {
-	private enum State {
+	
+	protected enum State {
 		READY, MOVE_TO, KICK_TOWARD, EXIT, MOVE_LAT
 	}
 	
-	protected boolean interrupted = false;
-	
+	private Robot robot;
+	private boolean interrupted = false;
 	private Object instructionLock = new Object();
 	private IssuedInstruction currentInstruction, newInstruction;
-	
 	private final BluetoothDiceConnection conn;
-	
 	private int heading, distance;
     private State currentState = State.READY;
-    private Robot robot;
-    private String latDirection;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
     	this.conn = conn;
@@ -31,6 +28,7 @@ public class MovementThread extends Thread {
 
     public void exit() {
     	interrupted = true;
+    	robot.setInterrupted();
     	this.currentState = State.EXIT;
     }
 
@@ -40,6 +38,7 @@ public class MovementThread extends Thread {
         	this.currentInstruction = null;
         	this.newInstruction = null;
         	this.interrupted = true;
+        	robot.setInterrupted();
     	}
     }
 	
@@ -53,7 +52,7 @@ public class MovementThread extends Thread {
 		}
 	}
 	
-	private void handleInstruction(IssuedInstruction instruction) {
+	protected void handleInstruction(IssuedInstruction instruction) {
 		byte instructionType = instruction.getType();
 		byte[] instructionParameters = instruction.getParameters();
 		
@@ -98,11 +97,13 @@ public class MovementThread extends Thread {
 		} else if (instructionType == RobotInstructions.LAT_MOVE_TO) {
 			distance = instructionParameters[0];
 			
+			System.out.println("MOVE_LAT");
+			System.out.println("Power: " + distance);
+			
 			currentState = State.MOVE_LAT;
 		}
 	}
 	
-	@Override
 	public void run() {
 		while(currentState != State.EXIT) {
 			if(currentState == State.KICK_TOWARD) {
@@ -110,7 +111,6 @@ public class MovementThread extends Thread {
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
-					// kick
 					robot.kick();
 				} else {
 					robot.stop();
@@ -125,14 +125,8 @@ public class MovementThread extends Thread {
 					robot.stop();
 				}
 			} else if (currentState == State.MOVE_LAT) {
-				while(robot.isMoving() && !interrupted);
-				
 				if(!interrupted) {
-					try {
-						((DefenceRobot) robot).travelSidewise(90, distance, latDirection);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					robot.moveLat(distance);
 				} else {
 					robot.stop();
 				}

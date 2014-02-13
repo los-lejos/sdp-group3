@@ -77,4 +77,9 @@ public class AttackRobot extends Robot {
 		this.hasBall = false;
 	}
 
+	@Override
+	void moveLat(int power) {
+		System.out.println("MOVE_LAT not implemented for attacker.");
+	}
+
 }
