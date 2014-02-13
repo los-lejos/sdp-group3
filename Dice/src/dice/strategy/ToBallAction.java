@@ -4,6 +4,7 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.GameObject;
 
 
 /*
@@ -53,7 +54,7 @@ public class ToBallAction extends StrategyAction {
 
 		return  RobotInstruction.CreateMoveTo(
 				(long) Math.round(robot.getRotationRelativeTo(ballPos)),
-				robot.getEuclidean(ballPos));
+				(byte) Math.round(robot.getEuclidean(ballPos)));
 	}
 
 }

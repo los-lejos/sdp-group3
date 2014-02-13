@@ -180,8 +180,8 @@ public class GameObject {
 
     // get the euclidean distance from the object
     public double getEuclidean(Vector2 position) {
-        return Math.sqrt((position.X - getPos().X) ^ 2 +
-                         (position.Y - getPos().Y) ^ 2);
+        return Math.sqrt(Math.pow(position.X - getPos().X, 2) +
+                         Math.pow(position.Y - getPos().Y,2));
     }
 
     // convert radians to degrees
