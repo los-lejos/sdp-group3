@@ -19,6 +19,7 @@ public class DefenceRobot extends Robot {
 	
 	private static final int tireDiameterMm = 48; // TODO placeholder value
 	private static final int trackWidthMm = 127;
+	private static final double alpha = 0.47;
 //	private static final NXTRegulatedMotor kickMotor = Motor.B;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
@@ -97,11 +98,27 @@ public class DefenceRobot extends Robot {
 			return;
 		}
 		
+<<<<<<< .merge_file_9MvthU
 		if (power < 0) {
 			lateralMotor.forward();
 		} else {
 			lateralMotor.backward();
 		}
+=======
+		Thread.sleep((int) Math.round((1000 * distance) / (power * alpha)));
+		// The following is an example of "time = distance/speed". It is multiplied by 1000 because "Thread.sleep" is in milliseconds.
+		/*if (power == 100){
+			Thread.sleep((int) (distance*1000/48)); // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		} else if (power == 90){
+			Thread.sleep((int) (distance*1000/40.4)); // the speed of the robot (having considered its current weight) is 40.4cm/sec at 90% power									
+		} else if (power == 80){
+			Thread.sleep((int) (distance*1000/33.1)); // the speed of the robot (having considered its current weight) is 33.1cm/sec at 80% power
+		} else if (power == 70){
+			Thread.sleep((int) (distance*1000/29.8)); // the speed of the robot (having considered its current weight) is 29.8cm/sec at 70% power
+		} else {
+			System.out.println("Better stick to values of 100%, 90%, 80%, 70%");
+		}	*/		
+>>>>>>> .merge_file_fIe0uP
 	}
 	
 	public void stopLat() {

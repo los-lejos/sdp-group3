@@ -10,7 +10,7 @@ import java.lang.Math;
  */
 public class GameObject {
     // allow for a variation in possible position changes
-    private static double DELTA = 200; 
+    private static double DELTA = 3; 
 
     private List<Vector2> positions;
     private double rotation; // the rotation of the object relative
@@ -42,27 +42,26 @@ public class GameObject {
 
     // decides if a new position for the object is viable given its
     // past positions
-    private boolean validatePos(Vector2 position) {
+    private boolean validatePos(Vector2 newPosition) {
         // only do the check if the new position isn't already
         // invalid
     	if (positions.size() > 2) {
-	        if (position.X == -1) {
+	        if (newPosition.X == -1) {
 	            return false;
 	        } else {
-	        	return true;
-	            /*Vector2 velocity = this.getVelocity();
+	            Vector2 velocity = this.getVelocity();
 	            if (velocity != null) {
-	                double dt = position.T - getPos().T;
-	
+
 	                // run the projection function to get an estimate
 	                // of the new position
-	                double newX = position.X + getVelocity().X;
-	                double newY = position.Y + getVelocity().Y;
+	                double newX = newPosition.X + getVelocity().X;
+	                double newY = newPosition.Y + getVelocity().Y;
 	                Vector2 estimate = new Vector2(newX, newY);
-	                double xDiff = Math.abs(position.X - estimate.X);
-	                double yDiff = Math.abs(position.Y - estimate.Y);
+	                double xDiff = Math.abs(newPosition.X - estimate.X);
+	                double yDiff = Math.abs(newPosition.Y - estimate.Y);
 	                if (xDiff > Math.abs(velocity.X) * DELTA ||
 	                    yDiff > Math.abs(velocity.Y) * DELTA) {
+                        System.err.println("Unreasonable position. Currently at " + String.valueOf(getPos().X) + "," + String.valueOf(getPos().Y) + " and trying to update position to " + String.valueOf(newPosition.X) + "," + String.valueOf(newPosition.Y) + ".");
 	                    return false;
 	                } else {
 	                    return true;
@@ -70,7 +69,8 @@ public class GameObject {
 	            } else {
 	                // if the object is "new", then assume the position makes
 	                // sense
-	                return true;*/
+	                return true;
+                }
 	        }
         } else {
         	return true;
@@ -144,23 +144,23 @@ public class GameObject {
             // over a time and project that forwards
             double dx = lastPos.X - nextLastPos.X;
             double dy = lastPos.Y - nextLastPos.Y;
-            double dt = lastPos.T - nextLastPos.T;
             
-            double vx = dx / dt;
-            double vy = dy / dt;
-
-            return new Vector2(vx, vy);
+            // currently just the velocity in pixels per frame.
+            // far from ideal
+            return new Vector2(dx, dy);
         } else {
             return null;
         }
     }
 
-
-    // code to get the rotation. Currently awaiting vision from python
-    // that contains rotation information
+    // get the rotation relative to another object in radians
     public double getRotationRelativeTo(GameObject obj) {
+        return getRotationRelativeTo(obj.getPos());
+    }
+
+    // get the rotation relative to another position in radians
+    public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
-        Vector2 otherPos = obj.getPos();
 
         double yDiff = myPos.Y - otherPos.Y;
         double xDiff = otherPos.X - myPos.X;
