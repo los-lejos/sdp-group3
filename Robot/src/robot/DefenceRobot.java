@@ -94,7 +94,7 @@ public class DefenceRobot extends Robot {
 	
 	public void moveLat(int power) {
 		this.movingLat = true;
-		this.lateralMotor.setPower(50 * Math.abs(power));
+		this.lateralMotor.setPower(6 * Math.abs(power) + 40);
 	
 		if (power < 0) {
 			lateralMotor.forward();
