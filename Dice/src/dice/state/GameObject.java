@@ -13,7 +13,7 @@ public class GameObject {
     private static double DELTA = 3; 
 
     private List<Vector2> positions;
-    private double rotation; // the rotation of the object relative
+    private List<Double> rotations; // the rotation of the object relative
                              // to 'up' (on the camera)
 
 
@@ -21,11 +21,11 @@ public class GameObject {
     	positions = new ArrayList<Vector2>();
     	System.out.println("Initializing object.");
 
-    	this.rotation = 0;
+    	this.rotations.add(0.0);
     }
     
     public void setRotation(double rotation) {
-    	this.rotation = rotation;
+    	this.rotations.add(rotation);
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -168,9 +168,9 @@ public class GameObject {
         double theta = Math.PI / 2.0 - Math.atan2(yDiff, xDiff);
 
         if (yDiff < 0)
-            return theta - rotation;
+            return theta - getRotation();
         else
-            return rotation - theta;
+            return getRotation() - theta;
     }
 
     // get the euclidean distance to the object
@@ -191,7 +191,7 @@ public class GameObject {
 
     // relative to the top of the screen
     public double getRotation() {
-        return rotation;
+        return rotations.get(rotations.size() - 1);
     }
     
     public Line getLineFromVelocity() {
