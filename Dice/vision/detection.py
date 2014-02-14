@@ -3,7 +3,6 @@
 
 """
 Vision subsystem for System Design Project 2014, group 3.
-Based on work by group 6, SDP 2013.
 
 Object detection class
 
@@ -15,6 +14,7 @@ import cv
 import time
 from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
 from threshold import Threshold
+from logger import Logger
 
 __author__ = "Ingvaras Merkys"
 
@@ -44,6 +44,7 @@ class Detection:
         self._pitch_num = pitch_num
         self._pitch_w = WIDTH
         self._pitch_h = HEIGHT
+        self._logger = Logger('detection_errors.log')
 
     def detect_objects(self, frame, pitch_size):
 
@@ -51,7 +52,6 @@ class Detection:
         hsv = frame.toHSV()
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
-        # TODO remove/turn off FULL image thresholding for black dots
         thresholds = [None, None, None, None, None, None]
         yellow = frame.copy()
         blue = frame.copy()
@@ -145,6 +145,38 @@ class Detection:
         """Given the coordinates of the colored part of 'i' find the dot,
         calculate the angle and update coordinates
         """
+        def average_angles(angle1, angle2):
+            x = math.cos(angle1) + math.cos(angle2)
+            y = math.sin(angle1) + math.sin(angle2)
+            return math.atan2(y, x)
+            
+        def get_quarter_d(x, y, w, h):
+            if 2*x < w - 1:
+                if 2*y < h - 1:
+                    return 3
+                else:
+                    return 0
+            else:
+                if 2*y < h - 1:
+                    return 2
+                else:
+                    return 1
+            
+        def get_quarter_a(angle):
+            if angle < 0.0:
+                angle = 2.0*math.pi + angle
+            if angle > 2.0*math.pi:
+                angle = angle - 2.0*math.pi
+            if angle >= 0.0 and angle < 0.5*math.pi:
+                return 3
+            elif angle >= 0.5*math.pi and angle < math.pi:
+                return 2
+            elif angle >= math.pi and angle < 1.5*math.pi:
+                return 1
+            elif angle >= 1.5*math.pi and angle < 2.0*math.pi:
+                return 0
+            else:
+                self._logger.log('Rubbish angle {0}.\n'.format(angle))
         radius = int(23.0*self._scale)
         x, y = entity.get_local_coords()
         # if coordinates are negative there is no object
@@ -155,6 +187,8 @@ class Detection:
         x2 = min(x + radius, image.width)
         y2 = min(y + radius, image.height)
         cropped_img = image.crop((x1, y1), (x2, y2))
+        crop_w = cropped_img.width
+        crop_h = cropped_img.height
         if cropped_img == None: return
         cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
         # set entity.rect for drawing
@@ -171,21 +205,33 @@ class Detection:
         dot_local_x = dot_x + x1
         dot_local_y = dot_y + y1
         
+        curr_angle = entity.get_angle()
+        qa = get_quarter_a(curr_angle)
+        qd = get_quarter_d(dot_x, dot_y, crop_w, crop_h)
+        if abs(qa - qd) == 2:
+            curr_angle = curr_angle + math.pi
+            entity.clarify_coords(dot_local_x, dot_local_y)
+        elif qa == qd:
+            entity.set_angle(curr_angle)
+            entity.clarify_coords(dot_local_x, dot_local_y)
+        else:
+            #ignore the dot completely
+            return
+        
         delta_x = float(abs(dot_local_x - x))
         delta_y = float(abs(dot_local_y - y))
 
         if x >= dot_local_x and y >= dot_local_y:
-            entity.set_angle(math.atan(delta_y/delta_x))
+            dot_angle = math.atan(delta_y/delta_x)
         elif x <= dot_local_x and y >= dot_local_y:
-            entity.set_angle(math.pi-math.atan(delta_y/delta_x))
+            dot_angle = math.pi-math.atan(delta_y/delta_x)
         elif x >= dot_local_x and y <= dot_local_y:
-            entity.set_angle(2*math.pi-math.atan(delta_y/delta_x))
+            dot_angle = 2*math.pi-math.atan(delta_y/delta_x)
         elif x <= dot_local_x and y <= dot_local_y:
-            entity.set_angle(1.5*math.pi-math.atan(delta_x/delta_y))
+            dot_angle = 1.5*math.pi-math.atan(delta_x/delta_y)
         else:
-            print 'wat'
-        # update coordinates of the centre of the robot
-        entity.clarify_coords(dot_local_x, dot_local_y)
+            self._logger.log('wat')
+        entity.set_angle(average_angles(curr_angle, dot_angle))
 
 class Entity:
 
@@ -207,6 +253,20 @@ class Entity:
         self.dot = None
         
         if not entity_blob is None:
+            cx, cy = entity_blob.centroid()
+            m00 = entity_blob.m00
+            mu11 = entity_blob.m11 - cx * entity_blob.m01
+            mu20 = entity_blob.m20 - cx * entity_blob.m10
+            mu02 = entity_blob.m02 - cy * entity_blob.m01
+            # Compute the blob's covariance matrix
+            # | a b |
+            # | b c |
+            a = mu20 / m00;
+            b = mu11 / m00;
+            c = mu02 / m00;
+            # Can derive the formula for the angle from the eigenvector associated with
+            # the largest eigenvalue
+            self._angle = 0.5 * math.atan2(2 * b, a - c)
             x_local, y_local = map(lambda x: int(x), entity_blob.centroid())
             self._local_coords = (x_local, y_local)
             if which == BALL:
@@ -269,8 +329,10 @@ class Entity:
             layer.circle((x, y), radius=2, filled=1)
             if self._colour_order[self.which] == 'b':
                 colour = Color.BLUE
-            else:
+            elif self._colour_order[self.which] == 'y':
                 colour = Color.YELLOW
+            else:
+                self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[self.which]))
             layer.circle((x, y), radius=int(25*self._scale), color=colour, width=2)
             angle = self.get_angle()
             if not angle is None:
