@@ -53,7 +53,7 @@ public class ToBallAction extends StrategyAction {
             robot = state.getOurDefender();
 
 		return  RobotInstruction.CreateMoveTo(
-				(long) Math.round(robot.getRotationRelativeTo(ballPos)),
+				(long) Math.round(GameObject.asDegrees(robot.getRotationRelativeTo(ballPos))),
 				(byte) Math.round(robot.getEuclidean(ballPos)));
 	}
 
