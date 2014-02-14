@@ -116,7 +116,7 @@ public class MovementThread extends Thread {
 					robot.stop();
 				}
 			} else if(currentState == State.MOVE_TO) {
-				robot.rotate(heading);
+				robot.rotate(heading * -1);
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
