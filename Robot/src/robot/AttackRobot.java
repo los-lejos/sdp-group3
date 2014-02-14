@@ -32,12 +32,13 @@ public class AttackRobot extends Robot {
 		super(leftLightSensor, rightLightSensor, ballSensor);
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 		kickSpeed = kickMotor.getMaxSpeed();
-		catchSpeed = kickMotor.getMaxSpeed() * 0.3f;
+		catchSpeed = kickMotor.getMaxSpeed() * 0.1f;
 		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
 		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
-		kickMotor.rotate(-40, true);
+		kickMotor.setSpeed(catchSpeed);
+		kickMotor.rotate(-1, true);
 	}
 	
 	@Override

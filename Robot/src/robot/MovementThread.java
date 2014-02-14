@@ -18,7 +18,7 @@ public class MovementThread extends Thread {
 	private Object instructionLock = new Object();
 	private IssuedInstruction currentInstruction, newInstruction;
 	private final BluetoothDiceConnection conn;
-	private int heading, distance, angle;
+	private int heading, distance;
     private State currentState = State.READY;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
@@ -27,9 +27,15 @@ public class MovementThread extends Thread {
     }
 
     public void exit() {
-    	interrupted = true;
-    	robot.setInterrupted();
     	this.currentState = State.EXIT;
+    	interrupted = true;
+    	try {
+			conn.closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
     }
 
     public void stopMovement() {
@@ -38,7 +44,6 @@ public class MovementThread extends Thread {
         	this.currentInstruction = null;
         	this.newInstruction = null;
         	this.interrupted = true;
-        	robot.setInterrupted();
     	}
     }
 	
@@ -101,6 +106,18 @@ public class MovementThread extends Thread {
 	}
 	
 	public void run() {
+		// Start Bluetooth
+		try {
+			conn.openConnection();
+		} catch (BluetoothCommunicationException e1) {
+			// This is likely a timeout
+			// System.out.println("Error: " + e1.getMessage());
+			System.out.println("Exiting");
+			return;
+		}
+		
+		conn.start();
+		
 		while(currentState != State.EXIT) {
 			if(currentState == State.KICK_TOWARD) {
 				robot.rotate(heading);
