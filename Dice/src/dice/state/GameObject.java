@@ -175,6 +175,7 @@ public class GameObject {
         if (getRotation() > theta) {
         	if (getRotation() - theta > Math.PI) {
         		return Math.PI * 2 - (getRotation() - theta);
+        		
         	} else {
         		return theta - getRotation();
         	}

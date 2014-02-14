@@ -18,7 +18,7 @@ public class MovementThread extends Thread {
 	private Object instructionLock = new Object();
 	private IssuedInstruction currentInstruction, newInstruction;
 	private final BluetoothDiceConnection conn;
-	private int heading, distance;
+	private int heading, distance, angle;
     private State currentState = State.READY;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
@@ -58,10 +58,8 @@ public class MovementThread extends Thread {
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				heading = (10 * headingA) + headingB;
-				distance = instructionParameters[2];
+				heading = instructionParameters[0];
+				distance = instructionParameters[1];
 				
 				System.out.println("MOVE_TO");
 				System.out.println("Heading: " + heading);
