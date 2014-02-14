@@ -37,13 +37,14 @@ public class AttackRobot extends Robot {
 		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
+		kickMotor.rotate(-40, true);
 	}
 	
 	@Override
 	protected void grab() {
 		if (!this.hasBall()) {
 			kickMotor.setSpeed(catchSpeed);
-			kickMotor.rotate(-40, true);
+			kickMotor.rotate(40, true);
 			this.hasBall = true;
 		} else {
 			System.out.println("Bad GRAB attempt.");
@@ -73,7 +74,7 @@ public class AttackRobot extends Robot {
 	@Override
 	void kick() {
 		kickMotor.setSpeed(kickSpeed);
-		kickMotor.rotate(50, true);
+		kickMotor.rotate(-50, true);
 		this.hasBall = false;
 	}
 
