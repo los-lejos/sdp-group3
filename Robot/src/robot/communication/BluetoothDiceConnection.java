@@ -116,7 +116,6 @@ public class BluetoothDiceConnection extends Thread {
 	public void closeConnection() throws IOException, BluetoothCommunicationException {
 		System.out.println("Sending exit message to Dice");
 		this.send(EXIT_MESSAGE);
-		
 		this.terminate();
 	}
 	

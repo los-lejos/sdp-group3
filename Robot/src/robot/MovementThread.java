@@ -8,20 +8,18 @@ import robot.communication.IssuedInstruction;
 import shared.RobotInstructions;
 
 public class MovementThread extends Thread {
-	private enum State {
-		READY, MOVE_TO, KICK_TOWARD, EXIT
+	
+	protected enum State {
+		READY, MOVE_TO, KICK_TOWARD, EXIT, MOVE_LAT
 	}
 	
-	protected boolean interrupted = false;
-	
+	private Robot robot;
+	private boolean interrupted = false;
 	private Object instructionLock = new Object();
 	private IssuedInstruction currentInstruction, newInstruction;
-	
 	private final BluetoothDiceConnection conn;
-	
-	private int heading, distance;
+	private int heading, distance, angle;
     private State currentState = State.READY;
-    private Robot robot;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
     	this.conn = conn;
@@ -30,6 +28,7 @@ public class MovementThread extends Thread {
 
     public void exit() {
     	interrupted = true;
+    	robot.setInterrupted();
     	this.currentState = State.EXIT;
     }
 
@@ -39,6 +38,7 @@ public class MovementThread extends Thread {
         	this.currentInstruction = null;
         	this.newInstruction = null;
         	this.interrupted = true;
+        	robot.setInterrupted();
     	}
     }
 	
@@ -52,16 +52,14 @@ public class MovementThread extends Thread {
 		}
 	}
 	
-	private void handleInstruction(IssuedInstruction instruction) {
+	protected void handleInstruction(IssuedInstruction instruction) {
 		byte instructionType = instruction.getType();
 		byte[] instructionParameters = instruction.getParameters();
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				heading = (10 * headingA) + headingB;
-				distance = instructionParameters[2];
+				heading = instructionParameters[0];
+				distance = instructionParameters[1];
 				
 				System.out.println("MOVE_TO");
 				System.out.println("Heading: " + heading);
@@ -94,10 +92,15 @@ public class MovementThread extends Thread {
 			} else {
 				System.out.println("Error: wrong parameters for KICK_TOWARD");
 			}
+		} else if (instructionType == RobotInstructions.LAT_MOVE_TO) {
+			distance = instructionParameters[0];
+			
+			System.out.println("MOVE_LAT");
+			System.out.println("Power: " + distance);
+			currentState = State.MOVE_LAT;
 		}
 	}
 	
-	@Override
 	public void run() {
 		while(currentState != State.EXIT) {
 			if(currentState == State.KICK_TOWARD) {
@@ -105,17 +108,24 @@ public class MovementThread extends Thread {
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
-					// kick
 					robot.kick();
+					while(robot.isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}
 			} else if(currentState == State.MOVE_TO) {
-				robot.rotate(heading);
+				robot.rotate(heading * -1);
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
 					robot.move(distance);
+					while(robot.isMoving() && !interrupted);
+				} else {
+					robot.stop();
+				}
+			} else if (currentState == State.MOVE_LAT) {
+				if(!interrupted) {
+					robot.moveLat(distance);
 				} else {
 					robot.stop();
 				}

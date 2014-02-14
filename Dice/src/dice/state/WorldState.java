@@ -30,6 +30,7 @@ public class WorldState {
 
     private static int PITCH_HEIGHT = 320;
     private static int PITCH_WIDTH = 580;
+    private static int GOAL_WIDTH = 200;
 
     private GameObject opponentDefender;
     private GameObject opponentAttacker;
@@ -73,11 +74,11 @@ public class WorldState {
     
     // Utility to create and return a new WorldState
     public static WorldState init() {
-    	GameObject opponentDefender = new GameObject(0, 0, 0.0);
-		GameObject ourAttacker = new GameObject(0, 0, 0.0);
-		GameObject opponentAttacker = new GameObject(0, 0, 0.0);
-		GameObject ourDefender = new GameObject(0, 0, 0.0);
-		GameObject ball = new GameObject(0, 0, 0.0);
+    	GameObject opponentDefender = new GameObject();
+		GameObject ourAttacker = new GameObject();
+		GameObject opponentAttacker = new GameObject();
+		GameObject ourDefender = new GameObject();
+		GameObject ball = new GameObject();
 
 		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
 
@@ -89,7 +90,11 @@ public class WorldState {
     }
 
     public static double convertYValue(double y) {
-        return -1 * y + PITCH_HEIGHT;
+        double result = -1 * y + PITCH_HEIGHT;
+        if (y != -1)
+        	return result;
+        else
+        	return y;
     }
 
     public static Vector2 convertYValue(Vector2 point) {
@@ -116,7 +121,7 @@ public class WorldState {
         ourDefender.setPos(convertYValue(d));
         ourDefender.setRotation(dAngle);
 
-        ball.setPos(convertYValue(ball));
+        this.ball.setPos(convertYValue(ball));
     }
 
     public void setSide(Side side) {
@@ -139,9 +144,9 @@ public class WorldState {
     // do this once at the beginning, so we have an "accurate"
     // representation of the pitch divisions (the pitch may be nudged
     // slightly).
-    public void calibratePitch(Line top, Line topRight, Line right,
-                               Line bottomRight, Line bottom,
-                               Line bottomLeft, Line left, Line topLeft) {
+    public void calibratePitch(BoundedLine top, BoundedLine topRight, BoundedLine right,
+                               BoundedLine bottomRight, BoundedLine bottom,
+                               BoundedLine bottomLeft, BoundedLine left, BoundedLine topLeft) {
         this.top = top;
         this.topRight = topRight;
         this.right = right;
@@ -150,6 +155,19 @@ public class WorldState {
         this.bottomLeft = bottomLeft;
         this.left = left;
         this.topLeft = topLeft;
+        
+        // construct the goals
+        double middle = (left.getEndPoint().Y + left.getStartPoint().Y) / 2.0;
+        Vector2 goalLeftTop = new Vector2(left.getEndPoint().X, middle+GOAL_WIDTH/2.0);
+        Vector2 goalLeftBottom = new Vector2(left.getEndPoint().X, middle-GOAL_WIDTH/2.0);
+        leftGoal = new Goal(goalLeftTop, goalLeftBottom);
+        
+        middle = (right.getEndPoint().Y + right.getStartPoint().Y) / 2.0;
+        Vector2 goalRightTop = new Vector2(right.getEndPoint().X, middle+GOAL_WIDTH/2.0);
+        Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
+        rightGoal = new Goal(goalRightTop, goalRightBottom);
+        
+        System.out.println("Calibrated pitch.");
     }
 
     // 0-3 left to right on vision

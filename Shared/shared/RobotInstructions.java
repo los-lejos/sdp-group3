@@ -7,6 +7,8 @@ public final class RobotInstructions {
 	// To robot
 	public static final byte MOVE_TO = 0;
 	public static final byte KICK_TOWARD = 1;
+	public static final byte LAT_MOVE_TO = 2;
+
 	
 	// To DICE
 	public static final byte CAUGHT_BALL = -2;

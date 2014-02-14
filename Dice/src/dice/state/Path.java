@@ -32,9 +32,15 @@ public class Path {
         Vector2 result = null;
 
         if (points.size() > 1) {
-            for (int i = 0; i < points.size(); i++) {
+            for (int i = 0; i < points.size() - 1; i++) {
                 Vector2 first = points.get(i);
                 Vector2 second = points.get(i+1);
+                
+                if (points.get(i) == null) {
+                	System.err.println(i + " is null.");
+                } else if (points.get(i+1) == null) {
+                	System.err.println((i+1) + " is null.");
+                }
 
                 // if the point is between the section of
                 // the path

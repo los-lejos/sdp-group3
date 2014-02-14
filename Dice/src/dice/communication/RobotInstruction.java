@@ -13,10 +13,14 @@ public class RobotInstruction {
 	
 
 	public static RobotInstruction CreateMoveTo(long angle, byte distance) {
-		byte angleUpper = (byte)(angle / 10);
-		byte angleLower = (byte)(angle % 10);
-		
-		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, distance);
+		//byte angleUpper = (byte)(angle / 10);
+		//byte angleLower = (byte)(angle % 10);
+		byte longAngle = (byte) angle;
+		return new RobotInstruction(RobotInstructions.MOVE_TO, longAngle, distance, (byte) 0);
+	}
+	
+	public static RobotInstruction CreateLateralMoveTo(byte distance) {
+		return new RobotInstruction(RobotInstructions.LAT_MOVE_TO, distance, (byte) 0, (byte) 0);
 	}
 	
 	public static RobotInstruction CreateShootTo(long angle) {

@@ -27,9 +27,9 @@ class Detection:
 
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
-    shape_sizes = { 'ball': [20, 160, 175],
-                    'yellow': [50, 110, 150],
-                    'blue': [50, 110, 150],
+    shape_sizes = { 'ball': [40, 160, 175],
+                    'yellow': [80, 110, 185],
+                    'blue': [80, 110, 185],
                     'dot': [20, 40, 80] }
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
@@ -221,16 +221,19 @@ class Detection:
         delta_x = float(abs(dot_local_x - x))
         delta_y = float(abs(dot_local_y - y))
 
-        if x >= dot_local_x and y >= dot_local_y:
-            dot_angle = math.atan(delta_y/delta_x)
-        elif x <= dot_local_x and y >= dot_local_y:
-            dot_angle = math.pi-math.atan(delta_y/delta_x)
-        elif x >= dot_local_x and y <= dot_local_y:
-            dot_angle = 2*math.pi-math.atan(delta_y/delta_x)
-        elif x <= dot_local_x and y <= dot_local_y:
-            dot_angle = 1.5*math.pi-math.atan(delta_x/delta_y)
-        else:
-            self._logger.log('wat')
+        try:
+            if x >= dot_local_x and y >= dot_local_y:
+                dot_angle = math.atan(delta_y/delta_x)
+            elif x <= dot_local_x and y >= dot_local_y:
+                dot_angle = math.pi-math.atan(delta_y/delta_x)
+            elif x >= dot_local_x and y <= dot_local_y:
+                dot_angle = 2*math.pi-math.atan(delta_y/delta_x)
+            elif x <= dot_local_x and y <= dot_local_y:
+                dot_angle = 1.5*math.pi-math.atan(delta_x/delta_y)
+            else:
+                self._logger.log('wat')
+        except ZeroDivisionError:
+            self._logger.log('Angle detection failure - division by zero.')
         entity.set_angle(average_angles(curr_angle, dot_angle))
 
 class Entity:

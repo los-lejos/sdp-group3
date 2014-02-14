@@ -1,15 +1,14 @@
 package robot;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
 import lejos.nxt.UltrasonicSensor;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
-import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -18,24 +17,25 @@ import shared.RobotInstructions;
 
 /*
  * Super class for fields/methods common to both robots.
- * eg. Instruction handling, sensors, message passing.
  * run() method contains main robot loop.
  */
 
 public abstract class Robot {
-
+	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 8;
-
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
+	private final BluetoothDiceConnection conn;
 
     private IssuedInstruction currentInstruction, newInstruction;
-    private final BluetoothDiceConnection conn;
     private MovementThread movementThread;
+    private Thread arnold;
     private boolean quit;
+    
     protected boolean hasBall;
+	protected boolean interrupted;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
@@ -69,37 +69,36 @@ public abstract class Robot {
 
 		movementThread = new MovementThread(this, conn);
 		movementThread.start();
+		
+		arnold = new TerminatorThread();
+		arnold.start();
 
-		while(!quit) {
+		while(arnold.isAlive()) {
 			if(currentInstruction != newInstruction) {
-				System.out.println("Getting new instruction");
+				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
 				currentInstruction = newInstruction;
 				movementThread.setInstruction(currentInstruction);
 			}
 			
-			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-				// Provisional: just stop and wait
-				this.movementThread.stopMovement();
-				System.out.println("Boundary detected! Waiting for further instructions.");
-			}
-			
-			if (objectAtFrontSensor()) {
-				grab();
-				
-				// Notify DICE that we have the ball
-				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
-				try {
-					conn.send(hasBallResponse);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if(Button.readButtons() != 0) {
-				quit = true;
-			}
+//			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
+//				// Provisional: just stop and wait
+//				this.movementThread.stopMovement();
+//				System.out.println("Boundary detected! Waiting for further instructions.");
+//			}
+//			
+//			if (objectAtFrontSensor()) {
+//				grab();
+//				
+//				// Notify DICE that we have the ball
+//				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
+//				try {
+//					conn.send(hasBallResponse);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				} catch (BluetoothCommunicationException e) {
+//					e.printStackTrace();
+//				}
+//			}
 		}
 
 		System.out.println("Exiting");
@@ -132,10 +131,17 @@ public abstract class Robot {
     	return hasBall;
     }
     
+    public void setInterrupted() {
+    	System.out.print("setInterrupted() called");
+		this.interrupted = true;
+	}
+    
     abstract boolean isMoving();
     abstract void rotate(int heading);
     abstract void move(int distance);
+    abstract void moveLat(int power);
     abstract void grab();
     abstract void stop();
     abstract void kick();
+	
 }

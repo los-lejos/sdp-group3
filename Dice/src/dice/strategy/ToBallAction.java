@@ -4,6 +4,7 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.GameObject;
 
 
 /*
@@ -44,10 +45,17 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		Vector2 ballPos = StratMaths.relativePos(this.getTargetObject(state), state.getBall());
-		return RobotInstruction.CreateMoveTo(
-				StratMaths.cartesianToPolarTheta(ballPos),
-				StratMaths.cartestanToPolarR(ballPos));
+		Vector2 ballPos = state.getBall().getPos();
+        GameObject robot;
+        if (this.targetRobot == RobotType.ATTACKER)
+            robot = state.getOurAttacker();
+        else
+            robot = state.getOurDefender();
+
+        System.out.println(GameObject.asDegrees(robot.getRotationRelativeTo(ballPos)));
+		return  RobotInstruction.CreateMoveTo(
+				(long) Math.round(GameObject.asDegrees(robot.getRotationRelativeTo(ballPos))),
+				(byte) Math.round(10 * robot.getEuclidean(ballPos)));
 	}
 
 }
