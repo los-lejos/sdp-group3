@@ -26,7 +26,8 @@ public class GameObject {
     }
     
     public void setRotation(double rotation) {
-    	this.rotations.add(rotation);
+    	double result = ((Math.PI * 2 - rotation) - Math.PI / 2.0) % Math.PI * 2.0;
+    	this.rotations.add(result);
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -210,7 +211,15 @@ public class GameObject {
     }
     
     public Line getLineFromVelocity() {
-    	return new UnboundedLine(getPos(), 0);
+    	Vector2 newPos = new Vector2(getPos().X + getVelocity().X, getPos().Y + getVelocity().Y);
+    	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
+    	return new UnboundedLine(getPos(), speedVector.getGradient());
+    }
+    
+    public double getSpeed() {
+    	double result = Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
+    	System.out.println(result);
+    	return result;
     }
     
 }

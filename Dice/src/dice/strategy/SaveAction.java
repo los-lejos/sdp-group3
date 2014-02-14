@@ -57,10 +57,14 @@ public class SaveAction extends StrategyAction {
 		try {
 			GameObject ball = state.getBall();
 			Line line = ball.getLineFromVelocity();
+			ball.getSpeed();
+			double yValue = line.getYValue(goalCenter.X);
 			if (line == null)
 				System.out.println("Line not initialized.");
-			else
+			else if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
 				whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
+			else
+				whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
 			//Vector2 result = path.getCoordinateAtX(goalCenter.X);
 			//if (result != null) {
 				//whereToBlock = result;
@@ -78,7 +82,6 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		System.out.println(whereToBlock.Y - state.getOurDefender().getPos().Y);
 		return RobotInstruction.CreateLateralMoveTo((byte) Math.round((whereToBlock.Y - state.getOurDefender().getPos().Y) / 10.0));
 				//StratMaths.cartesianToPolarTheta(whereToBlock),
 				//StratMaths.cartestanToPolarR(whereToBlock));

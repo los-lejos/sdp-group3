@@ -61,10 +61,6 @@ public class MovementThread extends Thread {
 				heading = instructionParameters[0];
 				distance = instructionParameters[1];
 				
-				System.out.println("MOVE_TO");
-				System.out.println("Heading: " + heading);
-				System.out.println("Distance: " + distance);
-				
 				currentState = State.MOVE_TO;
 			} else {
 				System.out.println("Error: wrong parameters for MOVE_TO");
