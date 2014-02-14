@@ -19,6 +19,7 @@ public class GameObject {
 
     public GameObject() {
     	positions = new ArrayList<Vector2>();
+	rotations = new ArrayList<Double>();
     	System.out.println("Initializing object.");
 
     	this.rotations.add(0.0);
@@ -162,15 +163,28 @@ public class GameObject {
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
 
-        double yDiff = myPos.Y - otherPos.Y;
+        double yDiff = otherPos.Y - myPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
+        double phi;
         double theta = Math.PI / 2.0 - Math.atan2(yDiff, xDiff);
 
-        if (yDiff < 0)
-            return theta - getRotation();
-        else
-            return getRotation() - theta;
+        if (theta < 0)
+        	theta = Math.PI * 2 + theta;
+        
+        if (getRotation() > theta) {
+        	if (getRotation() - theta > Math.PI) {
+        		return Math.PI * 2 - (getRotation() - theta);
+        	} else {
+        		return theta - getRotation();
+        	}
+        } else {
+        	if (theta - getRotation() > Math.PI) {
+        		return -1 * (Math.PI * 2 - (theta - getRotation()));
+        	} else {
+        		return theta - getRotation();
+        	}
+        }
     }
 
     // get the euclidean distance to the object
