@@ -9,6 +9,7 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
+import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
