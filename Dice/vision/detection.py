@@ -22,6 +22,7 @@ BALL = 4
 DOT = 5
 WIDTH = 580
 HEIGHT = 320
+RADIUS = 23.0
 
 class Detection:
 
@@ -179,10 +180,11 @@ class Detection:
                 return 0
             else:
                 self._logger.log('Rubbish angle {0}.\n'.format(angle))
-        radius = int(23.0*self._scale)
+        radius = int(RADIUS*self._scale)
         x, y = entity.get_local_coords()
+        angle = entity.get_angle()
         # if coordinates are negative there is no object
-        if x == -1: return
+        if x == -1 : return
         # crop out a rectangle to look for the dot
         x1 = max(x - radius, 0)
         y1 = max(y - radius, 0)
@@ -342,13 +344,13 @@ class Entity:
                 colour = Color.YELLOW
             else:
                 self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[self.which]))
-            layer.circle((x, y), radius=int(25*self._scale), color=colour, width=2)
+            layer.circle((x, y), radius=int(RADIUS*self._scale), color=colour, width=2)
             angle = self.get_angle()
             if not angle is None:
-                endx = x + int(25.0 * self._scale * math.cos(angle))
-                endy = y + int(25.0 * self._scale * math.sin(angle))
+                endx = x + int(RADIUS * self._scale * math.cos(angle))
+                endy = y + int(RADIUS * self._scale * math.sin(angle))
                 layer.line((x, y), (endx, endy), antialias=False)
-                degrees = abs(self._angle - math.pi)  / math.pi * 180
+                degrees = (self._angle * 180) / math.pi
                 layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
         elif self.which == BALL:
             w = layer.width
