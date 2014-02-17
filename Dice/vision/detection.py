@@ -22,6 +22,7 @@ BALL = 4
 DOT = 5
 WIDTH = 580
 HEIGHT = 320
+RADIUS = 23.0
 
 class Detection:
 
@@ -91,12 +92,12 @@ class Detection:
         return entities
 
     def __find_entity(self, threshold_img, which, image):
-        """
+
         # Work around OpenCV crash on some nearly black images
         nonZero = cv.CountNonZero(image.getGrayscaleMatrix())
         if nonZero < 10:
             return Entity()
-        """
+
         size = None
         if which == BALL:
             size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
@@ -104,6 +105,8 @@ class Detection:
             size = map(lambda x: int(x*self._scale), self.shape_sizes['blue'])
         elif self._colour_order[which] == 'y':
             size = map(lambda x: int(x*self._scale), self.shape_sizes['yellow'])
+        else:
+            self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[which]))
 
         entity_blob = self.__find_entity_blob(threshold_img, size)
         entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob, self.areas, self._scale)
@@ -177,10 +180,11 @@ class Detection:
                 return 0
             else:
                 self._logger.log('Rubbish angle {0}.\n'.format(angle))
-        radius = int(23.0*self._scale)
+        radius = int(RADIUS*self._scale)
         x, y = entity.get_local_coords()
+        angle = entity.get_angle()
         # if coordinates are negative there is no object
-        if x == -1: return
+        if x == -1 : return
         # crop out a rectangle to look for the dot
         x1 = max(x - radius, 0)
         y1 = max(y - radius, 0)
@@ -256,20 +260,7 @@ class Entity:
         self.dot = None
         
         if not entity_blob is None:
-            cx, cy = entity_blob.centroid()
-            m00 = entity_blob.m00
-            mu11 = entity_blob.m11 - cx * entity_blob.m01
-            mu20 = entity_blob.m20 - cx * entity_blob.m10
-            mu02 = entity_blob.m02 - cy * entity_blob.m01
-            # Compute the blob's covariance matrix
-            # | a b |
-            # | b c |
-            a = mu20 / m00;
-            b = mu11 / m00;
-            c = mu02 / m00;
-            # Can derive the formula for the angle from the eigenvector associated with
-            # the largest eigenvalue
-            self._angle = 0.5 * math.atan2(2 * b, a - c)
+            self._angle = self.calculate_angle(entity_blob)
             x_local, y_local = map(lambda x: int(x), entity_blob.centroid())
             self._local_coords = (x_local, y_local)
             if which == BALL:
@@ -295,6 +286,26 @@ class Entity:
     def get_angle(self):
         return self._angle
 
+    def set_angle(self, angle):
+        self._angle = angle
+
+    def calculate_angle(self, entity_blob):
+        cx, cy = entity_blob.centroid()
+        m00 = entity_blob.m00
+        mu11 = entity_blob.m11 - cx * entity_blob.m01
+        mu20 = entity_blob.m20 - cx * entity_blob.m10
+        mu02 = entity_blob.m02 - cy * entity_blob.m01
+        # Compute the blob's covariance matrix
+        # | a b |
+        # | b c |
+        a = mu20 / m00
+        b = mu11 / m00
+        c = mu02 / m00
+        # Can derive the formula for the angle from the eigenvector associated with
+        # the largest eigenvalue
+        angle = 0.5 * math.atan2(2 * b, a - c)
+        return angle
+
     def clarify_coords(self, dot_local_x, dot_local_y):
         local_x, local_y = self.get_local_coords()
         local_x = (local_x + dot_local_x)/2
@@ -312,9 +323,6 @@ class Entity:
         x = int((frame_x/float(self._pitch_w))*WIDTH)
         y = int((frame_y/float(self._pitch_h))*HEIGHT)
         self._coordinates = (x, y)
-
-    def set_angle(self, angle):
-        self._angle = angle
 
     def draw(self, layer):
         """Draw this entity to the specified layer
@@ -336,13 +344,13 @@ class Entity:
                 colour = Color.YELLOW
             else:
                 self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[self.which]))
-            layer.circle((x, y), radius=int(25*self._scale), color=colour, width=2)
+            layer.circle((x, y), radius=int(RADIUS*self._scale), color=colour, width=2)
             angle = self.get_angle()
             if not angle is None:
-                endx = x + int(25.0 * self._scale * math.cos(angle))
-                endy = y + int(25.0 * self._scale * math.sin(angle))
+                endx = x + int(RADIUS * self._scale * math.cos(angle))
+                endy = y + int(RADIUS * self._scale * math.sin(angle))
                 layer.line((x, y), (endx, endy), antialias=False)
-                degrees = abs(self._angle - math.pi)  / math.pi * 180
+                degrees = (self._angle * 180) / math.pi
                 layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
         elif self.which == BALL:
             w = layer.width
