@@ -31,6 +31,7 @@ public class DefenceRobot extends Robot {
 	private double travelSpeed;
 	private double rotateSpeed;
 	private boolean movingLat;
+	private int prevPower;
     
     public DefenceRobot() {
     	super(leftLightSensor, rightLightSensor, ballSensor);
@@ -73,11 +74,30 @@ public class DefenceRobot extends Robot {
 	public void moveLat(int power) {
 		this.movingLat = true;
 		this.lateralMotor.setPower((int) Math.round(7 * Math.abs(power)) + 20);
+		this.flipLat(power);
+	}
 	
-		if (power < 0) {
-			lateralMotor.forward();
-		} else {
+	private void flipLat(int power) {
+		if (this.prevPower < 0 && power >= 0) {
+			lateralMotor.flt();
+			
+			try {
+				lateralMotor.wait(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			lateralMotor.backward();
+		} else if (this.prevPower >= 0 && power < 0) {
+			lateralMotor.flt();
+			
+			try {
+				lateralMotor.wait(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			lateralMotor.forward();
 		}
 	}
 	
