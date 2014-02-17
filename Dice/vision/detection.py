@@ -157,10 +157,10 @@ class Detection:
         if x == -1 : return
 
         # get coordinates of possible centers
-        c1_x = x + int(0.7 * radius * math.cos(angle))
-        c1_y = y + int(0.7 * radius * math.sin(angle))
-        c2_x = x - int(0.7 * radius * math.cos(angle))
-        c2_y = y - int(0.7 * radius * math.sin(angle))
+        c1_x = x + int(0.3 * radius * math.cos(angle))
+        c1_y = y + int(0.3 * radius * math.sin(angle))
+        c2_x = x - int(0.3 * radius * math.cos(angle))
+        c2_y = y - int(0.3 * radius * math.sin(angle))
 
         c1_x1 = max(c1_x - DOT_RADIUS, 0)
         c1_y1 = max(c1_y - DOT_RADIUS, 0)
