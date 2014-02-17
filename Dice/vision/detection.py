@@ -12,7 +12,7 @@ import sys
 import math
 import cv
 import time
-from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color, ColorSpace
+from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
 from threshold import Threshold
 from logger import Logger
 
