@@ -121,6 +121,7 @@ public class StrategyEvaluator {
 		
 		// Check if we should send actions to the robots
 		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
+			System.out.println("new action sent");
 			defender.setCurrentAction(bestDefenderAction, state);
 			defenderCurrentAction = bestDefenderAction;
 		}

@@ -9,6 +9,7 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
+import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -31,13 +32,16 @@ public abstract class Robot {
 
     private IssuedInstruction currentInstruction, newInstruction;
     private MovementThread movementThread;
-    private Thread arnold;
-    private boolean quit;
+    private TerminatorThread arnold;
     
     protected boolean hasBall;
 	protected boolean interrupted;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
+    	
+    	arnold = new TerminatorThread();
+		arnold.start();
+    	
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
@@ -49,7 +53,7 @@ public abstract class Robot {
 
 			@Override
 			public void onExitRequested() {
-				quit = true;
+				arnold.exit();
 			}
 		});
     }
@@ -69,41 +73,42 @@ public abstract class Robot {
 
 		movementThread = new MovementThread(this, conn);
 		movementThread.start();
-		
-		arnold = new TerminatorThread();
-		arnold.start();
 
-		while(arnold.isAlive()) {
+		while(arnold.isAlive() && movementThread.isAlive()) {
 			if(currentInstruction != newInstruction) {
 				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
 				currentInstruction = newInstruction;
 				movementThread.setInstruction(currentInstruction);
 			}
 			
-//			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-//				// Provisional: just stop and wait
-//				this.movementThread.stopMovement();
-//				System.out.println("Boundary detected! Waiting for further instructions.");
-//			}
-//			
-//			if (objectAtFrontSensor()) {
-//				grab();
-//				
-//				// Notify DICE that we have the ball
-//				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
-//				try {
-//					conn.send(hasBallResponse);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				} catch (BluetoothCommunicationException e) {
-//					e.printStackTrace();
-//				}
-//			}
+			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
+				// Provisional: just stop and wait
+				this.movementThread.stopMovement();
+				System.out.println("Boundary detected! Waiting for further instructions.");
+			}
+			
+			if (objectAtFrontSensor()) {
+				grab();
+				
+				// Notify DICE that we have the ball
+				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
+				try {
+					conn.send(hasBallResponse);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BluetoothCommunicationException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		System.out.println("Exiting");
 		
 		// Kill movement thread
+		if (arnold.isAlive()) {
+			arnold.exit();
+		}
+		
 		this.movementThread.exit();
 		
 		try {

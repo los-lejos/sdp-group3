@@ -13,19 +13,21 @@ public class GameObject {
     private static double DELTA = 3; 
 
     private List<Vector2> positions;
-    private double rotation; // the rotation of the object relative
+    private List<Double> rotations; // the rotation of the object relative
                              // to 'up' (on the camera)
 
 
     public GameObject() {
     	positions = new ArrayList<Vector2>();
+	rotations = new ArrayList<Double>();
     	System.out.println("Initializing object.");
 
-    	this.rotation = 0;
+    	this.rotations.add(0.0);
     }
     
     public void setRotation(double rotation) {
-    	this.rotation = rotation;
+    	double result = ((Math.PI * 2 - rotation) - Math.PI / 2.0) % Math.PI * 2.0;
+    	this.rotations.add(result);
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -162,15 +164,28 @@ public class GameObject {
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
 
-        double yDiff = myPos.Y - otherPos.Y;
+        double yDiff = otherPos.Y - myPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
         double theta = Math.PI / 2.0 - Math.atan(xDiff / yDiff);
 
-        if (yDiff < 0)
-            return theta - rotation;
-        else
-            return rotation - theta;
+        if (theta < 0)
+        	theta = Math.PI * 2 + theta;
+        
+        if (getRotation() > theta) {
+        	if (getRotation() - theta > Math.PI) {
+        		return Math.PI * 2 - (getRotation() - theta);
+        		
+        	} else {
+        		return theta - getRotation();
+        	}
+        } else {
+        	if (theta - getRotation() > Math.PI) {
+        		return -1 * (Math.PI * 2 - (theta - getRotation()));
+        	} else {
+        		return theta - getRotation();
+        	}
+        }
     }
 
     // get the euclidean distance to the object
@@ -191,11 +206,19 @@ public class GameObject {
 
     // relative to the top of the screen
     public double getRotation() {
-        return rotation;
+        return rotations.get(rotations.size() - 1);
     }
     
     public Line getLineFromVelocity() {
-    	return new UnboundedLine(getPos(), 0);
+    	Vector2 newPos = new Vector2(getPos().X + getVelocity().X, getPos().Y + getVelocity().Y);
+    	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
+    	return new UnboundedLine(getPos(), speedVector.getGradient());
+    }
+    
+    public double getSpeed() {
+    	double result = Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
+    	System.out.println(result);
+    	return result;
     }
     
 }

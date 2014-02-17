@@ -18,7 +18,7 @@ public class MovementThread extends Thread {
 	private Object instructionLock = new Object();
 	private IssuedInstruction currentInstruction, newInstruction;
 	private final BluetoothDiceConnection conn;
-	private int heading, distance;
+	private int heading, distance, angle;
     private State currentState = State.READY;
     
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
@@ -58,14 +58,8 @@ public class MovementThread extends Thread {
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
-				byte headingA = instructionParameters[0];
-				byte headingB = instructionParameters[1];
-				heading = (10 * headingA) + headingB;
-				distance = instructionParameters[2];
-				
-				System.out.println("MOVE_TO");
-				System.out.println("Heading: " + heading);
-				System.out.println("Distance: " + distance);
+				heading = instructionParameters[0];
+				distance = instructionParameters[1];
 				
 				currentState = State.MOVE_TO;
 			} else {
@@ -100,6 +94,9 @@ public class MovementThread extends Thread {
 			System.out.println("MOVE_LAT");
 			System.out.println("Power: " + distance);
 			currentState = State.MOVE_LAT;
+		} else if (instructionType == 0) {
+			System.out.println("Zero instruction, assuming disconnected.");
+			this.interrupt();
 		}
 	}
 	
@@ -111,15 +108,17 @@ public class MovementThread extends Thread {
 				
 				if(!interrupted) {
 					robot.kick();
+					while(robot.isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}
 			} else if(currentState == State.MOVE_TO) {
-				robot.rotate(heading);
+				robot.rotate(heading * -1);
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
 					robot.move(distance);
+					while(robot.isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}

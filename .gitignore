@@ -65,3 +65,4 @@ local.properties
 
 # Vision stuff
 *.pyc
+Dice/vision/data/*
