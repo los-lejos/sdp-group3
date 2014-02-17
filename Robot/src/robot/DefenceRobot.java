@@ -28,19 +28,14 @@ public class DefenceRobot extends Robot {
 	NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
 	private final DifferentialPilot pilot;
 	
-//	private float kickSpeed;
-//	private float catchSpeed;
 	private double travelSpeed;
 	private double rotateSpeed;
 	private boolean movingLat;
-	private double lastPower;
+	private int prevPower;
     
     public DefenceRobot() {
     	super(leftLightSensor, rightLightSensor, ballSensor);
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
-//    	kickSpeed = kickMotor.getMaxSpeed();
-//    	catchSpeed = kickMotor.getMaxSpeed() * 0.3f;
-//    	kickMotor.setSpeed(kickSpeed);
 		travelSpeed = pilot.getMaxTravelSpeed();
 		rotateSpeed = pilot.getMaxRotateSpeed() * 0.2;
 		pilot.setTravelSpeed(travelSpeed);
@@ -48,17 +43,6 @@ public class DefenceRobot extends Robot {
 		lateralMotor.setPower(0);
 		lateralMotor.forward();
     }
-
-	@Override
-	protected void grab() {
-//		if (!this.hasBall()) {
-//			kickMotor.setSpeed(catchSpeed);
-//			kickMotor.rotate(-40, true);
-//			this.hasBall = true;
-//		} else {
-//			System.out.println("Bad GRAB attempt.");
-//		}
-	}
 
 	@Override
 	void stop() {
@@ -84,29 +68,72 @@ public class DefenceRobot extends Robot {
 	@Override
 	void move(int distance) {
 		this.stopLat();
-		pilot.travel(distance * 30, true);  // empirical (?!)
-	}
-
-	@Override
-	void kick() {
-		System.out.println("Kicking (not really)");
-		// TODO kicking
+		pilot.travel(distance, true);
 	}
 	
 	public void moveLat(int power) {
 		this.movingLat = true;
 		this.lateralMotor.setPower((int) Math.round(7 * Math.abs(power)) + 20);
+		this.flipLat(power);
+	}
 	
-		if (power < 0) {
-			lateralMotor.forward();
-		} else {
+	private void flipLat(int power) {
+		if (this.prevPower < 0 && power >= 0) {
+			lateralMotor.flt();
+			
+			try {
+				lateralMotor.wait(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			lateralMotor.backward();
+		} else if (this.prevPower >= 0 && power < 0) {
+			lateralMotor.flt();
+			
+			try {
+				lateralMotor.wait(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			lateralMotor.forward();
 		}
 	}
 	
 	public void stopLat() {
 		this.movingLat = false;
 		this.lateralMotor.setPower(0);
+	}
+	
+	// Robin: try and implement these. Good luck :)
+	
+	@Override
+	void kick() {
+		// TODO kicking
+		this.hasBall = false;
+	}
+	
+	public void openKicker() {
+		// TODO open kicker at start
+	}
+	
+	@Override
+	protected void grab() {
+		if (!this.hasBall) {
+			// TODO close around ball.
+			this.hasBall = true;
+		} else {
+			System.out.println("Bad GRAB attempt.");
+		}
+	}
+	
+	@Override
+	public void cleanup() {
+		if (this.hasBall) {
+			// TODO release ball (kick it away)
+		}
+		// TODO close kicker (back to starting position)
 	}
 	
 }
