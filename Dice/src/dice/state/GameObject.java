@@ -165,7 +165,7 @@ public class GameObject {
         double yDiff = myPos.Y - otherPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
-        double theta = Math.PI / 2.0 - Math.atan2(yDiff, xDiff);
+        double theta = Math.PI / 2.0 - Math.atan(xDiff / yDiff);
 
         if (yDiff < 0)
             return theta - rotation;
