@@ -51,8 +51,8 @@ public abstract class Robot {
 
 			@Override
 			public void onExitRequested() {
-				arnold.exit();
 				movementThread.exit();
+				arnold.exit();
 			}
 		});
     }
@@ -88,8 +88,27 @@ public abstract class Robot {
 				}
 			}
 		}
-		movementThread.exit();
+
 		arnold.exit();
+		
+		try {
+			arnold.join();
+			System.out.println("Joined arnold.");
+		} catch (InterruptedException e) {
+			System.out.println("Couldn't join arnold.");
+			//e.printStackTrace();
+		}
+		
+		movementThread.exit();
+		
+		try {
+			movementThread.join();
+			System.out.println("Joined movementThread.");
+		} catch (InterruptedException e) {
+			System.out.println("Couldn't join movementThread.");
+			//e.printStackTrace();
+		}
+		
 		System.out.println("Exiting");
 	}
 	
@@ -116,5 +135,6 @@ public abstract class Robot {
     abstract void grab();
     abstract void stop();
     abstract void kick();
+    abstract void cleanup();
 	
 }

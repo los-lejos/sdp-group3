@@ -27,15 +27,12 @@ public class MovementThread extends Thread {
     }
 
     public void exit() {
-    	this.currentState = State.EXIT;
-    	interrupted = true;
-    	try {
-			conn.closeConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
-		}
+    	synchronized(instructionLock) {
+	    	this.currentState = State.EXIT;
+	    	this.currentInstruction = null;
+	    	this.newInstruction = null;
+	    	this.interrupted = true;
+    	}
     }
 
     public void stopMovement() {
@@ -101,7 +98,7 @@ public class MovementThread extends Thread {
 			currentState = State.MOVE_LAT;
 		} else if (instructionType == 0) {
 			System.out.println("Zero instruction, assuming disconnected.");
-			this.interrupt();
+			this.exit();
 		}
 	}
 	
@@ -111,8 +108,7 @@ public class MovementThread extends Thread {
 			conn.openConnection();
 		} catch (BluetoothCommunicationException e1) {
 			// This is likely a timeout
-			// System.out.println("Error: " + e1.getMessage());
-			System.out.println("Exiting");
+			System.out.println("Error: " + e1.getMessage());
 			return;
 		}
 		
@@ -130,7 +126,7 @@ public class MovementThread extends Thread {
 					robot.stop();
 				}
 			} else if(currentState == State.MOVE_TO) {
-				robot.rotate(heading * -1);
+				robot.rotate(heading);
 				while(robot.isMoving() && !interrupted);
 				
 				if(!interrupted) {
@@ -173,6 +169,17 @@ public class MovementThread extends Thread {
 					this.handleInstruction(this.currentInstruction);
 				}
 			}
+		}
+		
+		System.out.println("Out of movement loop");
+		robot.cleanup();
+		
+		try {
+			conn.closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
 		}
 	}
 }

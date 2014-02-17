@@ -12,7 +12,7 @@ public class TerminatorThread extends Thread {
 	
 	public void exit() {
 		this.exit = true;
-		System.out.println("Hasta la vista");
+		//System.out.println("Hasta la vista");
 	}
 
 }
