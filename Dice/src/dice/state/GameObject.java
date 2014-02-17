@@ -220,7 +220,6 @@ public class GameObject {
     
     public double getSpeed() {
     	double result = Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
-    	System.out.println(result);
     	return result;
     }
     

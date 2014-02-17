@@ -96,7 +96,16 @@ public class MovementThread extends Thread {
 			currentState = State.MOVE_LAT;
 		} else if (instructionType == 0) {
 			System.out.println("Zero instruction, assuming disconnected.");
-			this.interrupt();
+			boolean joined = false;
+			while (joined == false) {
+				try {
+					this.join();
+					joined = true;
+					
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
