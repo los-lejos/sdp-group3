@@ -30,8 +30,11 @@ public class ToZoneCenterAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		// TODO Auto-generated method stub
-		return 0;
+		if ((getTargetObject(state) == state.getOurAttacker()) && !(state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE)){
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
