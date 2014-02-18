@@ -32,7 +32,7 @@ class Detection:
     shape_sizes = { 'ball': [40, 160, 175],
                     'yellow': [80, 110, 185],
                     'blue': [80, 110, 185],
-                    'dot': [20, 40, 80] }
+                    'dot': [60, 80, 100] }
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -152,16 +152,17 @@ class Detection:
         radius = int(RADIUS*self._scale)
         x, y = entity.get_local_coords()
         angle = entity.get_angle()
+        cropped_imgs = [None, None]
+        cropped_imgs_thresh = [None, None]
 
         # if coordinates are negative there is no object
-        if x == -1 : return
+        if x == -1 or y == -1: return
 
         # get coordinates of possible centers
         c1_x = x + int(0.3 * radius * math.cos(angle))
         c1_y = y + int(0.3 * radius * math.sin(angle))
         c2_x = x - int(0.3 * radius * math.cos(angle))
         c2_y = y - int(0.3 * radius * math.sin(angle))
-
         c1_x1 = max(c1_x - DOT_RADIUS, 0)
         c1_y1 = max(c1_y - DOT_RADIUS, 0)
         c1_x2 = min(c1_x + DOT_RADIUS, image.width)
@@ -171,17 +172,13 @@ class Detection:
         c2_x2 = min(c2_x + DOT_RADIUS, image.width)
         c2_y2 = min(c2_y + DOT_RADIUS, image.height)
 
-        cropped_img1 = image.crop((c1_x1, c1_y1), (c1_x2, c1_y2))
-        crop_w1 = cropped_img1.width
-        crop_h1 = cropped_img1.height
-        cropped_img2 = image.crop((c2_x1, c2_y1), (c2_x2, c2_y2))
-        crop_w2 = cropped_img2.width
-        crop_h2 = cropped_img2.height
+        cropped_imgs[0] = image.crop((c1_x1, c1_y1), (c1_x2, c1_y2))
+        cropped_imgs[1] = image.crop((c2_x1, c2_y1), (c2_x2, c2_y2))
 
-        if cropped_img1 == None: return
-        cropped_img1_threshold = self._threshold.dotT(cropped_img1).smooth(grayscale=True)
-        if cropped_img2 == None: return
-        cropped_img2_threshold = self._threshold.dotT(cropped_img2).smooth(grayscale=True)
+        if cropped_imgs[0] == None or cropped_imgs[1] == None: return
+        cropped_imgs_thresh[0] = self._threshold.dotT(cropped_imgs[0]).smooth(grayscale=True)
+        cropped_imgs_thresh[1] = self._threshold.dotT(cropped_imgs[1]).smooth(grayscale=True)
+
         # set entity.rect1 and entity.rect2 for drawing
         x_offset = int(self._scale * self._pitch_w * self.areas[entity.which][0])
         entity.rect1 = ((c1_x1 + x_offset, c1_y1), (c1_x2 - c1_x1, c1_y2 - c1_y1))
@@ -189,11 +186,37 @@ class Detection:
 
         # If cropped_img1_threshold is brighter (i. e. contains the black dot)
         # flip the angle and switch colours (so that black dot is in red rectangle)
-        if cropped_img1_threshold.meanColor()[2] > cropped_img2_threshold.meanColor()[2]:
-            entity.set_angle(angle + math.pi)
+        if cropped_imgs_thresh[0].meanColor()[2] > cropped_imgs_thresh[1].meanColor()[2]:
+            cropped_imgs_thresh.pop()
+            angle += math.pi
+            entity.set_angle(angle)
             entity.rect_colors = (Color.RED, Color.VIOLET)
+        else:
+            cropped_imgs_thresh.pop(0)
 
         # TODO correct the coordinates and the angle based on where is the dot
+        cropped_imgs_thresh[0]
+        
+        c_x = x - int(0.6 * radius * math.cos(angle))
+        c_y = y - int(0.6 * radius * math.sin(angle))
+        c_x1 = max(c_x - DOT_RADIUS, 0)
+        c_y1 = max(c_y - DOT_RADIUS, 0)
+        c_x2 = min(c_x + DOT_RADIUS, image.width)
+        c_y2 = min(c_y + DOT_RADIUS, image.height)
+        
+        cropped_img = image.crop((c_x1, c_y1), (c_x2, c_y2))
+        entity.rect3 = ((c_x1 + x_offset, c_y1), (c_x2 - c_x1, c_y2 - c_y1))
+        cropped_img_thresh = self._threshold.dotT(cropped_img).smooth(grayscale=True)
+        
+        size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
+        entity_blob = self.__find_entity_blob(cropped_img_thresh, size, dot=True)
+        if entity_blob is None:
+            return
+        dot_x, dot_y = tuple(map(lambda x: int(x), entity_blob.centroid()))
+        entity.dot = (dot_x, dot_y)
+        dot_local_x = dot_x + c_x1
+        dot_local_y = dot_y + c_y1
+        entity.clarify_coords(dot_local_x, dot_local_y)
         '''# find the dot
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img1_threshold, size, dot=True)
@@ -245,6 +268,7 @@ class Entity:
         self.rect_colors = (Color.VIOLET, Color.RED)
         self.rect1 = None
         self.rect2 = None
+        self.rect3 = None
         self.dot = None
         
         if not entity_blob is None:
@@ -323,8 +347,10 @@ class Entity:
             layer.rectangle(self.rect1[0], self.rect1[1], color=self.rect_colors[0])
         if not self.rect2 is None:
             layer.rectangle(self.rect2[0], self.rect2[1], color=self.rect_colors[1])
+        if not self.rect3 is None:
+            layer.rectangle(self.rect3[0], self.rect3[1], color=Color.GREEN)
         if not self.dot is None:
-            layer.circle((self.rect1[0][0]+self.dot[0], self.rect1[0][1]+self.dot[1]), radius=2, filled=1)
+            layer.circle((self.rect3[0][0]+self.dot[0], self.rect3[0][1]+self.dot[1]), radius=2, filled=1)
         if self.which >= 0 and self.which < 4:
             x, y = self.get_frame_coords()
             layer.circle((x, y), radius=2, filled=1)
