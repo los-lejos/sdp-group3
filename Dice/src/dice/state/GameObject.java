@@ -26,7 +26,9 @@ public class GameObject {
     }
     
     public void setRotation(double rotation) {
-    	double result = ((Math.PI * 2 - rotation) - Math.PI / 2.0) % Math.PI * 2.0;
+        // representation of rotation as given by vision returns value in
+        // radians measured clockwise from the left
+    	double result = (rotation - Math.PI / 2.0) % (Math.PI * 2.0);
     	this.rotations.add(result);
     }
 

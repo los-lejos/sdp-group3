@@ -23,7 +23,7 @@ public class SaveAction extends StrategyAction {
 	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
 		
-		goalCenter = new Vector2(570, 160);//ourGoal.getGoalCenter();
+		goalCenter = new Vector2(10, 160);//ourGoal.getGoalCenter();
 
 		whereToBlock = goalCenter;
 				

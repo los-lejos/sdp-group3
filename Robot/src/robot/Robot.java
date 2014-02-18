@@ -35,10 +35,8 @@ public abstract class Robot {
     private TerminatorThread arnold;
     
     protected boolean hasBall;
-	protected boolean interrupted;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
-    	
     	arnold = new TerminatorThread();
 		arnold.start();
     	
@@ -53,24 +51,13 @@ public abstract class Robot {
 
 			@Override
 			public void onExitRequested() {
+				movementThread.exit();
 				arnold.exit();
 			}
 		});
     }
 
 	public void run() {
-		// Try waiting for a Bluetooth connection
-		try {
-			conn.openConnection();
-		} catch (BluetoothCommunicationException e1) {
-			// This is likely a timeout
-			System.out.println("Error: " + e1.getMessage());
-			System.out.println("Exiting");
-			return;
-		}
-		
-		conn.start();
-
 		movementThread = new MovementThread(this, conn);
 		movementThread.start();
 
@@ -102,22 +89,27 @@ public abstract class Robot {
 			}
 		}
 
-		System.out.println("Exiting");
-		
-		// Kill movement thread
-		if (arnold.isAlive()) {
-			arnold.exit();
-		}
-		
-		this.movementThread.exit();
+		arnold.exit();
 		
 		try {
-			conn.closeConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
+			arnold.join();
+			System.out.println("Joined arnold.");
+		} catch (InterruptedException e) {
+			System.out.println("Couldn't join arnold.");
+			//e.printStackTrace();
 		}
+		
+		movementThread.exit();
+		
+		try {
+			movementThread.join();
+			System.out.println("Joined movementThread.");
+		} catch (InterruptedException e) {
+			System.out.println("Couldn't join movementThread.");
+			//e.printStackTrace();
+		}
+		
+		System.out.println("Exiting");
 	}
 	
     private boolean rightSensorOnBoundary() {
@@ -136,11 +128,6 @@ public abstract class Robot {
     	return hasBall;
     }
     
-    public void setInterrupted() {
-    	System.out.print("setInterrupted() called");
-		this.interrupted = true;
-	}
-    
     abstract boolean isMoving();
     abstract void rotate(int heading);
     abstract void move(int distance);
@@ -148,5 +135,6 @@ public abstract class Robot {
     abstract void grab();
     abstract void stop();
     abstract void kick();
+    abstract void cleanup();
 	
 }
