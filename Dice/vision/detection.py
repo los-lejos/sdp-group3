@@ -30,9 +30,9 @@ class Detection:
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
     shape_sizes = { 'ball': [40, 160, 175],
-                    'yellow': [80, 110, 185],
-                    'blue': [80, 110, 185],
+                    'blue': [120, 150, 280],
                     'dot': [60, 80, 100] }
+    shape_sizes['yellow'] = map(lambda x: int(0.9*x), shape_sizes['blue'])
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -126,6 +126,8 @@ class Detection:
             return None
 
         size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+        if not dot:
+            size_matched_blobs = filter(lambda (_, b): b.isRectangle(tolerance=0.8), size_matched_blobs)
         
         #if dot:
         #    a = len(size_matched_blobs)
