@@ -26,11 +26,14 @@ public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int FRONT_SENSOR_CUTOFF = 8;
+	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
+	
 	private final BluetoothDiceConnection conn;
-
+	private boolean isRunning = true;
+	
     private IssuedInstruction currentInstruction, newInstruction;
     private MovementThread movementThread;
     
@@ -49,14 +52,7 @@ public abstract class Robot {
 
 			@Override
 			public void onExitRequested() {
-				movementThread.exit();
-				
-				try {
-					movementThread.join();
-					System.out.println("Joined movementThread.");
-				} catch (InterruptedException e) {
-					System.out.println("Couldn't join movementThread.");
-				}
+				isRunning = false;
 			}
 		});
     	
@@ -79,9 +75,10 @@ public abstract class Robot {
 		movementThread = new MovementThread(this, conn);
 		movementThread.start();
 
-		while(Button.readButtons() != 0) {
+		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
 				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
+				
 				currentInstruction = newInstruction;
 				movementThread.setInstruction(currentInstruction);
 			}
@@ -126,7 +123,12 @@ public abstract class Robot {
 			e.printStackTrace();
 		}
 		
+		this.cleanup();
+		
 		System.out.println("Exiting");
+		
+		// Allow people to read exceptions/messages before exiting
+		Button.waitForAnyPress();
 	}
 	
     private boolean rightSensorOnBoundary() {
@@ -144,11 +146,13 @@ public abstract class Robot {
     public abstract boolean isMoving();
     public abstract void rotate(int heading);
     public abstract void move(int distance);
-    public abstract void moveLat(int power) throws BadMoveException;
+    public abstract void moveLat(int power);
     public abstract void stop();
+    
     public abstract void kick();
     public abstract void openKicker();
     public abstract void grab();
+    
     public abstract void cleanup();
 	
 }

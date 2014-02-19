@@ -114,12 +114,14 @@ public class BluetoothDiceConnection extends Thread {
 	}
 
 	public void closeConnection() throws IOException, BluetoothCommunicationException {
-		this.send(EXIT_MESSAGE);
+		if(this.connected) {
+			this.send(EXIT_MESSAGE);
+		}
+		
 		this.terminate();
 	}
 	
 	private void terminate() {
-		//System.out.println("Closing connection to Dice");
 		isRunning = false;
 		connected = false;
 	}

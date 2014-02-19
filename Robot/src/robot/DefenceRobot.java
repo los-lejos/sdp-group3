@@ -18,16 +18,19 @@ public class DefenceRobot extends Robot {
 	
 	private static final int tireDiameterMm = 48;
 	private static final int trackWidthMm = 127;
+	
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
+	
 	private static final NXTRegulatedMotor leftMotor = Motor.B;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	private static final NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
+	
 	private final DifferentialPilot pilot;
+	
 	private final double lateralPowerMultiplier;
 	private final int lateralMinPower;
-	
 	private double travelSpeed;
 	private double rotateSpeed;
 	private boolean movingLat;
@@ -150,7 +153,10 @@ public class DefenceRobot extends Robot {
 	public void cleanup() {
 		if (this.hasBall) {
 			// TODO release ball (kick it away)
+			
+			this.hasBall = false;
 		}
+		
 		// TODO close kicker (back to starting position)
 	}
 	

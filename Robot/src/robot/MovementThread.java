@@ -13,14 +13,17 @@ public class MovementThread extends Thread {
 		READY, MOVE_TO, KICK_TOWARD, EXIT, MOVE_LAT
 	}
 	
-	private Robot robot;
-	private boolean interrupted = false;
-	private Object instructionLock = new Object();
-	private IssuedInstruction currentInstruction, newInstruction;
 	private final BluetoothDiceConnection conn;
+	private final Robot robot;
+	
+	private State currentState = State.READY;
+	private boolean interrupted = false;
+	
+	private final Object instructionLock = new Object();
+	private IssuedInstruction currentInstruction, newInstruction;
+
 	private int heading, distance;
-    private State currentState = State.READY;
-    
+
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
     	this.conn = conn;
     	this.robot = robot;
@@ -126,11 +129,7 @@ public class MovementThread extends Thread {
 				}
 			} else if (currentState == State.MOVE_LAT) {
 				if(!interrupted) {
-					try {
-						robot.moveLat(distance);
-					} catch (BadMoveException e) {
-						e.printStackTrace();
-					}
+					robot.moveLat(distance);
 				} else {
 					robot.stop();
 				}
@@ -165,6 +164,5 @@ public class MovementThread extends Thread {
 		}
 		
 		System.out.println("Out of movement loop");
-		robot.cleanup();
 	}
 }
