@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
 
+import dice.Log;
+
 /** This class represents the state of objects
  * on the table (that can have positions)
  * @author Craig Wilkinson
@@ -47,37 +49,50 @@ public class GameObject {
     // decides if a new position for the object is viable given its
     // past positions
     private boolean validatePos(Vector2 newPosition) {
-        // only do the check if the new position isn't already
-        // invalid
-    	if (positions.size() > 2) {
-	        if (newPosition.X == -1) {
-	            return false;
-	        } else {
-	            Vector2 velocity = this.getVelocity();
-	            if (velocity != null) {
-
-	                // run the projection function to get an estimate
-	                // of the new position
-	                double newX = newPosition.X + getVelocity().X;
-	                double newY = newPosition.Y + getVelocity().Y;
-	                Vector2 estimate = new Vector2(newX, newY);
-	                double xDiff = Math.abs(newPosition.X - estimate.X);
-	                double yDiff = Math.abs(newPosition.Y - estimate.Y);
-	                if (xDiff > Math.abs(velocity.X) * DELTA ||
-	                    yDiff > Math.abs(velocity.Y) * DELTA) {
-                        System.err.println("Unreasonable position. Currently at " + String.valueOf(getPos().X) + "," + String.valueOf(getPos().Y) + " and trying to update position to " + String.valueOf(newPosition.X) + "," + String.valueOf(newPosition.Y) + ".");
-	                    return false;
-	                } else {
-	                    return true;
-	                }
-	            } else {
-	                // if the object is "new", then assume the position makes
-	                // sense
-	                return true;
-                }
-	        }
+    	// if the position isn't already the
+    	// "invalid" position
+	    if (newPosition.X < -1 || newPosition.Y == -1) {
+            return false;
         } else {
-        	return true;
+            Vector2 velocity = getVelocity();
+            
+            // if the object can have a velocity (has had more than
+            // one positions)
+            if (velocity != null) {
+                return isProjectedPosReasonable(newPosition);
+            } else {
+                return true;
+            }
+        }
+    }
+    
+    // takes a new position and returns true if the new position
+    // is reasonable given the objects current velocity and position
+    // ("reasonable" here means within bounds controlled by the DELTA
+    // constant)
+    private boolean isProjectedPosReasonable(Vector2 newPosition) {
+    	Vector2 velocity = getVelocity();
+        double newX = newPosition.X + getVelocity().X;
+        double newY = newPosition.Y + getVelocity().Y;
+        
+        Vector2 estimate = new Vector2(newX, newY);
+        
+        // if the difference between the projected estimate
+        // and the actual new position is too large,
+        // return false and report the positions
+        double xDiff = Math.abs(newPosition.X - estimate.X);
+        double yDiff = Math.abs(newPosition.Y - estimate.Y);
+        if (xDiff > Math.abs(velocity.X) * DELTA ||
+            yDiff > Math.abs(velocity.Y) * DELTA) {
+    
+        	Log.logInfo("Unreasonable position. Currently at " + 
+				    getPos().X + "," + getPos().Y +
+				    " and trying to update position to " +
+				    newPosition.X + "," + newPosition.Y + ".");
+        	
+        	return false;
+        } else {
+            return true;
         }
     }
 
@@ -112,8 +127,7 @@ public class GameObject {
     }
 
     // project a path based on the velocity of the object
-    // of course, this won't work for the ball. To project
-    // the ball position, you should use the velocity
+    // (used for the ball, since the ball has no "rotation")
     public Path projectPathFromVelocity(WorldState world) {
         if (positions.size() > 2) {
 	        Path result = new Path();
@@ -198,12 +212,7 @@ public class GameObject {
     // get the euclidean distance from the object
     public double getEuclidean(Vector2 position) {
         return Math.sqrt(Math.pow(position.X - getPos().X, 2) +
-                         Math.pow(position.Y - getPos().Y,2));
-    }
-
-    // convert radians to degrees
-    public static double asDegrees(double radians) {
-        return 360 * (radians / (2.0 * Math.PI));
+                         Math.pow(position.Y - getPos().Y, 2));
     }
 
     // relative to the top of the screen
@@ -211,16 +220,21 @@ public class GameObject {
         return rotations.get(rotations.size() - 1);
     }
     
+    // simply projects a straight line f
     public Line getLineFromVelocity() {
-    	Vector2 newPos = new Vector2(getPos().X + getVelocity().X, getPos().Y + getVelocity().Y);
+    	double dx = getPos().X + getVelocity().X;
+    	double dy = getPos().Y + getVelocity().Y;
+    	
+    	// create the next predicted position
+    	Vector2 newPos = new Vector2(dy, dx);
+    	
     	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
     	return new UnboundedLine(getPos(), speedVector.getGradient());
     }
     
+    // get the speed as a scalar
     public double getSpeed() {
-    	double result = Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
-    	System.out.println(result);
-    	return result;
+    	return Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
     }
     
 }

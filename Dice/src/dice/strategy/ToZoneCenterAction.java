@@ -45,7 +45,7 @@ public class ToZoneCenterAction extends StrategyAction {
 			zoneCenter = state.getCellCenter(WorldState.PitchZone.OUR_DEFEND_ZONE);
 		}
 		
-		long angle = (long) GameObject.asDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
+		long angle = (long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
 		byte dist = (byte) getTargetObject(state).getEuclidean(zoneCenter);
 		
 		return RobotInstruction.CreateMoveTo(angle, dist);

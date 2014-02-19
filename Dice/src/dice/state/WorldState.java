@@ -290,13 +290,13 @@ public class WorldState {
         double ballX = ball.getPos().X;
 
         if (ballX >= origin && ballX <= firstDivision)
-            ballZone = PitchZone.OUR_DEFEND_ZONE;
+            ballZone = zoneFromNumber(0);
         else if (ballX <= secondDivision)
-            ballZone = PitchZone.OPP_ATTACK_ZONE;
+            ballZone = zoneFromNumber(1);
         else if (ballX <= thirdDivision)
-            ballZone = PitchZone.OUR_ATTACK_ZONE;
+            ballZone = zoneFromNumber(2);
         else if (ballX <= end)
-            ballZone = PitchZone.OPP_DEFEND_ZONE;
+            ballZone = zoneFromNumber(3);
         else
             return null;
         

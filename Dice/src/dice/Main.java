@@ -136,6 +136,10 @@ public class Main {
 			
 		} while(cmd == null || !cmd[0].equals("quit"));
 		
+		// send the quit command to both robots
+		execSend(new String[] {"0", "0", "10", "0", "0", "0"});
+		execSend(new String[] {"0", "0", "10", "0", "0", "0"});
+
 		Log.logInfo("Exiting");
 	}
 	
