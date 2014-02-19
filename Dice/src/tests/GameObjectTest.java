@@ -2,7 +2,6 @@ package tests;
 
 import dice.Log;
 import dice.state.GameObject;
-import java.lang.Math;
 
 public class GameObjectTest {
 	public static void main(String[] args) {

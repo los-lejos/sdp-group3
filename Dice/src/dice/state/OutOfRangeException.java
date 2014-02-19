@@ -5,7 +5,10 @@ import java.lang.Exception;
 /** @author Craig Wilkinson
  */
 public class OutOfRangeException extends Exception {
-    public OutOfRangeException() {
+
+	private static final long serialVersionUID = 1L;
+
+	public OutOfRangeException() {
     	super();
     }
 

@@ -3,12 +3,9 @@ package dice.strategy;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
-import dice.state.Goal;
-import dice.state.InvalidPathException;
+import dice.state.Line;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.Path;
-import dice.state.Line;
 
 /*
  * @author Sam Stern
@@ -16,7 +13,6 @@ import dice.state.Line;
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
 public class SaveAction extends StrategyAction {
-	private WorldState world;
 	private Vector2 whereToBlock;
 	private Vector2 goalCenter;
 
@@ -64,9 +60,8 @@ public class SaveAction extends StrategyAction {
 			Line line = ball.getLineFromVelocity();
 			ball.getSpeed();
 			double yValue = line.getYValue(goalCenter.X);
-			if (line == null)
-				System.out.println("Line not initialized.");
-			else if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
+			
+			if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
 				whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
 			else
 				whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);

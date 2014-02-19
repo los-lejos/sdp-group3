@@ -31,6 +31,10 @@ public class RobotStrategyState {
 	public RobotStrategyState(RobotType robotType) {
 		this.robotType = robotType;
 	}
+	
+	public StrategyAction getCurrentAction() {
+		return this.strategyAction;
+	}
 
 	public void setCommunicator(RobotCommunicator robotComms) {
 		this.robotComms = robotComms;

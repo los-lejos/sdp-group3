@@ -4,15 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import dice.Log;
+import dice.state.BoundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.Line;
-import dice.state.BoundedLine;
 import dice.strategy.StrategyEvaluator;
 
 /**

@@ -3,7 +3,10 @@ package dice.state;
 import java.lang.Exception;
 
 public class InvalidPathException extends Exception {
-    public InvalidPathException() {
+
+	private static final long serialVersionUID = 1L;
+
+	public InvalidPathException() {
         super();
     }
 

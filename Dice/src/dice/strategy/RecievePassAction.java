@@ -13,8 +13,6 @@ import dice.state.WorldState;
  */
 public class RecievePassAction extends StrategyAction {
 
-	private Vector2 whereToRecieve;
-	
 	public RecievePassAction(RobotType targetRobot) {
 		super(targetRobot);
 	}

@@ -4,6 +4,7 @@ import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.WorldState;
+import dice.state.WorldState.Side;
 import dice.strategy.StrategyEvaluator;
 import dice.strategy.StrategyEvaluator.StrategyType;
 
@@ -18,7 +19,7 @@ public class StrategyTests {
 		GameObject opponentAttacker = new GameObject();
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
-		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
+		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
 		
 		RobotCommunicator attackerComms = new MockRobotCommunicator();
 		attackerComms.init(RobotType.ATTACKER, null);
@@ -26,7 +27,7 @@ public class StrategyTests {
 		RobotCommunicator defenderComms = new MockRobotCommunicator();
 		defenderComms.init(RobotType.DEFENDER, null);		
 		
-		StrategyEvaluator strat = new StrategyEvaluator(state);
+		StrategyEvaluator strat = new StrategyEvaluator();
 		strat.setType(StrategyType.M3_ATTACKER);
 		strat.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strat.setCommunicator(RobotType.DEFENDER, defenderComms);

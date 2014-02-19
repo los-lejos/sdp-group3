@@ -79,7 +79,7 @@ public class Main {
 		this.attackerComms = new BluetoothRobotCommunicator();
 		this.defenderComms = new BluetoothRobotCommunicator();
 
-		strategy = new StrategyEvaluator(worldState);
+		strategy = new StrategyEvaluator();
 		strategy.setType(StrategyType.M3_DEFENDER);
 		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
@@ -152,6 +152,11 @@ public class Main {
 	}
 	
 	private void execSend(String[] cmd) {
+		if(cmd.length < 5) {
+			Log.logInfo("Not enough parameters specified");
+			return;
+		}
+		
 		RobotType type = getRobotTypeFromCommand(cmd);
 		
 		if(type != null) {
@@ -159,6 +164,7 @@ public class Main {
 			byte param1 = Byte.parseByte(cmd[3]);
 			byte param2 = Byte.parseByte(cmd[4]);
 			byte param3 = Byte.parseByte(cmd[5]);
+
 			final String display = "" + instructionType + param1 + param2 + param3;
 			
 			RobotCommunicationCallback callback = new RobotCommunicationCallback() {

@@ -80,7 +80,7 @@ public class WorldState {
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
 
-		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball);
+		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
 
         Vector2 start = new Vector2(0,0);
         Vector2 end = new Vector2(1000,0);
@@ -130,7 +130,10 @@ public class WorldState {
 
     // populate the world. First all robots and the
     // ball must be created
-    public WorldState(GameObject opponentDefender, GameObject opponentAttacker, GameObject ourDefender, GameObject ourAttacker, GameObject ball) {
+    public WorldState(
+    		GameObject opponentDefender, GameObject opponentAttacker,
+    		GameObject ourDefender, GameObject ourAttacker,
+    		GameObject ball, Side ourSide) {
         
         this.opponentDefender = opponentDefender;
         this.opponentAttacker = opponentAttacker;
