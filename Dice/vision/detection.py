@@ -28,7 +28,6 @@ DOT_RADIUS = 8
 class Detection:
 
     # Format: (area_min, area_expected, area_max)
-    # one for both colours COULD be sufficient
     shape_sizes = { 'ball': [40, 160, 175],
                     'blue': [120, 150, 280],
                     'dot': [60, 80, 100] }
@@ -37,8 +36,9 @@ class Detection:
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
 
-    def __init__(self, gui, threshold, colour_order, scale, pitch_num):
+    def __init__(self, gui, threshold, colour_order, scale, pitch_num, render_tlayers = True):
     
+        self._render_tlayers = render_tlayers
         self._threshold = threshold
         self._gui = gui
         self._scale = scale
@@ -55,8 +55,9 @@ class Detection:
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
         thresholds = [None, None, None, None, None, None]
-        yellow = frame.copy()
-        blue = frame.copy()
+        if self._render_tlayers:
+            yellow = frame.copy()
+            blue = frame.copy()
 
         for i in range(0, 4):
             x = int(self._scale*self.areas[i][0]*self._pitch_w)
@@ -67,20 +68,23 @@ class Detection:
 
             if self._colour_order[i] == 'b':
                 thresholds[i] = self._threshold.blueT(cropped_img).smooth(grayscale=True)
-                blue.dl().blit(thresholds[i], (x, y))
+                if self._render_tlayers:
+                    blue.dl().blit(thresholds[i], (x, y))
             elif self._colour_order[i] == 'y':
                 thresholds[i] = self._threshold.yellowT(cropped_img).smooth(grayscale=True)
-                yellow.dl().blit(thresholds[i], (x, y))
+                if self._render_tlayers:
+                    yellow.dl().blit(thresholds[i], (x, y))
 
             entities[i] =  self.__find_entity(thresholds[i], i, cropped_img)
 
         thresholds[BALL] = self._threshold.ball(hsv).smooth(grayscale=True)
         entities[BALL] = self.__find_entity(thresholds[BALL], BALL, hsv)
-        thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
-        self._gui.update_layer('threshY', yellow)
-        self._gui.update_layer('threshB', blue)
-        self._gui.update_layer('threshR', thresholds[BALL])
-        self._gui.update_layer('threshD', thresholds[DOT])
+        if self._render_tlayers:
+            thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
+            self._gui.update_layer('threshY', yellow)
+            self._gui.update_layer('threshB', blue)
+            self._gui.update_layer('threshR', thresholds[BALL])
+            self._gui.update_layer('threshD', thresholds[DOT])
 
         for i in range(0, 4):
             if self._colour_order[i] == 'b':
@@ -126,17 +130,12 @@ class Detection:
             return None
 
         size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+
         if not dot:
             size_matched_blobs = filter(lambda (_, b): b.isRectangle(tolerance=0.8), size_matched_blobs)
-        
-        #if dot:
-        #    a = len(size_matched_blobs)
-        #    size_matched_blobs = filter(lambda (_, b): b.isCircle(tolerance=0.8), size_matched_blobs)
-        #    print 'blobs1={0} blobs2={1}'.format(a, len(size_matched_blobs))
-
+            
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
                                 size_matched_blobs, (sys.maxint, None))
-
         return entity_blob
 
     def __match_size(self, blob, expected_size):

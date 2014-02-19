@@ -5,18 +5,17 @@ Options:
   -p PITCH, --pitch=PITCH
                         PITCH should be 0 for main pitch, 1 for the other
                         pitch
-  -s, --stdout          Send output to stdout instead of using a socket
-  -r, --reset           Don't restore the last run's saved pitch size
-  -t, --thresholds      Don't restore the last run's saved thresholds
-  -c SCALE, --scale=SCALE
-                        Scale down the image in preprocessing stage
-  -i COLOUR_ORDER, --colour-order=COLOUR_ORDER
-                        COLOUR_ORDER - the way different colour robots are put
-                        from left to right (e. g. "--colour-order=yybb" for
-                        sequence yellow-yellow-blue-blue)
+  -s                    Send output to stdout instead of using a socket
+  --reset-pitch         Don't restore the last run's saved pitch size
+  --reset-thresh        Don't restore the last run's saved thresholds
+  --scale=SCALE         Scale down the image in preprocessing stage
+  -c COLOUR_ORDER, --colour-order=COLOUR_ORDER
+                        The way different colour robots are put from left to
+                        right (e. g. "--colour-order=yybb" for sequence
+                        yellow-yellow-blue-blue)
+  -n                    Turns off threshold layers. Use when thresholds are
+                        well adjusted.
   -f FILE, --file=FILE  File input, can be a video or image.
-
-
 
 To run vision system you first need to set up environment variables.
 
