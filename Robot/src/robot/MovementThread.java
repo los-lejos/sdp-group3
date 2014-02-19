@@ -137,7 +137,11 @@ public class MovementThread extends Thread {
 				}
 			} else if (currentState == State.MOVE_LAT) {
 				if(!interrupted) {
-					robot.moveLat(distance);
+					try {
+						robot.moveLat(distance);
+					} catch (BadMoveException e) {
+						e.printStackTrace();
+					}
 				} else {
 					robot.stop();
 				}
