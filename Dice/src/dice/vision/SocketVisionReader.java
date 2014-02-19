@@ -42,12 +42,15 @@ public class SocketVisionReader {
 	public SocketVisionReader(WorldState world, StrategyEvaluator strategy) {
 		this.strategy = strategy;
 		this.world = world;
+		
 		thread = new SocketThread();
+		thread.setDaemon(true);
 		thread.start();
 	}
 
 	public void stop() {
         thread.setIsRunning(false);
+        thread.interrupt();
     }
 
 	class SocketThread extends Thread {
@@ -60,7 +63,6 @@ public class SocketVisionReader {
 
 		@Override
 		public void run() {
-
 			try {
 				ServerSocket server = new ServerSocket(PORT);
 

@@ -11,6 +11,7 @@ public class Log extends Thread {
 	
 	public static void init() {
 		log = new Log();
+		log.setDaemon(true);
 		log.start();
 	}
 	
@@ -66,7 +67,6 @@ public class Log extends Thread {
 				System.out.print(msg);
 			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 }

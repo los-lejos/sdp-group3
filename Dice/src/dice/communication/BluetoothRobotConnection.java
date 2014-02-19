@@ -41,6 +41,8 @@ public class BluetoothRobotConnection extends Thread {
 	private OutputStream out;
 	
 	public BluetoothRobotConnection(RobotType robot, RobotEventListener eventListener) {
+		this.setDaemon(true);
+		
 		this.eventListener = eventListener;
 		
 		if(robot == RobotType.ATTACKER) {
@@ -183,10 +185,9 @@ public class BluetoothRobotConnection extends Thread {
 	
 	public void closeConnection() throws IOException {
 		if(!this.connected) return;
-		
-		this.terminate();
-		
+
 		this.send(EXIT_MESSAGE);
+		this.interrupt();
 	}
 	
 	private void terminate() {
