@@ -13,6 +13,8 @@ public class RobotInstruction {
 	
 
 	public static RobotInstruction CreateMoveTo(long angle, byte distance) {
+		assert (angle >= 0) && (angle <= 360);
+		
 		byte angleUpper = (byte)(angle / 10);
 		byte angleLower = (byte)(angle % 10);
 
@@ -24,6 +26,8 @@ public class RobotInstruction {
 	}
 	
 	public static RobotInstruction CreateShootTo(long angle) {
+		assert (angle >= 0) && (angle <= 360);
+		
 		byte angleUpper = (byte)(angle / 10);
 		byte angleLower = (byte)(angle % 10);
 		
