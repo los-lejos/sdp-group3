@@ -20,6 +20,7 @@ from preprocessor import Preprocessor
 from gui import Gui, ThresholdGui
 from threshold import Threshold
 from detection import Detection, Entity
+from logger import Logger
 
 __author__ = "Ingvaras Merkys"
 
@@ -31,12 +32,14 @@ BALL = 4
 
 class Vision:
 
-    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresholds, scale, colour_order, file_input=None):
+    def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresh,
+                 scale, colour_order, render_tlayers, file_input=None):
 
         self.running = True
         self.connected = False
         self.scale = scale
         self.stdout = stdout
+        self._logger = Logger('vision_errors.log')
 
         if file_input is None:
             self.cam = Camera(prop_set = {"width": 720, "height": 540})
@@ -50,16 +53,19 @@ class Vision:
             calibration_path = os.path.join('calibration', 'pitch{0}'.format(pitch_num))
             self.cam.loadCalibration(os.path.join(sys.path[0], calibration_path))
         except TypeError:
-            print 'Calibration file not found.'
+            error_msg = 'Calibration file not found.'
+            self._logger.log(error_msg)
+            print error_msg
 
         self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
         if self.preprocessor.has_pitch_size:
             self.gui = Gui(self.preprocessor.pitch_size)
         else:
             self.gui = Gui()
-        self.threshold = Threshold(pitch_num, reset_thresholds)
+        self.threshold = Threshold(pitch_num, reset_thresh)
         self.threshold_gui = ThresholdGui(self.threshold, self.gui, pitch_num = pitch_num)
-        self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num)
+        self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num,
+                                   render_tlayers=render_tlayers)
         self.event_handler = self.gui.get_event_handler()
         self.event_handler.add_listener('q', self.quit)
 
@@ -69,23 +75,21 @@ class Vision:
                     self.connect()
                 else:
                     self.connected = True
-
                 if self.preprocessor.has_pitch_size:
                     self.output_pitch_size()
                     self.gui.set_show_mouse(False)
                 else:
                     self.event_handler.set_click_listener(self.set_next_pitch_corner)
-
                 while self.running:
                     self.process_frame()
-                    
-
             except socket.error:
                 self.connected = False
                 # If the rest of the system is not up yet/gets quit,
                 # just wait for it to come available.
                 time.sleep(1)
-                print("Connection error, sleeping 1s...")
+                error_msg = 'Connection error, sleeping 1s...' 
+                self._logger.log(error_msg)
+                print error_msg
                 self.process_frame()
 
         if not self.stdout:
@@ -160,27 +164,32 @@ class Vision:
 if __name__ == "__main__":
 
     parser = OptionParser()
-
+    
     parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH', default='0',
                       help='PITCH should be 0 for main pitch, 1 for the other pitch')
 
-    parser.add_option('-s', '--stdout', action='store_true', dest='stdout', default=False,
+    parser.add_option('-s', action='store_true', dest='stdout', default=False,
                       help='Send output to stdout instead of using a socket')
 
-    parser.add_option('-r', '--reset', action='store_true', dest='reset_pitch_size', default=False,
+    parser.add_option('--reset-pitch', action='store_true', dest='reset_pitch_size', default=False,
                       help='Don\'t restore the last run\'s saved pitch size')
 
-    parser.add_option('-t', '--thresholds', action='store_true', dest='reset_thresholds', default=False,
+    parser.add_option('--reset-thresh', action='store_true', dest='reset_thresh', default=False,
                       help='Don\'t restore the last run\'s saved thresholds')
 
-    parser.add_option('-c', '--scale', dest='scale', type='float', metavar='SCALE', default=1.0,
+    parser.add_option('--scale', dest='scale', type='float', metavar='SCALE', default=1.0,
                       help='Scale down the image in preprocessing stage')
 
-    parser.add_option('-i', '--colour-order', dest='colour_order', type='string', metavar='COLOUR_ORDER', default='yybb',
-                      help=('COLOUR_ORDER - the way different colour robots are put from left to right '
-                            '(e. g. "--colour-order=yybb" for sequence yellow-yellow-blue-blue)'))
+    parser.add_option('-c', '--colour-order', dest='colour_order', type='string',
+                      metavar='COLOUR_ORDER', default='yybb',
+                      help=('The way different colour robots are put from left to right (e. g. '
+                            '"--colour-order=yybb" for sequence yellow-yellow-blue-blue)'))
 
-    parser.add_option('-f', '--file', dest='file_input', type='string', metavar='FILE', help='File input, can be a video or image.')
+    parser.add_option('-n', action='store_false', dest='render_tlayers', default='store_true',
+                      help='Turns off threshold layers. Use when thresholds are well adjusted.')
+
+    parser.add_option('-f', '--file', dest='file_input', type='string', metavar='FILE',
+                      help='File input, can be a video or image.')
 
     (opts, args) = parser.parse_args()
 
@@ -190,4 +199,11 @@ if __name__ == "__main__":
     if opts.colour_order not in ['yybb', 'bbyy', 'ybby', 'byyb', 'ybyb', 'byby']:
         parser.error('Invalid colour ordering specified.')
 
-    Vision(opts.pitch, opts.stdout, opts.reset_pitch_size, opts.reset_thresholds, opts.scale, opts.colour_order, file_input=opts.file_input)
+    Vision(opts.pitch,
+           opts.stdout,
+           opts.reset_pitch_size,
+           opts.reset_thresh,
+           opts.scale,
+           opts.colour_order,
+           opts.render_tlayers,
+           file_input=opts.file_input)
