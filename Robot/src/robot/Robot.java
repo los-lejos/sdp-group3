@@ -64,6 +64,18 @@ public abstract class Robot {
     }
 
 	public void run() {
+		
+		// Start Bluetooth
+		try {
+			conn.openConnection();
+		} catch (BluetoothCommunicationException e1) {
+			// This is likely a timeout
+			System.out.println("Error: " + e1.getMessage());
+			return;
+		}
+		
+		conn.start();
+		
 		movementThread = new MovementThread(this, conn);
 		movementThread.start();
 
@@ -104,6 +116,14 @@ public abstract class Robot {
 		} catch (InterruptedException e) {
 			System.out.println("Couldn't join movementThread.");
 			//e.printStackTrace();
+		}
+		
+		try {
+			conn.closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
 		}
 		
 		System.out.println("Exiting");

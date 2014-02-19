@@ -9,7 +9,7 @@ import shared.RobotInstructions;
 
 public class MovementThread extends Thread {
 	
-	protected enum State {
+	private enum State {
 		READY, MOVE_TO, KICK_TOWARD, EXIT, MOVE_LAT
 	}
 	
@@ -102,18 +102,7 @@ public class MovementThread extends Thread {
 		}
 	}
 	
-	public void run() {
-		// Start Bluetooth
-		try {
-			conn.openConnection();
-		} catch (BluetoothCommunicationException e1) {
-			// This is likely a timeout
-			System.out.println("Error: " + e1.getMessage());
-			return;
-		}
-		
-		conn.start();
-		
+	public void run() {		
 		while(currentState != State.EXIT) {
 			if(currentState == State.KICK_TOWARD) {
 				robot.rotate(heading);
@@ -177,13 +166,5 @@ public class MovementThread extends Thread {
 		
 		System.out.println("Out of movement loop");
 		robot.cleanup();
-		
-		try {
-			conn.closeConnection();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
-		}
 	}
 }
