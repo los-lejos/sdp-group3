@@ -18,6 +18,11 @@ public class ToBallAction extends StrategyAction {
 	public ToBallAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
+	
+	@Override
+	public String getActionType(){
+		return "ToBallAction";
+	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -59,5 +64,4 @@ public class ToBallAction extends StrategyAction {
 				(long) Math.round(GameObject.asDegrees(robot.getRotationRelativeTo(ballPos))),
 				(byte) Math.round(10 * robot.getEuclidean(ballPos)));
 	}
-
 }

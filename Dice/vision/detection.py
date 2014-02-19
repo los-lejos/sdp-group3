@@ -23,15 +23,16 @@ DOT = 5
 WIDTH = 580
 HEIGHT = 320
 RADIUS = 23.0
+DOT_RADIUS = 8
 
 class Detection:
 
     # Format: (area_min, area_expected, area_max)
     # one for both colours COULD be sufficient
     shape_sizes = { 'ball': [40, 160, 175],
-                    'yellow': [80, 110, 185],
-                    'blue': [80, 110, 185],
-                    'dot': [20, 40, 80] }
+                    'blue': [120, 150, 280],
+                    'dot': [60, 80, 100] }
+    shape_sizes['yellow'] = map(lambda x: int(0.9*x), shape_sizes['blue'])
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -125,6 +126,8 @@ class Detection:
             return None
 
         size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
+        if not dot:
+            size_matched_blobs = filter(lambda (_, b): b.isRectangle(tolerance=0.8), size_matched_blobs)
         
         #if dot:
         #    a = len(size_matched_blobs)
@@ -132,7 +135,7 @@ class Detection:
         #    print 'blobs1={0} blobs2={1}'.format(a, len(size_matched_blobs))
 
         _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
-                                size_matched_blobs, (9999, None))
+                                size_matched_blobs, (sys.maxint, None))
 
         return entity_blob
 
@@ -148,97 +151,76 @@ class Detection:
         """Given the coordinates of the colored part of 'i' find the dot,
         calculate the angle and update coordinates
         """
-        def average_angles(angle1, angle2):
-            x = math.cos(angle1) + math.cos(angle2)
-            y = math.sin(angle1) + math.sin(angle2)
-            return math.atan2(y, x)
-            
-        def get_quarter_d(x, y, w, h):
-            if 2*x < w - 1:
-                if 2*y < h - 1:
-                    return 3
-                else:
-                    return 0
-            else:
-                if 2*y < h - 1:
-                    return 2
-                else:
-                    return 1
-            
-        def get_quarter_a(angle):
-            if angle < 0.0:
-                angle = 2.0*math.pi + angle
-            if angle > 2.0*math.pi:
-                angle = angle - 2.0*math.pi
-            if angle >= 0.0 and angle < 0.5*math.pi:
-                return 3
-            elif angle >= 0.5*math.pi and angle < math.pi:
-                return 2
-            elif angle >= math.pi and angle < 1.5*math.pi:
-                return 1
-            elif angle >= 1.5*math.pi and angle < 2.0*math.pi:
-                return 0
-            else:
-                self._logger.log('Rubbish angle {0}.\n'.format(angle))
         radius = int(RADIUS*self._scale)
         x, y = entity.get_local_coords()
         angle = entity.get_angle()
-        # if coordinates are negative there is no object
-        if x == -1 : return
-        # crop out a rectangle to look for the dot
-        x1 = max(x - radius, 0)
-        y1 = max(y - radius, 0)
-        x2 = min(x + radius, image.width)
-        y2 = min(y + radius, image.height)
-        cropped_img = image.crop((x1, y1), (x2, y2))
-        crop_w = cropped_img.width
-        crop_h = cropped_img.height
-        if cropped_img == None: return
-        cropped_img_threshold = self._threshold.dotT(cropped_img).smooth(grayscale=True)
-        # set entity.rect for drawing
+        cropped_imgs = [None, None]
+        cropped_imgs_thresh = [None, None]
+        # Offset for drawing rectangles
         x_offset = int(self._scale * self._pitch_w * self.areas[entity.which][0])
-        entity.rect = ((x1 + x_offset, y1), (x2 - x1, y2 - y1))
-        # find the dot
-        size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
-        entity_blob = self.__find_entity_blob(cropped_img_threshold, size, dot=True)
-        if entity_blob is None: return
-        entity.dot = tuple(map(lambda x: int(x), entity_blob.centroid()))
-
-        # calculate the angle
-        dot_x, dot_y = entity_blob.centroid()
-        dot_local_x = dot_x + x1
-        dot_local_y = dot_y + y1
-        
-        curr_angle = entity.get_angle()
-        qa = get_quarter_a(curr_angle)
-        qd = get_quarter_d(dot_x, dot_y, crop_w, crop_h)
-        if abs(qa - qd) == 2:
-            curr_angle = curr_angle + math.pi
-            entity.clarify_coords(dot_local_x, dot_local_y)
-        elif qa == qd:
-            entity.set_angle(curr_angle)
-            entity.clarify_coords(dot_local_x, dot_local_y)
+        # If coordinates are negative there is no object, ABORT
+        if x == -1 or y == -1: return
+        # Get coordinates of possible centers
+        c1_x = x + int(0.3 * radius * math.cos(angle))
+        c1_y = y + int(0.3 * radius * math.sin(angle))
+        c2_x = x - int(0.3 * radius * math.cos(angle))
+        c2_y = y - int(0.3 * radius * math.sin(angle))
+        c1_x1 = max(c1_x - DOT_RADIUS, 0)
+        c1_y1 = max(c1_y - DOT_RADIUS, 0)
+        c1_x2 = min(c1_x + DOT_RADIUS, image.width)
+        c1_y2 = min(c1_y + DOT_RADIUS, image.height)
+        c2_x1 = max(c2_x - DOT_RADIUS, 0)
+        c2_y1 = max(c2_y - DOT_RADIUS, 0)
+        c2_x2 = min(c2_x + DOT_RADIUS, image.width)
+        c2_y2 = min(c2_y + DOT_RADIUS, image.height)
+        # Crop out 2 small rectangles
+        cropped_imgs[0] = image.crop((c1_x1, c1_y1), (c1_x2, c1_y2))
+        cropped_imgs[1] = image.crop((c2_x1, c2_y1), (c2_x2, c2_y2))
+        # If one of the areas is of size 0, comparison impossible, ABORT
+        # (might happen if robot is crossing the edge of its area)
+        if cropped_imgs[0] == None or cropped_imgs[1] == None: return
+        # Threshold areas to be compared
+        cropped_imgs_thresh[0] = self._threshold.dotT(cropped_imgs[0]).smooth(grayscale=True)
+        cropped_imgs_thresh[1] = self._threshold.dotT(cropped_imgs[1]).smooth(grayscale=True)
+        # Set entity.rect1 and entity.rect2 for drawing
+        entity.rect1 = ((c1_x1 + x_offset, c1_y1), (c1_x2 - c1_x1, c1_y2 - c1_y1))
+        entity.rect2 = ((c2_x1 + x_offset, c2_y1), (c2_x2 - c2_x1, c2_y2 - c2_y1))
+        # If the first one is brighter (i. e. contains the black dot)
+        # flip the angle and switch colours
+        if cropped_imgs_thresh[0].meanColor()[2] > cropped_imgs_thresh[1].meanColor()[2]:
+            cropped_imgs_thresh.pop()
+            angle += math.pi
+            entity.rect_colors = (Color.ORANGE, Color.BLUE)
         else:
-            #ignore the dot completely
-            return
-        
-        delta_x = float(abs(dot_local_x - x))
-        delta_y = float(abs(dot_local_y - y))
-
-        try:
-            if x >= dot_local_x and y >= dot_local_y:
-                dot_angle = math.atan(delta_y/delta_x)
-            elif x <= dot_local_x and y >= dot_local_y:
-                dot_angle = math.pi-math.atan(delta_y/delta_x)
-            elif x >= dot_local_x and y <= dot_local_y:
-                dot_angle = 2*math.pi-math.atan(delta_y/delta_x)
-            elif x <= dot_local_x and y <= dot_local_y:
-                dot_angle = 1.5*math.pi-math.atan(delta_x/delta_y)
-            else:
-                self._logger.log('wat')
-        except ZeroDivisionError:
-            self._logger.log('Angle detection failure - division by zero.')
-        entity.set_angle(average_angles(curr_angle, dot_angle))
+            cropped_imgs_thresh.pop(0)
+        # Crop out a rectangle for where the dot is supposed to be
+        c_x = x - int(0.6 * radius * math.cos(angle))
+        c_y = y - int(0.6 * radius * math.sin(angle))
+        c_x1 = max(c_x - DOT_RADIUS, 0)
+        c_y1 = max(c_y - DOT_RADIUS, 0)
+        c_x2 = min(c_x + DOT_RADIUS, image.width)
+        c_y2 = min(c_y + DOT_RADIUS, image.height)
+        cropped_img = image.crop((c_x1, c_y1), (c_x2, c_y2))
+        cropped_img_thresh = self._threshold.dotT(cropped_img).smooth(grayscale=True)
+        # Look for the dot
+        size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
+        entity_blob = self.__find_entity_blob(cropped_img_thresh, size, dot=True)
+        if not entity_blob is None:
+            entity.rect3 = ((c_x1 + x_offset, c_y1), (c_x2 - c_x1, c_y2 - c_y1))
+            dot_x, dot_y = tuple(map(lambda x: int(x), entity_blob.centroid()))
+            entity.dot = (dot_x, dot_y)
+            dot_local_x = dot_x + c_x1
+            dot_local_y = dot_y + c_y1
+            # Average coordinates
+            entity.clarify_coords(dot_local_x, dot_local_y)
+            delta_x = dot_local_x - x
+            delta_y = dot_local_y - y
+            angle_by_dot = math.atan2(delta_y, delta_x) + math.pi
+            # Average angles
+            a = math.cos(angle) + math.cos(angle_by_dot)
+            b = math.sin(angle) + math.sin(angle_by_dot)
+            angle = math.atan2(b, a)
+        entity.set_angle(angle)
 
 class Entity:
 
@@ -256,7 +238,10 @@ class Entity:
         self._colour_order = colour_order
         self._areas = areas
         self.which = which
-        self.rect = None
+        self.rect_colors = (Color.BLUE, Color.ORANGE)
+        self.rect1 = None
+        self.rect2 = None
+        self.rect3 = None
         self.dot = None
         
         if not entity_blob is None:
@@ -331,10 +316,14 @@ class Entity:
         if self.get_coordinates()[0] == -1: return
         if not self._colour_frame_coords[0] == -1:
             layer.circle(self._colour_frame_coords, radius=2, filled=1)
-        if not self.rect is None:
-            layer.rectangle(self.rect[0], self.rect[1], color=Color.RED)
+        if not self.rect1 is None:
+            layer.rectangle(self.rect1[0], self.rect1[1], color=self.rect_colors[0])
+        if not self.rect2 is None:
+            layer.rectangle(self.rect2[0], self.rect2[1], color=self.rect_colors[1])
+        if not self.rect3 is None:
+            layer.rectangle(self.rect3[0], self.rect3[1], color=Color.RED)
         if not self.dot is None:
-            layer.circle((self.rect[0][0]+self.dot[0], self.rect[0][1]+self.dot[1]), radius=2, filled=1)
+            layer.circle((self.rect3[0][0]+self.dot[0], self.rect3[0][1]+self.dot[1]), radius=2, filled=1)
         if self.which >= 0 and self.which < 4:
             x, y = self.get_frame_coords()
             layer.circle((x, y), radius=2, filled=1)

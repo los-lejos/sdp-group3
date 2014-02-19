@@ -1,0 +1,70 @@
+2014-02-17 17:09:00,952 INFO  [org.eclim.eclipse.EclimDaemon] Workspace: /Users/samstern/Java_stuff/SDP
+2014-02-17 17:09:00,953 INFO  [org.eclim.eclipse.EclimDaemon] Home: /Applications/eclipse/plugins/org.eclim_2.3.2/
+2014-02-17 17:09:00,954 INFO  [org.eclim.eclipse.EclimDaemon] Starting eclim...
+2014-02-17 17:09:00,960 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim
+2014-02-17 17:09:00,962 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim.core
+2014-02-17 17:09:01,055 INFO  [org.eclim.plugin.core.CorePlugin] Loading eclim plugins...
+2014-02-17 17:09:01,060 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.adt
+2014-02-17 17:09:01,062 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.cdt
+2014-02-17 17:09:01,064 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.jdt
+2014-02-17 17:09:01,066 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.wst
+2014-02-17 17:09:01,069 INFO  [org.eclim.plugin.core.CorePlugin] Plugins loaded.
+2014-02-17 17:09:01,069 INFO  [org.eclim.eclipse.EclimDaemon] Loaded plugin org.eclim.core
+2014-02-17 17:09:01,069 INFO  [org.eclim.eclipse.EclimDaemon] Eclim Server Started on: 127.0.0.1:9091
+2014-02-17 17:09:01,147 ERROR [org.eclim.eclipse.EclimDaemon] Error starting eclim:
+java.lang.RuntimeException: java.net.BindException: Address already in use
+	at com.martiansoftware.nailgun.NGServer.run(NGServer.java:426)
+	at org.eclim.eclipse.EclimDaemon.start(EclimDaemon.java:141)
+	at org.eclim.eclipse.ui.EclimdView$1.run(EclimdView.java:59)
+Caused by: java.net.BindException: Address already in use
+	at java.net.PlainSocketImpl.socketBind(Native Method)
+	at java.net.PlainSocketImpl.socketBind(PlainSocketImpl.java:521)
+	at java.net.PlainSocketImpl.bind(PlainSocketImpl.java:414)
+	at java.net.ServerSocket.bind(ServerSocket.java:326)
+	at java.net.ServerSocket.<init>(ServerSocket.java:192)
+	at com.martiansoftware.nailgun.NGServer.run(NGServer.java:408)
+	... 2 more
+2014-02-17 17:45:19,931 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.adt
+2014-02-17 17:45:19,932 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.cdt
+2014-02-17 17:45:19,932 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.jdt
+2014-02-17 17:45:19,932 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.wst
+2014-02-17 17:45:38,770 INFO  [org.eclim.eclipse.EclimDaemon] Workspace: /Users/samstern/Java_stuff/SDP
+2014-02-17 17:45:38,772 INFO  [org.eclim.eclipse.EclimDaemon] Home: /Applications/eclipse/plugins/org.eclim_2.3.2/
+2014-02-17 17:45:38,772 INFO  [org.eclim.eclipse.EclimDaemon] Starting eclim...
+2014-02-17 17:45:38,780 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim
+2014-02-17 17:45:38,789 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim.core
+2014-02-17 17:45:38,880 INFO  [org.eclim.plugin.core.CorePlugin] Loading eclim plugins...
+2014-02-17 17:45:38,885 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.adt
+2014-02-17 17:45:38,886 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.cdt
+2014-02-17 17:45:38,886 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.jdt
+2014-02-17 17:45:38,887 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.wst
+2014-02-17 17:45:38,888 INFO  [org.eclim.plugin.core.CorePlugin] Plugins loaded.
+2014-02-17 17:45:38,888 INFO  [org.eclim.eclipse.EclimDaemon] Loaded plugin org.eclim.core
+2014-02-17 17:45:38,890 INFO  [org.eclim.eclipse.EclimDaemon] Eclim Server Started on: 127.0.0.1:9091
+2014-02-17 18:24:29,043 INFO  [org.eclim.eclipse.EclimDaemon] Shutting down eclim...
+2014-02-17 18:24:29,053 INFO  [org.eclim.eclipse.EclimDaemon] Stopping plugin org.eclim.core
+2014-02-17 18:24:29,055 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.adt
+2014-02-17 18:24:29,056 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.cdt
+2014-02-17 18:24:29,056 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.jdt
+2014-02-17 18:24:29,056 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.wst
+2014-02-17 18:24:29,057 INFO  [org.eclim.eclipse.EclimDaemon] Eclim stopped.
+2014-02-17 18:26:54,466 INFO  [org.eclim.eclipse.EclimDaemon] Workspace: /Users/samstern/Java_stuff/SDP
+2014-02-17 18:26:54,467 INFO  [org.eclim.eclipse.EclimDaemon] Home: /Applications/eclipse/plugins/org.eclim_2.3.2/
+2014-02-17 18:26:54,467 INFO  [org.eclim.eclipse.EclimDaemon] Starting eclim...
+2014-02-17 18:26:54,473 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim
+2014-02-17 18:26:54,476 INFO  [org.eclim.eclipse.EclimDaemon] Loading plugin org.eclim.core
+2014-02-17 18:26:54,568 INFO  [org.eclim.plugin.core.CorePlugin] Loading eclim plugins...
+2014-02-17 18:26:54,573 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.adt
+2014-02-17 18:26:54,574 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.cdt
+2014-02-17 18:26:54,576 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.jdt
+2014-02-17 18:26:54,577 INFO  [org.eclim.plugin.core.CorePlugin] Loading plugin org.eclim.wst
+2014-02-17 18:26:54,581 INFO  [org.eclim.plugin.core.CorePlugin] Plugins loaded.
+2014-02-17 18:26:54,581 INFO  [org.eclim.eclipse.EclimDaemon] Loaded plugin org.eclim.core
+2014-02-17 18:26:54,583 INFO  [org.eclim.eclipse.EclimDaemon] Eclim Server Started on: 127.0.0.1:9091
+2014-02-17 18:26:56,912 INFO  [org.eclim.eclipse.EclimDaemon] Shutting down eclim...
+2014-02-17 18:26:56,921 INFO  [org.eclim.eclipse.EclimDaemon] Stopping plugin org.eclim.core
+2014-02-17 18:26:56,922 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.adt
+2014-02-17 18:26:56,922 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.cdt
+2014-02-17 18:26:56,924 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.jdt
+2014-02-17 18:26:56,925 INFO  [org.eclim.plugin.core.CorePlugin] Stopping plugin org.eclim.wst
+2014-02-17 18:26:56,925 INFO  [org.eclim.eclipse.EclimDaemon] Eclim stopped.

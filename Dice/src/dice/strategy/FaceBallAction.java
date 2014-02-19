@@ -14,7 +14,12 @@ public class FaceBallAction extends StrategyAction {
 	public FaceBallAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-
+	
+	@Override
+	public String getActionType(){
+		return "FaceBallAction";
+	}
+	
 	@Override
 	public boolean isPossible(WorldState state) {
 		return true;

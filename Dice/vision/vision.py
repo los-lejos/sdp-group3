@@ -86,8 +86,6 @@ class Vision:
                 # just wait for it to come available.
                 time.sleep(1)
                 print("Connection error, sleeping 1s...")
-                # Strange things seem to happen to X sometimes if the
-                # display isn't updated for a while
                 self.process_frame()
 
         if not self.stdout:
@@ -116,7 +114,6 @@ class Vision:
         self.preprocessor.set_next_pitch_corner(where)
 
         if self.preprocessor.has_pitch_size:
-            #print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
             self.output_pitch_size()
             self.gui.set_show_mouse(False)
             self.gui.update_layer('corner', None)
@@ -125,9 +122,6 @@ class Vision:
 
     def output_pitch_size(self):
         self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.preprocessor.pitch_points_string))
-        #f = open('pitch_size', 'w')
-        #f.write('{0}'.format(self.preprocessor.pitch_points_string))
-        #f.close()
         
 
     def output_entities(self, entities):

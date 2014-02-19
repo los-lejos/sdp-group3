@@ -30,6 +30,11 @@ public class SaveAction extends StrategyAction {
 	}
 	
 	@Override
+	public String getActionType(){
+		return "SaveAction";
+	}
+	
+	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
 	}

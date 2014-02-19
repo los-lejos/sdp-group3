@@ -169,8 +169,7 @@ public class GameObject {
         double yDiff = otherPos.Y - myPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
-        double phi;
-        double theta = Math.PI / 2.0 - Math.atan2(yDiff, xDiff);
+        double theta = Math.PI / 2.0 - Math.atan(xDiff / yDiff);
 
         if (theta < 0)
         	theta = Math.PI * 2 + theta;

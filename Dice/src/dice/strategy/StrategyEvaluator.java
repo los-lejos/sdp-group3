@@ -29,6 +29,8 @@ public class StrategyEvaluator {
 	private RobotStrategyState attacker, defender;
 	private StrategyType type;
 	private WorldState world;
+	private StrategyAction attackerCurrentAction;
+	private StrategyAction defenderCurrentAction;
 
 	public StrategyEvaluator(WorldState world) {
 		attacker = new RobotStrategyState(RobotType.ATTACKER);
@@ -79,6 +81,14 @@ public class StrategyEvaluator {
 			defender.setCommunicator(comms);
 		}
 	}
+	
+	private StrategyAction getCurrentAction(RobotType robot) {
+		if (robot == RobotType.ATTACKER) {
+			return attackerCurrentAction;
+		} else {
+			return defenderCurrentAction;
+		}
+	}
 
 	/*
 	 * Make decisions based on new world state.
@@ -102,11 +112,18 @@ public class StrategyEvaluator {
 		// Action overrides	
 		// if defender is passing, attacker needs to receive
 		
+		if ((defenderCurrentAction.getActionType().equals("SaveAction")) &&
+				((state.getOurDefender().getPos().X > state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X > 0)) ||
+				( state.getOurDefender().getPos().X < state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X <0)) {
+			defenderOverride = true;
+		}
+		
 		
 		// Check if we should send actions to the robots
 		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
 			System.out.println("new action sent");
 			defender.setCurrentAction(bestDefenderAction, state);
+			defenderCurrentAction = bestDefenderAction;
 		}
 		
 		if(bestAttackerAction != null && (attackerOverride || attacker.needsNewAction(state))) {

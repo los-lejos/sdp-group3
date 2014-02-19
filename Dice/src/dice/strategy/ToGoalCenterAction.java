@@ -18,6 +18,12 @@ public class ToGoalCenterAction extends StrategyAction {
 	public ToGoalCenterAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
+	
+	@Override
+	public String getActionType(){
+		return "ToGoalCenterAction";
+	}
+	
 
 	@Override
 	public boolean isPossible(WorldState state) {

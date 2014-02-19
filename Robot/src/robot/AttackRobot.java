@@ -36,48 +36,52 @@ public class AttackRobot extends Robot {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 		kickMotor.setPower(50);
-		this.openKicker();
 	}
 
 	@Override
-	void stop() {
+	public void stop() {
 		pilot.stop();
 	}
 
 	@Override
-	boolean isMoving() {
+	public boolean isMoving() {
 		return pilot.isMoving();
 	}
 
 	@Override
-	void rotate(int heading) {
-		pilot.rotate(heading, true);
+	public void rotate(int heading) {
+		if (heading >= 0 && heading <= 180) {
+			pilot.rotate(heading, true);
+		} else if (heading > 180 && heading < 360) {
+			pilot.rotate(- (heading - 180), true);
+		}
 	}
 
 	@Override
-	void move(int distance) {
+	public void move(int distance) {
 		pilot.travel(distance, true);
 	}
 	
 	@Override
-	void moveLat(int power) {
-		System.out.println("MOVE_LAT not implemented for attacker.");
+	public void moveLat(int power) throws BadMoveException {
+		throw new BadMoveException("MOVE_LAT not possible for ATK.");
 	}
 	
 	// Robin: try and implement these. Good luck :)
 	
 	@Override
-	void kick() {
+	public void kick() {
 		// TODO kicking
 		this.hasBall = false;
 	}
 
+	@Override
 	public void openKicker() {
 		// TODO open kicker at start
 	}
 	
 	@Override
-	protected void grab() {
+	public void grab() {
 		if (!this.hasBall) {
 			// TODO close around ball.
 			this.hasBall = true;

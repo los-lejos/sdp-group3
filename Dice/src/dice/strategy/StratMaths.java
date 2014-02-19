@@ -3,6 +3,7 @@ package dice.strategy;
 
 import dice.state.GameObject;
 import dice.state.Vector2;
+import dice.state.WorldState;
 
 /*
  * @author Sam Stern
@@ -16,7 +17,12 @@ final class StratMaths {
 	}
 	
 	public static Vector2 whereToIntercept(GameObject target, GameObject ball) {
-//		return ball.projectPath.getCoordinateAt();
+		//		return ball.projectPath.getCoordinateAt();
+		return null;
+	}
+	
+	protected static Vector2 whereToRecievePass(WorldState state) {
+		//TODO
 		return null;
 	}
 	

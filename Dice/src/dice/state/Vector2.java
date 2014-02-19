@@ -36,4 +36,9 @@ public class Vector2 {
     	this.Y = position.Y;
     }
 
+    @Override
+    public String toString() {
+        return "(" + X + "," + Y + ")";
+    }
+
 }

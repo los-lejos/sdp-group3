@@ -1,5 +1,6 @@
 package robot.test;
 
+import lejos.nxt.Button;
 import robot.DefenceRobot;
 
 public class DefenceTester {
@@ -7,11 +8,14 @@ public class DefenceTester {
 	public static void main(String[] args) throws Exception {
 		DefenceRobot ballE = new DefenceRobot();
 		
-		ballE.moveLat(30);
-		Thread.sleep(2000);
-		ballE.moveLat(-30);
-		Thread.sleep(2000);
-		ballE.moveLat(30);
+		while (Button.readButtons() == 0) {
+			ballE.moveLat(50);
+			Thread.sleep(1500);
+			ballE.moveLat(-50);
+			Thread.sleep(1500);
+		}
+		
+		ballE.stopLat();
 		
 	}
 
