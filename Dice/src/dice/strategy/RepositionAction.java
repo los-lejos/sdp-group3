@@ -42,16 +42,14 @@ public class RepositionAction extends StrategyAction {
 	protected int calculateUtility(WorldState state) {
 		GameObject us = state.getOurAttacker();
 		Goal goal = state.getOppGoal();
-		
-		// pesky other team getting in the way all the time		
-		List<GameObject> annoyingThings = Arrays.asList(state.getOpponentAttacker(), state.getOpponentDefender());
-	
+		GameObject annoyance = state.getOpponentDefender();
+				
 		// we have the ball but are we pointing roughly where the goal is?
 		if (!pointingAtGoal(us,goal)) {
 			// if not, please strongly consider pointing at the goal
 			// it makes the ball more likely to go in
 			return 2;
-		} else if (inTheWay(us,annoyingThings,goal)) {
+		} else if (inTheWay(us,annoyance,goal)) {
 			// we can't shoot through things
 			// yet
 			return 2;
@@ -84,33 +82,31 @@ public class RepositionAction extends StrategyAction {
 	 * something before it gets there?
 	 * 
 	 * @param us Thing which wants a clear path to the goal
-	 * @param things Things which might be in the way
-	 * @param goal A goal
-	 * @return Whether any of 'things' are in the way
+	 * @param thing Thing which might be in the way
+	 * @param goal A goal we want the ball to be in
+	 * @return true if thing in way, else false
 	 */
-	private boolean inTheWay(GameObject us,
-			List<GameObject> things, Goal goal) {
+	private boolean inTheWay(GameObject us, GameObject thing, Goal goal) {
 		
-		for(GameObject thing : things) {
-			if (StratMaths.isInFrontOf(us, thing)) {
+		if (StratMaths.isInFrontOf(us, thing)) {
 				return true;
-			}
 		}
 	
 		return false; // shoot now, stop asking questions
 	}
 	
+	
 	/**
 	 * Work out where to move a robot such that shooting a ball from
-	 * there will not hit things
+	 * there will not hit a thing
 	 * 
 	 * @param us A robot to instruct
-	 * @param annoyingThings List of things that get in the way
+	 * @param annoyance Thing which gets in the way
 	 * @param goal A goal we want to shoot at
 	 * @return An instruction to give to the robot
 	 */
-	private RobotInstruction getAvoidanceInstruction(GameObject us,
-			List<GameObject> annoyingThings, Goal goal, WorldState state) {
+	private RobotInstruction getAvoidanceInstruction(GameObject us, 
+			GameObject annoyance, Goal goal, WorldState state) {
 		
 		/*
 		 * Currently using the highly janky method of trying
@@ -121,21 +117,17 @@ public class RepositionAction extends StrategyAction {
 		
 		Vector2 goodPos = state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE); // for relative positioning
 		
-		for (GameObject annoyance : annoyingThings) {
-			
-			/*
-			 * this code is not intended to actually work
-			 * please replace it with a good way of figuring out an optimal position
-			 * or things will be bad 
-			 */
-			if (annoyance.getPos().Y < state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE).Y) {
-				// favour moving +ve
-				goodPos.setY(goodPos.Y + 10); // replace this
-			} else {
-				// favour moving -ve
-				goodPos.setY(goodPos.Y - 10); // ...and this
-			}
-			
+		/*
+		 * this code is not intended to actually work
+		 * please replace it with a good way of figuring out an optimal position
+		 * or things will be bad 
+		 */
+		if (annoyance.getPos().Y < state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE).Y) {
+			// favour moving +ve
+			goodPos.setY(goodPos.Y + 10); // replace this
+		} else {
+			// favour moving -ve
+			goodPos.setY(goodPos.Y - 10); // ...and this
 		}
 		
 		return RobotInstruction.CreateLateralMoveTo((byte) goodPos.Y);
@@ -145,17 +137,16 @@ public class RepositionAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject us = state.getOurAttacker();
 		Goal goal = state.getOppGoal();
-		
-		List<GameObject> annoyingThings = Arrays.asList(state.getOpponentAttacker(), state.getOpponentDefender());
-		
+		GameObject annoyance = state.getOpponentDefender();
+				
 		if (!pointingAtGoal(us,goal)) {
 			// point robot at goal
 			return RobotInstruction.CreateMoveTo(
 					(long) us.getRotationRelativeTo(goal.getGoalCenter()),
 					(byte) 0);
-		} else if (inTheWay(us, annoyingThings, goal)) {
-			// move robot somewhere where they aren't
-			return getAvoidanceInstruction(us, annoyingThings, goal, state);
+		} else if (inTheWay(us, annoyance, goal)) {
+			// move robot somewhere where the annoyance isn't
+			return getAvoidanceInstruction(us, annoyance, goal, state);
 		}
 		
 		return null;
