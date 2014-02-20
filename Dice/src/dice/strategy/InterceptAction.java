@@ -4,18 +4,25 @@ package dice.strategy;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.BoundedLine;
+import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
 /*
  * @author Sam Stern
  * 
- * extrapolate position of the ball and move to that position
+ * intercept opponent's pass
+ * determine where the ball is headed and move there
+ * 
+ * Attackers equivilant to SaveAction
  */
 
 public class InterceptAction extends StrategyAction {
 	
 	Vector2 whereToIntercept;
+	BoundedLine ballTraj;
+	protected double criticalVel; //sould be the same as in BlockAction
 	
 	
 	public InterceptAction(RobotType targetRobot) {
@@ -29,17 +36,23 @@ public class InterceptAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		whereToIntercept  = StratMaths.whereToIntercept(this.getTargetObject(state), state.getBall());
-		return StratMaths.canReach(whereToIntercept, this.getTargetObject(state));
+		Vector2 ballVel = state.getBall().getVelocity();
+		boolean hasLargeNegVel = (ballVel.X < 0) && ballVel.X > -Math.abs(criticalVel);
+		boolean canReach = (getTargetObject(state) == state.getOurAttacker()) && 
+				((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) || (state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE));
+		
+		if (hasLargeNegVel && canReach) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (StratMaths.willCollideWithBall(getTargetObject(state))) {
-			return 0;
-		} else {
-			return 2;
-		}
+		
+		return 2;
+		
 	}
 
 	@Override
