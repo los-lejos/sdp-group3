@@ -105,9 +105,6 @@ class Preprocessor:
         
         a = (y1 - y2)/float((x1 - x2))
         b = y1 - a * x1
-        #rect_corners = [(0, (0, 0)), (1, (w - 1, 0)), (2, (0, h - 1)), (3, (w - 1, h - 1))]
-        #distances = map(lambda (i, x): (i, self.point_to_line(x, (a, b))), rect_corners)
-        #corner_i, _ = reduce(lambda x, y: x if x[1] < y[1] else y, distances, (-1, sys.maxint))
         corner_i = self.which_corner(p1, p2, self._crop_rect)
         if corner_i == 0:
             p1 = (0, b)
@@ -127,9 +124,6 @@ class Preprocessor:
         p1y = int((float(p1[1])/h)*320)
         p2x = int((float(p2[0])/w)*580)
         p2y = int((float(p2[1])/h)*320)
-        #f = open('corners', 'w')
-        #f.write('{0} {1} {2}\n'.format(corner_i, (p1x, p1y), (p2x, p2y)))
-        #f.close()
         return ((p1x, p1y), (p2x, p2y))
 
     def which_corner(self, p1, p2, crop_rect):
@@ -162,8 +156,6 @@ class Preprocessor:
             j = i * 2
             k = i * 2 + 1
             corner = self.which_corner(points[j], points[k], [0, 0, 580, 320])
-            #f = open('test', 'a')
-            #f.write('{0} {1} {2}\n'.format(corner, points[j], points[k]))
             if corner == 0:
                 if points[j][0] > points[k][0]:
                     sorted_points[0] = points[j]
@@ -194,5 +186,4 @@ class Preprocessor:
                     sorted_points[4] = points[j]
             else:
                 raise Exception('Invalid corner {0}'.format(corner))
-        #f.close()
         return sorted_points

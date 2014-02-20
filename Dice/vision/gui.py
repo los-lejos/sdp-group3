@@ -81,12 +81,8 @@ class Gui:
 
     def __updateFps(self):
 
-#        smooth_const = 0.1
         this_frame_time = time.time()
         this_frame = this_frame_time - self._last_frame_time
-#        if self._last_frame is not None:
-            # Smooth values
-#            this_frame = this_frame * (1 - smooth_const) + smooth_const * self._lastFrame
         fps = 1.0 / this_frame
         self._lastFrame = this_frame
         self._last_frame_time = this_frame_time
@@ -263,7 +259,7 @@ class ThresholdGui:
 
     def change_entity(self, name):
         """Change which entity to adjust thresholding
-        Can be 'blue', 'yellow' or 'ball'
+        Can be 'blue', 'yellow', 'ball' or 'dot'
         """
         self.current_entity = name
         self.set_trackbar_values(self.threshold.get_threshold_values()[name])
