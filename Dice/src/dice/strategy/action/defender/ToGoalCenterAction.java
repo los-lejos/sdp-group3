@@ -1,4 +1,4 @@
-package dice.strategy;
+package dice.strategy.action.defender;
 
 
 import dice.communication.RobotInstruction;
@@ -6,6 +6,8 @@ import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
+import dice.strategy.StrategyAction;
 
 /*
  * @author Sam Stern

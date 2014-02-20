@@ -1,10 +1,11 @@
-package dice.strategy;
+package dice.strategy.action.shared;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.state.GameObject;
+import dice.strategy.StrategyAction;
 
 
 /*

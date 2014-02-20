@@ -3,6 +3,10 @@ package dice.strategy;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.ShootAction;
+import dice.strategy.action.defender.SaveAction;
+import dice.strategy.action.shared.BlockAction;
+import dice.strategy.action.shared.ToBallAction;
 
 /**
  * Keep track of what both robots are doing

@@ -1,4 +1,4 @@
-package dice.strategy;
+package dice.strategy.action.attacker;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +9,8 @@ import dice.state.GameObject;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
+import dice.strategy.StrategyAction;
 
 /**
  * Repositions attacker if it has a ball but shooting it

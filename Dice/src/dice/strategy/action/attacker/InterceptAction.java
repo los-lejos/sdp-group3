@@ -1,4 +1,4 @@
-package dice.strategy;
+package dice.strategy.action.attacker;
 
 
 
@@ -8,6 +8,8 @@ import dice.state.BoundedLine;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
+import dice.strategy.StrategyAction;
 
 /*
  * @author Sam Stern
