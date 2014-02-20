@@ -13,7 +13,7 @@ import dice.state.WorldState;
 
 public class ShootAction extends StrategyAction {
 	
-	Goal opGoal; //TODO set opponents goal
+	Goal opGoal;
 
 	public ShootAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -41,6 +41,7 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		opGoal = state.getOppGoal();
 		Vector2 aimTarget = StratMaths.relativePos(this.getTargetObject(state), opGoal.getGoalCenter());
 		return RobotInstruction.CreateShootTo(
 				StratMaths.cartesianToPolarTheta(aimTarget));
