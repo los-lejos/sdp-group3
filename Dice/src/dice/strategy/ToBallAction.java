@@ -26,15 +26,14 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
-		/*
-		if (((state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE) && (getTargetObject(state) == state.getOurAttacker())) ||
-			(((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) && (getTargetObject(state) == state.getOurDefender())))) {
+		if ((WorldState.PitchZone.OUR_ATTACK_ZONE.equals(state.getBallZone()) && 
+				getTargetObject(state).equals(state.getOurAttacker())) ||
+			(WorldState.PitchZone.OUR_DEFEND_ZONE.equals(state.getBallZone()) && 
+					getTargetObject(state).equals(state.getOurDefender()))) {
 			return true;
 		} else {
 			return false;
 		}
-		*/
 	}
 
 	@Override
@@ -52,10 +51,7 @@ public class ToBallAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 ballPos = state.getBall().getPos();
         GameObject robot;
-        if (this.targetRobot == RobotType.ATTACKER)
-            robot = state.getOurAttacker();
-        else
-            robot = state.getOurDefender();
+        robot = getTargetObject(state);
 
         System.out.println("Ball pos: " + ballPos.X + "," + ballPos.Y);
         System.out.println("Robot pos: " + robot.getPos().X + "," + robot.getPos().Y);

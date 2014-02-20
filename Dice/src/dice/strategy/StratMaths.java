@@ -7,9 +7,16 @@ import dice.state.WorldState;
 
 /*
  * @author Sam Stern
+ * @author Andrew Johnston
  */
 
 final class StratMaths {
+	
+	// maximum angle relative to the goal we'll tolerate shooting at it from
+	static final int SHOOT_ANGLE_TOLERANCE = 30; // arbitrary, adjust at your pleasure
+	
+	// tolerance if we want to find out if something's 'in the area of' a position
+	static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 	
 	protected static boolean canReach(Vector2 v, GameObject o) {
 		//TODO
@@ -36,6 +43,27 @@ final class StratMaths {
 	
 	protected static boolean willCollideWithBall(GameObject target) {
 		//TODO
+		return false;
+	}
+	
+	/**
+	 * Method which will tell you whether an object is in front
+	 * of another object (straight line...ish)
+	 * 
+	 * @param me object it might be in front of
+	 * @param it object which might be in front of me
+	 * @return true if yes, false if no
+	 */
+	protected static boolean isInFrontOf(GameObject me, GameObject it) {
+		Vector2 whereIAm = me.getPos();
+		Vector2 whereItIs = it.getPos();
+
+		// is where it is more-or-less in the same Y as me?
+		if (whereIAm.Y >= (whereItIs.Y - POSITION_FUZZ) &&
+				whereIAm.Y <= (whereItIs.Y + POSITION_FUZZ)) {
+			return true;
+		}
+		
 		return false;
 	}
 	

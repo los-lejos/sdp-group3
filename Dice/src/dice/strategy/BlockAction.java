@@ -2,6 +2,7 @@ package dice.strategy;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -14,9 +15,7 @@ import dice.state.WorldState;
 
 public class BlockAction extends StrategyAction {
 	
-	protected double criticalVel;
-	protected Vector2 whereToMove;
-	Goal ourGoal; // TODO
+	protected double criticalVel; //TODO what is critical velocity?
 
 	public BlockAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -50,10 +49,14 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		whereToMove.setPos(getTargetObject(state).getPos().X,StratMaths.getBetweenY(state.getBall(), ourGoal.getGoalCenter()));
+		Vector2 ourGoalCenter = state.getOurGoal().getGoalCenter();
+		double whereToBlockX = getTargetObject(state).getPos().X;
+		double whereToBlockY = StratMaths.getBetweenY(state.getBall(), ourGoalCenter);
+		Vector2 whereToBlock = new Vector2 (whereToBlockX, whereToBlockY);
+		GameObject robot = getTargetObject(state);
 		return RobotInstruction.CreateMoveTo(
-				StratMaths.cartesianToPolarTheta(whereToMove), 
-				StratMaths.cartestanToPolarR(whereToMove));
+				(long) Math.round(Math.toDegrees(robot.getRotationRelativeTo(whereToBlock))),
+				(byte) Math.round(10 * robot.getEuclidean(whereToBlock)));
 	}
 
 }
