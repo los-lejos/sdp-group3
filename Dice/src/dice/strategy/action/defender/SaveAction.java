@@ -78,7 +78,7 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return RobotInstruction.CreateLateralMoveTo((byte) Math.round((whereToBlock.Y - state.getOurDefender().getPos().Y) / 10.0));
+		return RobotInstruction.CreateLateralMoveTo(whereToBlock.Y - state.getOurDefender().getPos().Y);
 				//StratMaths.cartesianToPolarTheta(whereToBlock),
 				//StratMaths.cartestanToPolarR(whereToBlock));
 	}

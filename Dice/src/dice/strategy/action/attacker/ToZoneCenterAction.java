@@ -41,7 +41,7 @@ public class ToZoneCenterAction extends StrategyAction {
 		}
 		
 		long angle = (long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
-		byte dist = (byte) getTargetObject(state).getEuclidean(zoneCenter);
+		double dist = getTargetObject(state).getEuclidean(zoneCenter);
 		
 		return RobotInstruction.CreateMoveTo(angle, dist);
 	}
