@@ -1,10 +1,11 @@
-package dice.strategy;
+package dice.strategy.action.shared;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.GameObject;
+import dice.strategy.StrategyAction;
 
 
 /*
@@ -18,23 +19,14 @@ public class ToBallAction extends StrategyAction {
 	public ToBallAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "ToBallAction";
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
-		/*
-		if (((state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE) && (getTargetObject(state) == state.getOurAttacker())) ||
-			(((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) && (getTargetObject(state) == state.getOurDefender())))) {
+		if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
 			return true;
 		} else {
 			return false;
 		}
-		*/
 	}
 
 	@Override
@@ -51,17 +43,13 @@ public class ToBallAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 ballPos = state.getBall().getPos();
-        GameObject robot;
-        if (this.targetRobot == RobotType.ATTACKER)
-            robot = state.getOurAttacker();
-        else
-            robot = state.getOurDefender();
+        GameObject robot = getTargetObject(state);
 
         System.out.println("Ball pos: " + ballPos.X + "," + ballPos.Y);
         System.out.println("Robot pos: " + robot.getPos().X + "," + robot.getPos().Y);
         System.out.println(Math.toDegrees(robot.getRotationRelativeTo(ballPos)));
 		return  RobotInstruction.CreateMoveTo(
 				(long) Math.round(Math.toDegrees(robot.getRotationRelativeTo(ballPos))),
-				(byte) Math.round(10 * robot.getEuclidean(ballPos)));
+				Math.round(robot.getEuclidean(ballPos)));
 	}
 }

@@ -3,6 +3,10 @@ package dice.strategy;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.ShootAction;
+import dice.strategy.action.defender.SaveAction;
+import dice.strategy.action.shared.BlockAction;
+import dice.strategy.action.shared.ToBallAction;
 
 /**
  * Keep track of what both robots are doing
@@ -51,7 +55,7 @@ public class StrategyEvaluator {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
-			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+			//attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		} 
 	}
 	
@@ -98,8 +102,7 @@ public class StrategyEvaluator {
 		
 		// Action overrides	
 		// if defender is passing, attacker needs to receive
-		
-		if ((defender.getCurrentAction().getActionType().equals("SaveAction")) &&
+		if ((defender.getCurrentAction() instanceof SaveAction) &&
 				((state.getOurDefender().getPos().X > state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X > 0)) ||
 				( state.getOurDefender().getPos().X < state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X <0)) {
 			defenderOverride = true;

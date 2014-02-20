@@ -63,8 +63,10 @@ public class MovementThread extends Thread {
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
-				heading = instructionParameters[0];
-				distance = instructionParameters[1];
+				byte headingA = instructionParameters[0];
+				byte headingB = instructionParameters[1];
+				heading = (10 * headingA) + headingB;
+				distance = instructionParameters[2];
 				
 				currentState = State.MOVE_TO;
 			} else {
@@ -113,6 +115,9 @@ public class MovementThread extends Thread {
 			}
 			this.exit();
 		}
+		
+		// Convert from centimeters to millimeters
+		distance *= 10;
 	}
 	
 	public void run() {		

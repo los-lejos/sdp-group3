@@ -1,4 +1,4 @@
-package dice.strategy;
+package dice.strategy.action.defender;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
@@ -6,6 +6,7 @@ import dice.state.GameObject;
 import dice.state.Line;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StrategyAction;
 
 /*
  * @author Sam Stern
@@ -24,12 +25,7 @@ public class SaveAction extends StrategyAction {
 		whereToBlock = goalCenter;
 				
 	}
-	
-	@Override
-	public String getActionType(){
-		return "SaveAction";
-	}
-	
+
 	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
@@ -82,7 +78,7 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return RobotInstruction.CreateLateralMoveTo((byte) Math.round((whereToBlock.Y - state.getOurDefender().getPos().Y) / 10.0));
+		return RobotInstruction.CreateLateralMoveTo(whereToBlock.Y - state.getOurDefender().getPos().Y);
 				//StratMaths.cartesianToPolarTheta(whereToBlock),
 				//StratMaths.cartestanToPolarR(whereToBlock));
 	}

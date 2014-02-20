@@ -1,11 +1,11 @@
-package dice.strategy;
+package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
-
 import dice.communication.RobotType;
-import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
+import dice.strategy.StrategyAction;
 
 
 /*
@@ -18,17 +18,8 @@ public class RecievePassAction extends StrategyAction {
 	}
 
 	@Override
-	public String getActionType() {
-		return "getActionType";
-	}
-
-	@Override
 	public boolean isPossible(WorldState state) {
-		if (state.getBallZone() == WorldState.PitchZone.OUR_DEFEND_ZONE) {
-			return true;
-		} else {
-			return false;
-		}
+		return state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_DEFEND_ZONE;
 	}
 
 	@Override
@@ -42,13 +33,13 @@ public class RecievePassAction extends StrategyAction {
 		if (getTargetObject(state).getPos().equals(StratMaths.whereToRecievePass(state))) {
 			return RobotInstruction.CreateMoveTo(
 					(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall())),
-					(byte) 0);
+					0);
 		} else {
 			Vector2 whereToRecieve = StratMaths.whereToRecievePass(state);
 			
 			return RobotInstruction.CreateMoveTo(
 					(long) Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
-					(byte) getTargetObject(state).getEuclidean(whereToRecieve));
+					getTargetObject(state).getEuclidean(whereToRecieve));
 		}
 	}
 

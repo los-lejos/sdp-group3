@@ -80,7 +80,17 @@ public abstract class Robot {
 				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
 				
 				currentInstruction = newInstruction;
-				movementThread.setInstruction(currentInstruction);
+				
+				// If we have encountered an instruction beginning with '0'
+				// assume error and terminate
+				if(currentInstruction.getType() == 0) {
+					System.out.println("Received an instruction with type 0");
+					
+					this.isRunning = false;
+					continue;
+				} else {
+					movementThread.setInstruction(currentInstruction);
+				}
 			}
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
