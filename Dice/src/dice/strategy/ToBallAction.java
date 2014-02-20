@@ -51,10 +51,7 @@ public class ToBallAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 ballPos = state.getBall().getPos();
         GameObject robot;
-        if (this.targetRobot == RobotType.ATTACKER)
-            robot = state.getOurAttacker();
-        else
-            robot = state.getOurDefender();
+        robot = getTargetObject(state);
 
         System.out.println("Ball pos: " + ballPos.X + "," + ballPos.Y);
         System.out.println("Robot pos: " + robot.getPos().X + "," + robot.getPos().Y);
