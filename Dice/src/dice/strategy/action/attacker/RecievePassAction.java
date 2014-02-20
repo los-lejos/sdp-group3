@@ -1,9 +1,7 @@
 package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
-
 import dice.communication.RobotType;
-import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StratMaths;
@@ -20,17 +18,8 @@ public class RecievePassAction extends StrategyAction {
 	}
 
 	@Override
-	public String getActionType() {
-		return "getActionType";
-	}
-
-	@Override
 	public boolean isPossible(WorldState state) {
-		if (state.getBallZone() == WorldState.PitchZone.OUR_DEFEND_ZONE) {
-			return true;
-		} else {
-			return false;
-		}
+		return state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_DEFEND_ZONE;
 	}
 
 	@Override

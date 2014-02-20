@@ -2,9 +2,9 @@ package dice.strategy.action.shared;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.GameObject;
 import dice.strategy.StrategyAction;
 
 
@@ -19,18 +19,10 @@ public class ToBallAction extends StrategyAction {
 	public ToBallAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "ToBallAction";
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if ((WorldState.PitchZone.OUR_ATTACK_ZONE.equals(state.getBallZone()) && 
-				getTargetObject(state).equals(state.getOurAttacker())) ||
-			(WorldState.PitchZone.OUR_DEFEND_ZONE.equals(state.getBallZone()) && 
-					getTargetObject(state).equals(state.getOurDefender()))) {
+		if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
 			return true;
 		} else {
 			return false;

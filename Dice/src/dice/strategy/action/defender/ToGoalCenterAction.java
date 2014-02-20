@@ -6,6 +6,7 @@ import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.PitchZone;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -20,12 +21,6 @@ public class ToGoalCenterAction extends StrategyAction {
 	public ToGoalCenterAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "ToGoalCenterAction";
-	}
-	
 
 	@Override
 	public boolean isPossible(WorldState state) {
@@ -34,8 +29,10 @@ public class ToGoalCenterAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if ((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) || 
-			(state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE)) {
+		PitchZone ballZone = state.getBall().getCurrentZone();
+		
+		if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || 
+			(ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE)) {
 			return 2;
 		} else {
 			return 1;

@@ -55,7 +55,7 @@ public class StrategyEvaluator {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
-			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+			//attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		} 
 	}
 	
@@ -102,8 +102,7 @@ public class StrategyEvaluator {
 		
 		// Action overrides	
 		// if defender is passing, attacker needs to receive
-		
-		if ((defender.getCurrentAction().getActionType().equals("SaveAction")) &&
+		if ((defender.getCurrentAction() instanceof SaveAction) &&
 				((state.getOurDefender().getPos().X > state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X > 0)) ||
 				( state.getOurDefender().getPos().X < state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X <0)) {
 			defenderOverride = true;

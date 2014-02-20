@@ -20,13 +20,7 @@ public class ShootAction extends StrategyAction {
 	public ShootAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "ShootAction";
-	}
-	
-	
+
 	@Override
 	public boolean isPossible(WorldState state) {
 		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) {

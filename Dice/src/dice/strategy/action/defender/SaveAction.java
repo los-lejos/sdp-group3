@@ -25,12 +25,7 @@ public class SaveAction extends StrategyAction {
 		whereToBlock = goalCenter;
 				
 	}
-	
-	@Override
-	public String getActionType(){
-		return "SaveAction";
-	}
-	
+
 	@Override
 	public boolean isPossible(WorldState state) {
 		return true;

@@ -2,7 +2,6 @@ package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
-import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StrategyAction;
@@ -20,18 +19,13 @@ public class ToZoneCenterAction extends StrategyAction {
 	}
 
 	@Override
-	public String getActionType() {
-		return "ToZoneCenterAction";
-	}
-
-	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if ((getTargetObject(state) == state.getOurAttacker()) && !(state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE)){
+		if ((getTargetObject(state) == state.getOurAttacker()) && !(state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_ATTACK_ZONE)){
 			return 1;
 		} else {
 			return 0;

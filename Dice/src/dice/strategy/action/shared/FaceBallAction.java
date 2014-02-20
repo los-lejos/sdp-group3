@@ -18,11 +18,6 @@ public class FaceBallAction extends StrategyAction {
 	}
 	
 	@Override
-	public String getActionType(){
-		return "FaceBallAction";
-	}
-	
-	@Override
 	public boolean isPossible(WorldState state) {
 		return true;
 	}

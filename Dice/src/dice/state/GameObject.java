@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 import dice.Log;
+import dice.state.WorldState.PitchZone;
 
 /** This class represents the state of objects
  * on the table (that can have positions)
@@ -18,6 +19,7 @@ public class GameObject {
     private List<Double> rotations; // the rotation of the object relative
                              // to 'up' (on the camera)
 
+    private PitchZone currentZone;
 
     public GameObject() {
     	positions = new ArrayList<Vector2>();
@@ -25,6 +27,14 @@ public class GameObject {
     	System.out.println("Initializing object.");
 
     	this.rotations.add(0.0);
+    }
+    
+    public PitchZone getCurrentZone() {
+    	return currentZone;
+    }
+    
+    public void setCurrentZone(PitchZone currentZone) {
+    	this.currentZone = currentZone;
     }
     
     public void setRotation(double rotation) {

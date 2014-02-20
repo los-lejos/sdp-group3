@@ -5,9 +5,9 @@ package dice.strategy.action.attacker;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.BoundedLine;
-import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.PitchZone;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -30,18 +30,15 @@ public class InterceptAction extends StrategyAction {
 	public InterceptAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "InterceptAction";
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
 		Vector2 ballVel = state.getBall().getVelocity();
+		PitchZone ballZone = state.getBall().getCurrentZone();
+		
 		boolean hasLargeNegVel = (ballVel.X < 0) && ballVel.X > -Math.abs(criticalVel);
 		boolean canReach = (getTargetObject(state) == state.getOurAttacker()) && 
-				((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) || (state.getBallZone() == WorldState.PitchZone.OUR_ATTACK_ZONE));
+				((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE));
 		
 		if (hasLargeNegVel && canReach) {
 			return true;

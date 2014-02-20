@@ -2,6 +2,8 @@ package dice.state;
 
 import java.security.InvalidParameterException;
 
+import dice.Log;
+
 /** The class that will contain all information about the
  * current state of the game.
  * @author Craig Wilkinson
@@ -111,17 +113,38 @@ public class WorldState {
     		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
         opponentDefender.setPos(convertYValue(a));
         opponentDefender.setRotation(aAngle);
+        this.updateObjectZone(opponentDefender);
         
         ourAttacker.setPos(convertYValue(b));
         ourAttacker.setRotation(bAngle);
+        this.updateObjectZone(ourAttacker);
         
         opponentAttacker.setPos(convertYValue(c));
         opponentAttacker.setRotation(cAngle);
+        this.updateObjectZone(opponentAttacker);
         
         ourDefender.setPos(convertYValue(d));
         ourDefender.setRotation(dAngle);
+        this.updateObjectZone(ourDefender);
 
         this.ball.setPos(convertYValue(ball));
+        this.updateObjectZone(this.ball);
+    }
+    
+    private void updateObjectZone(GameObject object) {
+        double objectX = object.getPos().X;
+
+        if (objectX >= origin && objectX <= firstDivision) {
+            object.setCurrentZone(zoneFromNumber(0));
+        } else if (objectX <= secondDivision) {
+        	object.setCurrentZone(zoneFromNumber(1));
+        } else if (objectX <= thirdDivision) {
+        	object.setCurrentZone(zoneFromNumber(2));
+        } else if (objectX <= end) {
+        	object.setCurrentZone(zoneFromNumber(3));
+        } else {
+            Log.logError("Cannot update object zone - unexpected x coordinate: " + objectX);
+        }
     }
 
     public void setSide(Side side) {
@@ -174,7 +197,7 @@ public class WorldState {
     }
 
     // 0-3 left to right on vision
-    public PitchZone zoneFromNumber(int number)
+    private PitchZone zoneFromNumber(int number)
             throws InvalidParameterException {
         PitchZone result;
         
@@ -283,24 +306,6 @@ public class WorldState {
 
     public GameObject getBall() {
     	return ball;
-    }
-
-    public PitchZone getBallZone() {
-        PitchZone ballZone;
-        double ballX = ball.getPos().X;
-
-        if (ballX >= origin && ballX <= firstDivision)
-            ballZone = zoneFromNumber(0);
-        else if (ballX <= secondDivision)
-            ballZone = zoneFromNumber(1);
-        else if (ballX <= thirdDivision)
-            ballZone = zoneFromNumber(2);
-        else if (ballX <= end)
-            ballZone = zoneFromNumber(3);
-        else
-            return null;
-        
-        return ballZone;
     }
 
     public BallPossession getBallPossession() {

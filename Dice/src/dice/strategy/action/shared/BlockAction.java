@@ -3,9 +3,9 @@ package dice.strategy.action.shared;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
-import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.PitchZone;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -22,15 +22,12 @@ public class BlockAction extends StrategyAction {
 	public BlockAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
-	
-	@Override
-	public String getActionType(){
-		return "BlockAction";
-	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if ((state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE) || (state.getBallZone() == WorldState.PitchZone.OPP_ATTACK_ZONE)) {
+		PitchZone ballZone = state.getBall().getCurrentZone();
+		
+		if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE)) {
 			return true;
 		} else {
 			return false;
@@ -39,10 +36,12 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if ((getTargetObject(state) == state.getOurDefender()) && (state.getBallZone() == WorldState.PitchZone.OPP_ATTACK_ZONE) 
+		PitchZone ballZone = state.getBall().getCurrentZone();
+		
+		if ((getTargetObject(state) == state.getOurDefender()) && (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) 
 				&& (Math.abs(state.getBall().getVelocity().Y) < criticalVel)) {
 			return 2;
-		} else if ((getTargetObject(state) == state.getOurAttacker()) && (state.getBallZone() == WorldState.PitchZone.OPP_DEFEND_ZONE)){
+		} else if ((getTargetObject(state) == state.getOurAttacker()) && (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE)){
 			return 1;
 		} else {
 			return 0;

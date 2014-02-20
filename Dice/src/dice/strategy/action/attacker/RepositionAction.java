@@ -1,8 +1,5 @@
 package dice.strategy.action.attacker;
 
-import java.util.Arrays;
-import java.util.List;
-
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
@@ -23,11 +20,6 @@ public class RepositionAction extends StrategyAction {
 
 	public RepositionAction(RobotType targetRobot) {
 		super(targetRobot);
-	}
-
-	@Override
-	public String getActionType() {
-		return "RepositionAction";
 	}
 
 	@Override
