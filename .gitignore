@@ -7,6 +7,11 @@ Dice/.gitignore
 Milestone/.gitignore
 Robot/.gitignore
 
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+
 # Directories #
 /build/
 bin/
