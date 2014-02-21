@@ -1,7 +1,10 @@
 package dice.strategy;
 
 
+import dice.state.BoundedLine;
 import dice.state.GameObject;
+import dice.state.Path;
+import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
 
@@ -41,8 +44,11 @@ public final class StratMaths {
 		return (long) Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
 	}
 	
-	public static boolean willCollideWithBall(GameObject target) {
-		//TODO
+	public static boolean willCollideWithBall(GameObject robot, WorldState state) {
+		Vector2 robotPos = robot.getPos();
+		GameObject ball = state.getBall();
+		Path ballPath = ball.projectPathFromVelocity(state);
+		//return robotPos.willIntercept(ballPath); TODO
 		return false;
 	}
 	

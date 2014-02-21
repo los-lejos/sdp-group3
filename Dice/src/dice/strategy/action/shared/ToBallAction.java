@@ -22,11 +22,7 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
-			return true;
-		} else {
-			return false;
-		}
+		return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
 	}
 
 	@Override
@@ -42,13 +38,15 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		
 		Vector2 ballPos = state.getBall().getPos();
         GameObject robot = getTargetObject(state);
 
         System.out.println("Ball pos: " + ballPos.X + "," + ballPos.Y);
         System.out.println("Robot pos: " + robot.getPos().X + "," + robot.getPos().Y);
         System.out.println(Math.toDegrees(robot.getRotationRelativeTo(ballPos)));
-		return  RobotInstruction.CreateMoveTo(
+		
+        return  RobotInstruction.CreateMoveTo(
 				(long) Math.round(Math.toDegrees(robot.getRotationRelativeTo(ballPos))),
 				Math.round(robot.getEuclidean(ballPos)));
 	}

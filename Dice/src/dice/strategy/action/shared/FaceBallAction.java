@@ -19,12 +19,20 @@ public class FaceBallAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
+		
+		boolean ourAttackerHasBall = state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER;
+		boolean ourDefenderHasBall = state.getBallPossession() == WorldState.BallPossession.OUR_DEFENDER;
+		
+		boolean targetIsAttacker = getTargetObject(state) == state.getOurAttacker();
+		boolean targetIsDefender = getTargetObject(state) == state.getOurDefender();
+		
+		return !((targetIsAttacker && ourAttackerHasBall) || (targetIsDefender && ourDefenderHasBall)); 
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (StratMaths.willCollideWithBall(getTargetObject(state))) {
+		
+		if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
 			return 2;
 		} else {
 			return 0;
@@ -33,6 +41,7 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		
 		double rotation = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall()));
 
 		return RobotInstruction.CreateMoveTo(
