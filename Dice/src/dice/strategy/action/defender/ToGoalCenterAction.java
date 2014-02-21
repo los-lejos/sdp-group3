@@ -12,10 +12,12 @@ import dice.strategy.StrategyAction;
 
 /*
  * @author Sam Stern
+ * 
+ * 
  */
 public class ToGoalCenterAction extends StrategyAction {
 
-	Goal ourGoal; // TODO set our Goal
+	Goal ourGoal;
 	Vector2 ourGoalCenter = ourGoal.getGoalCenter();
 	
 	public ToGoalCenterAction(RobotType targetRobot) {
@@ -29,10 +31,15 @@ public class ToGoalCenterAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
+		
+		Goal ourGoal = state.getOurGoal();
+		double halfGoalWidth = Math.abs((ourGoal.getTopPost().Y-ourGoal.getBottomPost().Y))/2;
+		
 		PitchZone ballZone = state.getBall().getCurrentZone();
 		
 		if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || 
-			(ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE)) {
+			(ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE) &&
+			(getTargetObject(state).getEuclidean(ourGoalCenter) > halfGoalWidth)) {
 			return 2;
 		} else {
 			return 1;
@@ -42,8 +49,8 @@ public class ToGoalCenterAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.CreateMoveTo(
-				StratMaths.cartesianToPolarTheta(ourGoalCenter), 
-				StratMaths.cartestanToPolarR(ourGoalCenter));
+				(long) getTargetObject(state).getRotationRelativeTo(ourGoalCenter), 
+				(byte) getTargetObject(state).getEuclidean(ourGoalCenter));
 	}
 
 }
