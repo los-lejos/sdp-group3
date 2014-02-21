@@ -38,8 +38,8 @@ public class ShootAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		opGoal = state.getOppGoal();
-		Vector2 aimTarget = StratMaths.relativePos(this.getTargetObject(state), opGoal.getGoalCenter());
+		Vector2 opGoalCenter = opGoal.getGoalCenter();
 		return RobotInstruction.CreateShootTo(
-				StratMaths.cartesianToPolarTheta(aimTarget));
+				(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
 		}
 	}

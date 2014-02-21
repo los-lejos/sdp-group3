@@ -17,14 +17,14 @@ import dice.strategy.StrategyAction;
  * intercept opponent's pass
  * determine where the ball is headed and move there
  * 
- * Attackers equivilant to SaveAction
+ * Attackers equivalant to SaveAction
  */
 
 public class InterceptAction extends StrategyAction {
 	
 	Vector2 whereToIntercept;
-	BoundedLine ballTraj;
-	protected double criticalVel; //sould be the same as in BlockAction
+	BoundedLine ballTrajecory;
+	protected double criticalVel; //should be the same as in BlockAction
 	
 	
 	public InterceptAction(RobotType targetRobot) {
@@ -36,15 +36,11 @@ public class InterceptAction extends StrategyAction {
 		Vector2 ballVel = state.getBall().getVelocity();
 		PitchZone ballZone = state.getBall().getCurrentZone();
 		
-		boolean hasLargeNegVel = (ballVel.X < 0) && ballVel.X > -Math.abs(criticalVel);
-		boolean canReach = (getTargetObject(state) == state.getOurAttacker()) && 
-				((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE));
+		boolean hasLargeNegVel = ballVel.X > -Math.abs(criticalVel);
+		boolean canReach = (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE);
 		
-		if (hasLargeNegVel && canReach) {
-			return true;
-		} else {
-			return false;
-		}
+		return hasLargeNegVel && canReach;
+	
 	}
 
 	@Override

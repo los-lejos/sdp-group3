@@ -186,7 +186,11 @@ public class GameObject {
         return getRotationRelativeTo(obj.getPos());
     }
 
-    // get the rotation relative to another position in radians
+    /** get the rotation relative to another position in radians
+     * 
+     * @param otherPos
+     * @return 
+     */
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
 
