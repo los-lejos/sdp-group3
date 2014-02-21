@@ -98,11 +98,6 @@ class Detection:
 
     def __find_entity(self, threshold_img, which, image):
 
-        # Work around OpenCV crash on some nearly black images
-        nonZero = cv.CountNonZero(image.getGrayscaleMatrix())
-        if nonZero < 10:
-            return Entity()
-
         size = None
         if which == BALL:
             size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
@@ -114,7 +109,8 @@ class Detection:
             self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[which]))
 
         entity_blob = self.__find_entity_blob(threshold_img, size)
-        entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob, self.areas, self._scale)
+        entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob,
+                        self.areas, self._scale, render_tlayers = self._render_tlayers)
 
         if which >= 0 and which < 4:
             self.__clarify_coords(entity, image)
@@ -223,11 +219,13 @@ class Detection:
 
 class Entity:
 
-    def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None, areas = None, scale = None):
+    def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None,
+                 areas = None, scale = None, render_tlayers = True):
 
         self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
         self._local_coords = (-1, -1) # coordinates in the relevant area of the frame
         self._frame_coords = (-1, -1) # coordinates in the frame
+        self._render_tlayers = render_tlayers
         self._colour_frame_coords = (-1, -1)
         self._angle = None
         self._scale = scale
@@ -315,9 +313,9 @@ class Entity:
         if self.get_coordinates()[0] == -1: return
         if not self._colour_frame_coords[0] == -1:
             layer.circle(self._colour_frame_coords, radius=2, filled=1)
-        if not self.rect1 is None:
+        if not self.rect1 is None and self._render_tlayers:
             layer.rectangle(self.rect1[0], self.rect1[1], color=self.rect_colors[0])
-        if not self.rect2 is None:
+        if not self.rect2 is None and self._render_tlayers:
             layer.rectangle(self.rect2[0], self.rect2[1], color=self.rect_colors[1])
         if not self.rect3 is None:
             layer.rectangle(self.rect3[0], self.rect3[1], color=Color.RED)
@@ -338,8 +336,9 @@ class Entity:
                 endx = x + int(RADIUS * self._scale * math.cos(angle))
                 endy = y + int(RADIUS * self._scale * math.sin(angle))
                 layer.line((x, y), (endx, endy), antialias=False)
-                degrees = (self._angle * 180) / math.pi
-                layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
+                if self._render_tlayers:
+                    degrees = (self._angle * 180) / math.pi
+                    layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
         elif self.which == BALL:
             w = layer.width
             h = layer.height

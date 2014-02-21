@@ -37,7 +37,7 @@ public class FaceBallAction extends StrategyAction {
 
 		return RobotInstruction.CreateMoveTo(
 				(long) rotation,
-				(byte) 0);
+				0);
 	}
 
 }

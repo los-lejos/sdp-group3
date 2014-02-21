@@ -33,13 +33,13 @@ public class RecievePassAction extends StrategyAction {
 		if (getTargetObject(state).getPos().equals(StratMaths.whereToRecievePass(state))) {
 			return RobotInstruction.CreateMoveTo(
 					(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall())),
-					(byte) 0);
+					0);
 		} else {
 			Vector2 whereToRecieve = StratMaths.whereToRecievePass(state);
 			
 			return RobotInstruction.CreateMoveTo(
 					(long) Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
-					(byte) getTargetObject(state).getEuclidean(whereToRecieve));
+					getTargetObject(state).getEuclidean(whereToRecieve));
 		}
 	}
 

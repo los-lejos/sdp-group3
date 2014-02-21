@@ -115,6 +115,9 @@ public class MovementThread extends Thread {
 			}
 			this.exit();
 		}
+		
+		// Convert from centimeters to millimeters
+		distance *= 10;
 	}
 	
 	public void run() {		

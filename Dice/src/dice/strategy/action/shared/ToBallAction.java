@@ -43,14 +43,13 @@ public class ToBallAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 ballPos = state.getBall().getPos();
-        GameObject robot;
-        robot = getTargetObject(state);
+        GameObject robot = getTargetObject(state);
 
         System.out.println("Ball pos: " + ballPos.X + "," + ballPos.Y);
         System.out.println("Robot pos: " + robot.getPos().X + "," + robot.getPos().Y);
         System.out.println(Math.toDegrees(robot.getRotationRelativeTo(ballPos)));
 		return  RobotInstruction.CreateMoveTo(
 				(long) Math.round(Math.toDegrees(robot.getRotationRelativeTo(ballPos))),
-				(byte) Math.round(10 * robot.getEuclidean(ballPos)));
+				Math.round(robot.getEuclidean(ballPos)));
 	}
 }

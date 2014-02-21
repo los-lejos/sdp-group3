@@ -56,8 +56,8 @@ public class BlockAction extends StrategyAction {
 		Vector2 whereToBlock = new Vector2 (whereToBlockX, whereToBlockY);
 		GameObject robot = getTargetObject(state);
 		return RobotInstruction.CreateMoveTo(
-				(long) Math.round(Math.toDegrees(robot.getRotationRelativeTo(whereToBlock))),
-				(byte) Math.round(10 * robot.getEuclidean(whereToBlock)));
+				Math.toDegrees(robot.getRotationRelativeTo(whereToBlock)),
+				robot.getEuclidean(whereToBlock));
 	}
 
 }

@@ -124,7 +124,7 @@ public class RepositionAction extends StrategyAction {
 			goodPos.setY(goodPos.Y - 10); // ...and this
 		}
 		
-		return RobotInstruction.CreateLateralMoveTo((byte) goodPos.Y);
+		return RobotInstruction.CreateLateralMoveTo(goodPos.Y);
 	}
 	
 	@Override
@@ -137,7 +137,7 @@ public class RepositionAction extends StrategyAction {
 			// point robot at goal
 			return RobotInstruction.CreateMoveTo(
 					(long) us.getRotationRelativeTo(goal.getGoalCenter()),
-					(byte) 0);
+					0);
 		} else if (inTheWay(us, annoyance, goal)) {
 			// move robot somewhere where the annoyance isn't
 			return getAvoidanceInstruction(us, annoyance, goal, state);
