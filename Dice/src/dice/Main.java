@@ -152,7 +152,7 @@ public class Main {
 	}
 	
 	private void execSend(String[] cmd) {
-		if(cmd.length < 5) {
+		if(cmd.length < 6) {
 			Log.logInfo("Not enough parameters specified");
 			return;
 		}

@@ -131,7 +131,5 @@ public class RepositionAction extends StrategyAction {
 			// move robot somewhere where an annoyance isn't
 			return getAvoidanceInstruction(us, annoyance, goal, state);
 		}
-
 	}
-
 }

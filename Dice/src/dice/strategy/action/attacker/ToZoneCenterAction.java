@@ -34,10 +34,9 @@ public class ToZoneCenterAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		
 		zoneCenter = state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE);
 		
-		long angle = (long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
+		double angle = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
 		double dist = getTargetObject(state).getEuclidean(zoneCenter);
 		
 		return RobotInstruction.CreateMoveTo(angle, dist);

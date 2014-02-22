@@ -38,10 +38,7 @@ public class GameObject {
     }
     
     public void setRotation(double rotation) {
-        // representation of rotation as given by vision returns value in
-        // radians measured clockwise from the left
-    	double result = (rotation - Math.PI / 2.0) % (Math.PI * 2.0);
-    	this.rotations.add(result);
+    	this.rotations.add(rotation);
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -193,29 +190,18 @@ public class GameObject {
      */
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
+        
+        if(myPos == null) {
+        	return 0;
+        }
 
         double yDiff = otherPos.Y - myPos.Y;
         double xDiff = otherPos.X - myPos.X;
         
-        double theta = Math.PI / 2.0 - Math.atan(xDiff / yDiff);
+        double theta = Math.atan2(yDiff, xDiff);
+        double myRotation = getRotation();
 
-        if (theta < 0)
-        	theta = Math.PI * 2 + theta;
-        
-        if (getRotation() > theta) {
-        	if (getRotation() - theta > Math.PI) {
-        		return Math.PI * 2 - (getRotation() - theta);
-        		
-        	} else {
-        		return theta - getRotation();
-        	}
-        } else {
-        	if (theta - getRotation() > Math.PI) {
-        		return -1 * (Math.PI * 2 - (theta - getRotation()));
-        	} else {
-        		return theta - getRotation();
-        	}
-        }
+        return theta - myRotation;
     }
 
     // get the euclidean distance to the object

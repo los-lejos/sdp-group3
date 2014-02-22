@@ -29,6 +29,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			conn.start();
 		} catch (BluetoothCommunicationException e) {
 			Log.logException(e);
+			conn = null;
 		}
 	}
 	
@@ -45,6 +46,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 	public void sendInstruction(RobotInstruction instruction) {
 		if(conn == null) {
 			Log.logError("Must call init before sending instruction");
+			instruction.getCallback().onError();
 			return;
 		}
 		
@@ -52,8 +54,10 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			Log.logInfo("Sending isntruction to " + this.robotType.toString());
 			conn.send(instruction);
 		} catch (IOException e) {
+			instruction.getCallback().onError();
 			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
+			instruction.getCallback().onError();
 			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		}
 	}
