@@ -6,7 +6,6 @@ import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 /*
@@ -14,8 +13,6 @@ import dice.strategy.StrategyAction;
  */
 
 public class ShootAction extends StrategyAction {
-	
-	Goal opGoal;
 
 	public ShootAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -37,9 +34,10 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		opGoal = state.getOppGoal();
+		Goal opGoal = state.getOppGoal();
 		Vector2 opGoalCenter = opGoal.getGoalCenter();
+		
 		return RobotInstruction.CreateShootTo(
-				(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
-		}
+				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
 	}
+}

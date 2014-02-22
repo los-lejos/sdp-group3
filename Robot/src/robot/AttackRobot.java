@@ -16,7 +16,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 public class AttackRobot extends Robot {
 	
 	private static final int tireDiameterMm = 62;
-	private static final int trackWidthMm = 142;
+	private static final int trackWidthMm = 136; // Actual measured - 119, this works better
 	
 	private static final NXTMotor kickMotor = new NXTMotor(MotorPort.B);
 	private static final NXTRegulatedMotor leftMotor = Motor.C;
@@ -57,11 +57,7 @@ public class AttackRobot extends Robot {
 
 	@Override
 	public void rotate(int heading) {
-		if (heading >= 0 && heading <= 180) {
-			pilot.rotate(heading, true);
-		} else if (heading > 180 && heading < 360) {
-			pilot.rotate(- (heading - 180), true);
-		}
+		pilot.rotate(heading, true);
 	}
 
 	@Override

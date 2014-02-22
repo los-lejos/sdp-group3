@@ -38,7 +38,7 @@ public class RecievePassAction extends StrategyAction {
 			Vector2 whereToRecieve = StratMaths.whereToRecievePass(state);
 			
 			return RobotInstruction.CreateMoveTo(
-					(long) Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
+					Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
 					getTargetObject(state).getEuclidean(whereToRecieve));
 		}
 	}

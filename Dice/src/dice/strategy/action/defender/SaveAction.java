@@ -14,6 +14,7 @@ import dice.strategy.StrategyAction;
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
 public class SaveAction extends StrategyAction {
+	
 	private Vector2 whereToBlock;
 	private Vector2 goalCenter;
 
@@ -22,8 +23,7 @@ public class SaveAction extends StrategyAction {
 		
 		goalCenter = new Vector2(10, 160);//ourGoal.getGoalCenter();
 
-		whereToBlock = goalCenter;
-				
+		whereToBlock = goalCenter;	
 	}
 
 	@Override
@@ -33,54 +33,22 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-	/*	GameObject ball = state.getBall();
-		try {
-			whereToBlock = new Vector2(ourGoalX,ball.projectPath(state).getCoordinateAtX(ourGoalX).Y);
-		} catch (InvalidPathException e) {
-			e.printStackTrace();
-		}
-		boolean canReachBall = StratMaths.canReach(whereToBlock, getTargetObject(state));
-		if (canReachBall && !StratMaths.willCollideWithBall(getTargetObject(state))) {
-			return 2;
-		} else if (canReachBall && StratMaths.willCollideWithBall(getTargetObject(state))){
-			return 0;
-		} else {
-			return 1;
-		}
+		GameObject ball = state.getBall();
+		Line line = ball.getLineFromVelocity();
+		ball.getSpeed();
+		double yValue = line.getYValue(goalCenter.X);
 		
-		*/
-		//Goal ourGoal = state.getOurGoal();
-		
-		try {
-			GameObject ball = state.getBall();
-			Line line = ball.getLineFromVelocity();
-			ball.getSpeed();
-			double yValue = line.getYValue(goalCenter.X);
-			
-			if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
-				whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
-			else
-				whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
-			//Vector2 result = path.getCoordinateAtX(goalCenter.X);
-			//if (result != null) {
-				//whereToBlock = result;
-				//System.out.println(whereToBlock.Y);
-			//}
-			
-		//} catch (InvalidPathException e) {
-		//	System.err.println("Path not long enough yet: " + e.getMessage());
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		
+		if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
+			whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
+		else
+			whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
+
 		return 2;
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.CreateLateralMoveTo(whereToBlock.Y - state.getOurDefender().getPos().Y);
-				//StratMaths.cartesianToPolarTheta(whereToBlock),
-				//StratMaths.cartestanToPolarR(whereToBlock));
 	}
 
 }

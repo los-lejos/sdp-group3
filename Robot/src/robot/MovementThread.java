@@ -25,6 +25,8 @@ public class MovementThread extends Thread {
 	private int heading, distance;
 
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
+    	this.setDaemon(true);
+    	
     	this.conn = conn;
     	this.robot = robot;
     }
@@ -49,6 +51,7 @@ public class MovementThread extends Thread {
 	
 	public void setInstruction(IssuedInstruction instruction) {
 		// If we're doing something, stop.
+		robot.stop();
 		interrupted = true;
 		currentState = State.READY;
 		
@@ -58,8 +61,31 @@ public class MovementThread extends Thread {
 	}
 	
 	protected void handleInstruction(IssuedInstruction instruction) {
+		updateStateForInstruction(instruction);
+		validateParameters();
+	}
+	
+	private void validateParameters() {
+		// Convert from centimeters to millimeters
+		distance *= 10;
+
+		if(heading > 180) {
+			heading -= 360;
+		} else if(heading < -180) {
+			heading += 360;
+		}
+		
+		assert (heading >= -180) && (heading <= 180);
+	}
+	
+	private void updateStateForInstruction(IssuedInstruction instruction) {
 		byte instructionType = instruction.getType();
 		byte[] instructionParameters = instruction.getParameters();
+		
+		// Reset state
+		heading = 0;
+		distance = 0;
+		currentState = State.READY;
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
@@ -101,23 +127,7 @@ public class MovementThread extends Thread {
 			System.out.println("MOVE_LAT");
 			System.out.println("Power: " + distance);
 			currentState = State.MOVE_LAT;
-		} else if (instructionType == 0) {
-			System.out.println("Zero instruction, assuming disconnected.");
-			boolean joined = false;
-			while (joined == false) {
-				try {
-					this.join();
-					joined = true;
-					
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			this.exit();
 		}
-		
-		// Convert from centimeters to millimeters
-		distance *= 10;
 	}
 	
 	public void run() {		
@@ -135,7 +145,7 @@ public class MovementThread extends Thread {
 			} else if(currentState == State.MOVE_TO) {
 				robot.rotate(heading);
 				while(robot.isMoving() && !interrupted);
-				
+
 				if(!interrupted) {
 					robot.move(distance);
 					while(robot.isMoving() && !interrupted);

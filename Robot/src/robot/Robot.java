@@ -95,7 +95,7 @@ public abstract class Robot {
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				this.movementThread.stopMovement();
+				//this.movementThread.stopMovement();
 				System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
@@ -136,9 +136,6 @@ public abstract class Robot {
 		this.cleanup();
 		
 		System.out.println("Exiting");
-		
-		// Allow people to read exceptions/messages before exiting
-		Button.waitForAnyPress();
 	}
 	
     private boolean rightSensorOnBoundary() {

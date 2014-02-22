@@ -40,14 +40,11 @@ public class InterceptAction extends StrategyAction {
 		boolean canReach = (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE);
 		
 		return hasLargeNegVel && canReach;
-	
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		
 		return 2;
-		
 	}
 
 	@Override

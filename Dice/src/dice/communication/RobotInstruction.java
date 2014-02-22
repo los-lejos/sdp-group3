@@ -14,18 +14,18 @@ public class RobotInstruction {
 	private static byte strategyToRobotDistance(double distance) {
 		// The pitch is 237 x 114 cm
 		// The vision coordinate system is 580 x 320
-		final double ratio = 237/580;
+		final double ratio = 237.0 / 580.0;
 		return (byte)(distance * ratio);
 	}
 	
 	public static RobotInstruction CreateMoveTo(double angle, double distance) {
 		assert (angle >= 0) && (angle <= 360);
 		
-		byte angleUpper = (byte)(angle / 10);
-		byte angleLower = (byte)(angle % 10);
-		
 		angle = Math.round(angle);
 		
+		byte angleUpper = (byte)(angle / 10);
+		byte angleLower = (byte)(angle % 10);
+
 		byte robotDistance = strategyToRobotDistance(distance);
 
 		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, robotDistance);

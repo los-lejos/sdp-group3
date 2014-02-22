@@ -6,12 +6,11 @@ import dice.state.WorldState;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
+/*
+ * @author Sam Stern
+ */
+
 public class FaceBallAction extends StrategyAction {
-	
-	/*
-	 * @author Sam Stern
-	 */
-	
 
 	public FaceBallAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -31,7 +30,6 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		
 		if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
 			return 2;
 		} else {
@@ -45,8 +43,7 @@ public class FaceBallAction extends StrategyAction {
 		double rotation = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall()));
 
 		return RobotInstruction.CreateMoveTo(
-				(long) rotation,
+				rotation,
 				0);
 	}
-
 }
