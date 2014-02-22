@@ -21,11 +21,11 @@ public class RobotInstruction {
 	public static RobotInstruction CreateMoveTo(double angle, double distance) {
 		assert (angle >= 0) && (angle <= 360);
 		
-		byte angleUpper = (byte)(angle / 10);
-		byte angleLower = (byte)(angle % 10);
-		
 		angle = Math.round(angle);
 		
+		byte angleUpper = (byte)(angle / 10);
+		byte angleLower = (byte)(angle % 10);
+
 		byte robotDistance = strategyToRobotDistance(distance);
 
 		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, robotDistance);
