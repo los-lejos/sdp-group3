@@ -136,7 +136,7 @@ public class RepositionAction extends StrategyAction {
 		if (!pointingAtGoal(us,goal)) {
 			// point robot at goal
 			return RobotInstruction.CreateMoveTo(
-					(long) us.getRotationRelativeTo(goal.getGoalCenter()),
+					us.getRotationRelativeTo(goal.getGoalCenter()),
 					0);
 		} else if (inTheWay(us, annoyance, goal)) {
 			// move robot somewhere where the annoyance isn't
@@ -145,7 +145,4 @@ public class RepositionAction extends StrategyAction {
 		
 		return null;
 	}
-
-
-
 }

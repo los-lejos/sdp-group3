@@ -1,13 +1,11 @@
 package dice.strategy.action.defender;
 
-
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.state.WorldState.PitchZone;
-import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 /*
@@ -49,8 +47,8 @@ public class ToGoalCenterAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.CreateMoveTo(
-				(long) getTargetObject(state).getRotationRelativeTo(ourGoalCenter), 
-				(byte) getTargetObject(state).getEuclidean(ourGoalCenter));
+				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(ourGoalCenter)), 
+				getTargetObject(state).getEuclidean(ourGoalCenter));
 	}
 
 }
