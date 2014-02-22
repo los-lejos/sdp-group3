@@ -2,6 +2,8 @@ package robot;
 
 import java.io.IOException;
 
+import lejos.nxt.Button;
+
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
@@ -49,6 +51,7 @@ public class MovementThread extends Thread {
 	
 	public void setInstruction(IssuedInstruction instruction) {
 		// If we're doing something, stop.
+		robot.stop();
 		interrupted = true;
 		currentState = State.READY;
 		
@@ -101,19 +104,6 @@ public class MovementThread extends Thread {
 			System.out.println("MOVE_LAT");
 			System.out.println("Power: " + distance);
 			currentState = State.MOVE_LAT;
-		} else if (instructionType == 0) {
-			System.out.println("Zero instruction, assuming disconnected.");
-			boolean joined = false;
-			while (joined == false) {
-				try {
-					this.join();
-					joined = true;
-					
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			this.exit();
 		}
 		
 		// Convert from centimeters to millimeters
@@ -135,7 +125,7 @@ public class MovementThread extends Thread {
 			} else if(currentState == State.MOVE_TO) {
 				robot.rotate(heading);
 				while(robot.isMoving() && !interrupted);
-				
+
 				if(!interrupted) {
 					robot.move(distance);
 					while(robot.isMoving() && !interrupted);
