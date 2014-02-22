@@ -2,8 +2,6 @@ package robot;
 
 import java.io.IOException;
 
-import lejos.nxt.Button;
-
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
@@ -61,6 +59,24 @@ public class MovementThread extends Thread {
 	}
 	
 	protected void handleInstruction(IssuedInstruction instruction) {
+		updateStateForInstruction(instruction);
+		validateParameters();
+	}
+	
+	private void validateParameters() {
+		// Convert from centimeters to millimeters
+		distance *= 10;
+
+		if(heading > 180) {
+			heading -= 360;
+		}
+		
+		if(heading < -180) {
+			heading += 360;
+		}
+	}
+	
+	private void updateStateForInstruction(IssuedInstruction instruction) {
 		byte instructionType = instruction.getType();
 		byte[] instructionParameters = instruction.getParameters();
 		
@@ -105,9 +121,6 @@ public class MovementThread extends Thread {
 			System.out.println("Power: " + distance);
 			currentState = State.MOVE_LAT;
 		}
-		
-		// Convert from centimeters to millimeters
-		distance *= 10;
 	}
 	
 	public void run() {		

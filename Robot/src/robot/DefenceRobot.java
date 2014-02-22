@@ -67,14 +67,6 @@ public class DefenceRobot extends Robot {
 	@Override
 	public void rotate(int heading) {
 		this.stopLat();
-		
-		if(heading > 180) {
-			heading -= 360;
-		}
-		
-		if(heading < -180) {
-			heading += 360;
-		}
 
 		pilot.rotate(heading, true);
 	}
