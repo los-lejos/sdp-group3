@@ -25,6 +25,8 @@ public class MovementThread extends Thread {
 	private int heading, distance;
 
     public MovementThread(Robot robot, BluetoothDiceConnection conn) {
+    	this.setDaemon(true);
+    	
     	this.conn = conn;
     	this.robot = robot;
     }
