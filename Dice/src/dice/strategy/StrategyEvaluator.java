@@ -3,9 +3,14 @@ package dice.strategy;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.InterceptAction;
+import dice.strategy.action.attacker.RecievePassAction;
 import dice.strategy.action.attacker.ShootAction;
+import dice.strategy.action.attacker.ToZoneCenterAction;
 import dice.strategy.action.defender.SaveAction;
+import dice.strategy.action.defender.ToGoalCenterAction;
 import dice.strategy.action.shared.BlockAction;
+import dice.strategy.action.shared.FaceBallAction;
 import dice.strategy.action.shared.ToBallAction;
 
 /**
@@ -49,8 +54,13 @@ public class StrategyEvaluator {
 		attacker.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			attacker.addAction(new BlockAction(RobotType.ATTACKER));
+			attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+			attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+			attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
+			attacker.addAction(new BlockAction(RobotType.ATTACKER));
+			attacker.addAction(new FaceBallAction(RobotType.ATTACKER));
+			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_ATTACKER) {
@@ -63,8 +73,11 @@ public class StrategyEvaluator {
 		defender.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			defender.addAction(new BlockAction(RobotType.DEFENDER));
 			defender.addAction(new SaveAction(RobotType.DEFENDER));
+			defender.addAction(new ToGoalCenterAction(RobotType.DEFENDER));
+			defender.addAction(new BlockAction(RobotType.DEFENDER));
+			defender.addAction(new FaceBallAction(RobotType.DEFENDER));
+			defender.addAction(new ToBallAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		} else if(this.type == StrategyType.M3_DEFENDER) {
