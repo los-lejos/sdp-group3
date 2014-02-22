@@ -2,10 +2,7 @@ package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
-import dice.state.GameObject;
-import dice.state.Goal;
-import dice.state.Vector2;
-import dice.state.WorldState;
+import dice.state.*;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -25,12 +22,8 @@ public class RepositionAction extends StrategyAction {
 	@Override
 	public boolean isPossible(WorldState state) {
 		// only if the attacker has the ball
-		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+		return (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER);
+    }
 
 	@Override
 	protected int calculateUtility(WorldState state) {
@@ -48,8 +41,10 @@ public class RepositionAction extends StrategyAction {
 			// yet
 			return 2;
 		}
-		
-		return 0;
+
+        // TODO: fancy 'not actually pointing at goal' tricks eg bouncing ball off wall
+
+        return 0;
 	}
 	
 	/**
@@ -59,16 +54,10 @@ public class RepositionAction extends StrategyAction {
 	 * @param goal Goal it might be pointing at
 	 * @return true or false
 	 */
-	private boolean pointingAtGoal(GameObject us, Goal goal) {
+    private boolean pointingAtGoal(GameObject us, Goal goal) {
 		Vector2 whereGoalIs = goal.getGoalCenter();
 		
-		if (us.getRotationRelativeTo(whereGoalIs) < StratMaths.SHOOT_ANGLE_TOLERANCE) {
-			return true;
-		}
-		
-		// TODO: fancy 'not actually pointing at goal' tricks eg bouncing ball off wall
-		
-		return false;
+		return (us.getRotationRelativeTo(whereGoalIs) < StratMaths.SHOOT_ANGLE_TOLERANCE);
 	}
 	
 	/**
@@ -136,16 +125,13 @@ public class RepositionAction extends StrategyAction {
 		if (!pointingAtGoal(us,goal)) {
 			// point robot at goal
 			return RobotInstruction.CreateMoveTo(
-					(long) us.getRotationRelativeTo(goal.getGoalCenter()),
+					us.getRotationRelativeTo(goal.getGoalCenter()),
 					0);
-		} else if (inTheWay(us, annoyance, goal)) {
-			// move robot somewhere where the annoyance isn't
+		} else  {
+			// move robot somewhere where an annoyance isn't
 			return getAvoidanceInstruction(us, annoyance, goal, state);
 		}
-		
-		return null;
+
 	}
-
-
 
 }
