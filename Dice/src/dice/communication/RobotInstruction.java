@@ -14,7 +14,7 @@ public class RobotInstruction {
 	private static byte strategyToRobotDistance(double distance) {
 		// The pitch is 237 x 114 cm
 		// The vision coordinate system is 580 x 320
-		final double ratio = 237/580;
+		final double ratio = 237.0 / 580.0;
 		return (byte)(distance * ratio);
 	}
 	
