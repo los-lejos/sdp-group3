@@ -40,5 +40,9 @@ public class Vector2 {
     public String toString() {
         return "(" + X + "," + Y + ")";
     }
+    
+    public boolean equals(Vector2 other) {
+    	return ((X == other.X) && (Y == other.Y));
+    }
 
 }
