@@ -57,11 +57,15 @@ public class AttackRobot extends Robot {
 
 	@Override
 	public void rotate(int heading) {
-		if (heading >= 0 && heading <= 180) {
-			pilot.rotate(heading, true);
-		} else if (heading > 180 && heading < 360) {
-			pilot.rotate(- (heading - 180), true);
+		if(heading > 180) {
+			heading -= 360;
 		}
+		
+		if(heading < -180) {
+			heading += 360;
+		}
+
+		pilot.rotate(heading, true);
 	}
 
 	@Override
