@@ -48,13 +48,15 @@ public class WorldState {
     // |    |    |    |    | |
     // |    |    |    |    | | 320
     // o----f----s----t----e v
-    // <--------580--------> 
-    private double origin;
-    private double firstDivision;
-    private double secondDivision;
-    private double thirdDivision;
-    private double end;
-    private double width;
+    // <--------580-------->
+    private static final double origin = 0;
+    private static final double width = 580;
+    
+    private static final double firstDivision = width / 4 + origin;
+    private static final double secondDivision = width / 4 * 2 + origin;
+    private static final double thirdDivision = width / 4 * 3 + origin;
+    private static final double end = width + origin;
+    
 
     // lines which represent the outer edge
     private Line top;
@@ -132,7 +134,11 @@ public class WorldState {
     }
     
     private void updateObjectZone(GameObject object) {
-        double objectX = object.getPos().X;
+    	Vector2 position = object.getPos();
+    	
+    	if(position == null) { return; }
+    	
+        double objectX = position.X;
 
         if (objectX >= origin && objectX <= firstDivision) {
             object.setCurrentZone(zoneFromNumber(0));
