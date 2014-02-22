@@ -116,7 +116,10 @@ public class SocketVisionReader {
 				double y2 = Double.parseDouble(tokens[5]); // y
                 Vector2 secondPos = new Vector2(x2, y2);
 				double d2 = Double.parseDouble(tokens[6]); // angle
+				System.out.println("Before: " + d2);
 				d2 = visionAngleToDiceAngle(d2);
+				System.out.println("After: " + d2);
+
 
 				// right attacker
 				double x3 = Double.parseDouble(tokens[7]); // x
@@ -179,8 +182,14 @@ public class SocketVisionReader {
 	}
 	
 	private static double visionAngleToDiceAngle(double angle) {
-		// In vision, the angle is relative to -Y
-		// In dice, it's relative to +X
-		return angle - Math.PI / 2;
+		// In vision, the angle is relative to +X
+		// In dice, it's relative to +Y
+		
+		double result = (angle + Math.PI / 2);
+		if (result > Math.PI) {
+			result = Math.PI * 2 - result;
+		}
+		
+		return result;
 	}
 }

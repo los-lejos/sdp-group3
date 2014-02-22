@@ -191,15 +191,19 @@ public class GameObject {
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
         
-        if(myPos == null) {
+        if(myPos == null || otherPos == null) {
         	return 0;
         }
 
         double yDiff = otherPos.Y - myPos.Y;
+        System.out.println("yDiff: " + yDiff);
         double xDiff = otherPos.X - myPos.X;
+        System.out.println("xDiff: " + xDiff);
         
         double theta = Math.atan2(yDiff, xDiff);
         double myRotation = getRotation();
+        System.out.println("Theta: " + theta);
+        System.out.println("MyRotation: " + myRotation);
 
         return theta - myRotation;
     }
