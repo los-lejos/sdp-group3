@@ -130,6 +130,9 @@ public class Main {
 			else if(cmd[0].equals("vision")) {
 				startVision(cmd);		
 			} 
+			else if(cmd[0].equals("side")) {
+				setSide(cmd);
+			}
 			else if(!cmd[0].equals("quit")) {
 				Log.logError("Unrecognized command");
 			}
@@ -193,6 +196,18 @@ public class Main {
 				this.defenderComms.sendInstruction(instruction);
 			}
 		}
+	}
+	
+	private void setSide(String[] cmd) {
+		if (cmd[1].equals("left")) {
+			worldState.setSide(WorldState.Side.LEFT);
+		}
+		else if (cmd[1].equals("right")) {
+			worldState.setSide(WorldState.Side.RIGHT);
+		} else {
+			Log.logError("Invalid side. Side should be 'left' or 'right'");
+		}
+			
 	}
 	
 	private RobotType getRobotTypeFromCommand(String[] cmd) {
