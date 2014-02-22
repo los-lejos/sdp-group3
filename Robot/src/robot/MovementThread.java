@@ -69,16 +69,21 @@ public class MovementThread extends Thread {
 
 		if(heading > 180) {
 			heading -= 360;
-		}
-		
-		if(heading < -180) {
+		} else if(heading < -180) {
 			heading += 360;
 		}
+		
+		assert (heading >= -180) && (heading <= 180);
 	}
 	
 	private void updateStateForInstruction(IssuedInstruction instruction) {
 		byte instructionType = instruction.getType();
 		byte[] instructionParameters = instruction.getParameters();
+		
+		// Reset state
+		heading = 0;
+		distance = 0;
+		currentState = State.READY;
 		
 		if (instructionType == RobotInstructions.MOVE_TO) {
 			if (instructionParameters.length == 3) {
