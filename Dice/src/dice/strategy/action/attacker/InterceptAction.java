@@ -36,7 +36,7 @@ public class InterceptAction extends StrategyAction {
 		Vector2 ballVel = state.getBall().getVelocity();
 		PitchZone ballZone = state.getBall().getCurrentZone();
 		
-		boolean hasLargeNegVel = ballVel.X > -Math.abs(criticalVel);
+		boolean hasLargeNegVel = ballVel.X < -Math.abs(criticalVel);
 		boolean canReach = (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE);
 		
 		return hasLargeNegVel && canReach;
