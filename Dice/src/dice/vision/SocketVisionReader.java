@@ -116,9 +116,7 @@ public class SocketVisionReader {
 				double y2 = Double.parseDouble(tokens[5]); // y
                 Vector2 secondPos = new Vector2(x2, y2);
 				double d2 = Double.parseDouble(tokens[6]); // angle
-				System.out.println("Before: " + d2);
 				d2 = visionAngleToDiceAngle(d2);
-				System.out.println("After: " + d2);
 
 
 				// right attacker
@@ -187,7 +185,7 @@ public class SocketVisionReader {
 		
 		double result = (angle + Math.PI / 2);
 		if (result > Math.PI) {
-			result = Math.PI * 2 - result;
+			result = -1 * (Math.PI * 2 - result);
 		}
 		
 		return result;
