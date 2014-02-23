@@ -196,9 +196,7 @@ public class GameObject {
         }
 
         double yDiff = otherPos.Y - myPos.Y;
-        System.out.println("yDiff: " + yDiff);
         double xDiff = otherPos.X - myPos.X;
-        System.out.println("xDiff: " + xDiff);
         
         // atan2 measures anticlockwise from +X.
         // we want clockwise from +Y
@@ -208,8 +206,6 @@ public class GameObject {
         }
         
         double myRotation = getRotation();
-        System.out.println("Theta: " + theta);
-        System.out.println("MyRotation: " + myRotation);
 
         return theta - myRotation;
     }

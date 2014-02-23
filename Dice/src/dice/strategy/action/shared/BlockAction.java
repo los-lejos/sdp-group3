@@ -41,14 +41,19 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
+		GameObject ball = state.getBall();
 		
 		PitchZone ballZone = state.getBall().getCurrentZone();
 		
-		if ((getTargetObject(state) == state.getOurDefender()) && (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) 
-				&& (Math.abs(state.getBall().getVelocity().Y) < criticalVel)) {
-			return 2;
-		} else if ((getTargetObject(state) == state.getOurAttacker()) && (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE)){
-			return 1;
+		if (ball.getVelocity() != null) {
+			if ((getTargetObject(state) == state.getOurDefender()) && (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) 
+					&& (Math.abs(state.getBall().getVelocity().Y) < criticalVel)) {
+				return 2;
+			} else if ((getTargetObject(state) == state.getOurAttacker()) && (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE)){
+				return 1;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}

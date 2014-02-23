@@ -23,6 +23,11 @@ public class RobotInstruction {
 		
 		angle = Math.round(angle);
 		
+		// multiply by -1, because the robot code
+		// works with positive anticlockwise values.
+		// we need to discuss this.
+		angle *= -1;
+		
 		byte angleUpper = (byte)(angle / 10);
 		byte angleLower = (byte)(angle % 10);
 

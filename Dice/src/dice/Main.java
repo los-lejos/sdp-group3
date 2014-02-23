@@ -80,7 +80,7 @@ public class Main {
 		this.defenderComms = new BluetoothRobotCommunicator();
 
 		strategy = new StrategyEvaluator();
-		strategy.setType(StrategyType.M3_ATTACKER);
+		strategy.setType(StrategyType.MATCH);
 		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
 		

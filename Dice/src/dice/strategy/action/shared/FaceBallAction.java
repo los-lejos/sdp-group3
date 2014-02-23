@@ -20,7 +20,7 @@ public class FaceBallAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;//(getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
+		return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class FaceBallAction extends StrategyAction {
 		Vector2 ballPos = state.getBall().getPos();
 		GameObject robot = getTargetObject(state);
 
-		System.out.println(robot.getRotationRelativeTo(ballPos));
+		// -1 because holonomics work with negatives for clockwise
         return  RobotInstruction.CreateMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				0);
