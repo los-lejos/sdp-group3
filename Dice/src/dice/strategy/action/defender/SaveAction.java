@@ -28,7 +28,13 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
+		// this is only possible if the ball has been seen
+		GameObject ball = state.getBall();
+		if (ball == null || state.getOurDefender().getPos() == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
@@ -36,7 +42,13 @@ public class SaveAction extends StrategyAction {
 		GameObject ball = state.getBall();
 		Line line = ball.getLineFromVelocity();
 		ball.getSpeed();
-		double yValue = line.getYValue(goalCenter.X);
+		
+		double yValue;
+		if (line != null) {
+			yValue = line.getYValue(goalCenter.X);
+		} else {
+			yValue = -1;
+		}
 		
 		if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
 			whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));

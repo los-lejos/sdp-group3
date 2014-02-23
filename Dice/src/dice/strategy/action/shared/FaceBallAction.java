@@ -2,6 +2,8 @@ package dice.strategy.action.shared;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
+import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
@@ -18,14 +20,7 @@ public class FaceBallAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		
-		boolean ourAttackerHasBall = state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER;
-		boolean ourDefenderHasBall = state.getBallPossession() == WorldState.BallPossession.OUR_DEFENDER;
-		
-		boolean targetIsAttacker = getTargetObject(state) == state.getOurAttacker();
-		boolean targetIsDefender = getTargetObject(state) == state.getOurDefender();
-		
-		return !((targetIsAttacker && ourAttackerHasBall) || (targetIsDefender && ourDefenderHasBall)); 
+		return true;//(getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
 	}
 
 	@Override
@@ -39,11 +34,13 @@ public class FaceBallAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		
-		double rotation = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall()));
+		System.out.println("Face ball.");
+		Vector2 ballPos = state.getBall().getPos();
+		GameObject robot = getTargetObject(state);
 
-		return RobotInstruction.CreateMoveTo(
-				rotation,
+		System.out.println(robot.getRotationRelativeTo(ballPos));
+        return  RobotInstruction.CreateMoveTo(
+				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				0);
 	}
 }

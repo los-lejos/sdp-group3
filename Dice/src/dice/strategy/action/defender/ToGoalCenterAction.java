@@ -16,7 +16,7 @@ import dice.strategy.StrategyAction;
 public class ToGoalCenterAction extends StrategyAction {
 
 	Goal ourGoal;
-	Vector2 ourGoalCenter = ourGoal.getGoalCenter();
+	Vector2 ourGoalCenter;
 	
 	public ToGoalCenterAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -30,7 +30,8 @@ public class ToGoalCenterAction extends StrategyAction {
 	@Override
 	protected int calculateUtility(WorldState state) {
 		
-		Goal ourGoal = state.getOurGoal();
+		ourGoal = state.getOurGoal();
+		ourGoalCenter = ourGoal.getGoalCenter();
 		double halfGoalWidth = Math.abs((ourGoal.getTopPost().Y-ourGoal.getBottomPost().Y))/2;
 		
 		PitchZone ballZone = state.getBall().getCurrentZone();
