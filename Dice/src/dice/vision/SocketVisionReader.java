@@ -118,6 +118,7 @@ public class SocketVisionReader {
 				double d2 = Double.parseDouble(tokens[6]); // angle
 				d2 = visionAngleToDiceAngle(d2);
 
+
 				// right attacker
 				double x3 = Double.parseDouble(tokens[7]); // x
 				double y3 = Double.parseDouble(tokens[8]); // y
@@ -179,8 +180,14 @@ public class SocketVisionReader {
 	}
 	
 	private static double visionAngleToDiceAngle(double angle) {
-		// In vision, the angle is relative to -Y
-		// In dice, it's relative to +X
-		return angle - Math.PI / 2;
+		// In vision, the angle is relative to +X
+		// In dice, it's relative to +Y
+		
+		double result = (angle + Math.PI / 2);
+		if (result > Math.PI) {
+			result = -1 * (Math.PI * 2 - result);
+		}
+		
+		return result;
 	}
 }

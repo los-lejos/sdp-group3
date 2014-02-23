@@ -114,17 +114,9 @@ public class StrategyEvaluator {
 		boolean attackerOverride = false, defenderOverride = false;
 		
 		// Action overrides	
-		// if defender is passing, attacker needs to receive
-		//if (state.getOurDefender().getPos() != null && state.getBall().getPos() != null &&
-		//		(defender.getCurrentAction() instanceof SaveAction) &&
-		//		((state.getOurDefender().getPos().X > state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X > 0)) ||
-		//		( state.getOurDefender().getPos().X < state.getBall().getPos().X) && (state.getOurDefender().getVelocity().X < 0)) {
-		//	defenderOverride = true;
-		//}
-
+		
 		// Check if we should send actions to the robots
 		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
-			System.out.println("new action sent");
 			defender.setCurrentAction(bestDefenderAction, state);
 		}
 		

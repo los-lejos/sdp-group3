@@ -25,13 +25,18 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		PitchZone ballZone = state.getBall().getCurrentZone();
-		
-		if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) || (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE)) {
-			return true;
-		} else {
-			return false;
+		GameObject ball = state.getBall();
+				
+		if (ball != null) {
+			PitchZone ballZone = state.getBall().getCurrentZone();
+
+			if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) ||
+				(ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE)) {
+					return true;
+			}
 		}
+			
+		return false;
 	}
 
 	@Override

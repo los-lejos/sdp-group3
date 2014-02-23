@@ -23,7 +23,7 @@ public class GameObject {
 
     public GameObject() {
     	positions = new ArrayList<Vector2>();
-	rotations = new ArrayList<Double>();
+    	rotations = new ArrayList<Double>();
     	System.out.println("Initializing object.");
 
     	this.rotations.add(0.0);
@@ -191,15 +191,25 @@ public class GameObject {
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
         
-        if(myPos == null) {
+        if(myPos == null || otherPos == null) {
         	return 0;
         }
 
         double yDiff = otherPos.Y - myPos.Y;
+        System.out.println("yDiff: " + yDiff);
         double xDiff = otherPos.X - myPos.X;
+        System.out.println("xDiff: " + xDiff);
         
-        double theta = Math.atan2(yDiff, xDiff);
+        // atan2 measures anticlockwise from +X.
+        // we want clockwise from +Y
+        double theta = -1 * Math.atan2(yDiff, xDiff) + Math.PI / 2.0;
+        if (theta > Math.PI) {
+        	theta = -2.0 * Math.PI + theta;
+        }
+        
         double myRotation = getRotation();
+        System.out.println("Theta: " + theta);
+        System.out.println("MyRotation: " + myRotation);
 
         return theta - myRotation;
     }
@@ -211,30 +221,46 @@ public class GameObject {
 
     // get the euclidean distance from the object
     public double getEuclidean(Vector2 position) {
-        return Math.sqrt(Math.pow(position.X - getPos().X, 2) +
-                         Math.pow(position.Y - getPos().Y, 2));
+    	if (position != null && getPos() != null) {
+	        return Math.sqrt(Math.pow(position.X - getPos().X, 2) +
+	                         Math.pow(position.Y - getPos().Y, 2));
+    	} else {
+    		return 0.0;
+    	}
     }
 
     // relative to the top of the screen
     public double getRotation() {
-        return rotations.get(rotations.size() - 1);
+    	if (rotations.size() > 0) {
+    		return rotations.get(rotations.size() - 1);
+    	} else {
+    		return 0;
+    	}
     }
     
     // simply projects a straight line f
     public Line getLineFromVelocity() {
-    	double dx = getPos().X + getVelocity().X;
-    	double dy = getPos().Y + getVelocity().Y;
-    	
-    	// create the next predicted position
-    	Vector2 newPos = new Vector2(dy, dx);
-    	
-    	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
-    	return new UnboundedLine(getPos(), speedVector.getGradient());
+    	if (getPos() != null && getVelocity() != null) {
+	    	double dx = getPos().X + getVelocity().X;
+	    	double dy = getPos().Y + getVelocity().Y;
+	    	
+	    	// create the next predicted position
+	    	Vector2 newPos = new Vector2(dy, dx);
+	    	
+	    	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
+	    	return new UnboundedLine(getPos(), speedVector.getGradient());
+    	} else {
+    		return null;
+    	}
     }
     
     // get the speed as a scalar
     public double getSpeed() {
-    	return Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
+    	if (getVelocity() != null) {
+    		return Math.sqrt(Math.pow(getVelocity().X,2)+ Math.pow(getVelocity().Y,2));
+    	} else {
+    		return 0;
+    	}
     }
     
 }
