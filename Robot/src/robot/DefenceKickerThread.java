@@ -2,24 +2,39 @@ package robot;
 
 import java.io.IOException;
 
-import lejos.nxt.MotorPort;
-import lejos.nxt.NXTMotor;
+import lejos.nxt.I2CPort;
+import lejos.nxt.I2CSensor;
+import lejos.nxt.SensorPort;
+
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import shared.RobotInstructions;
 
-public class AttackKickerThread extends Thread {
+public class DefenceKickerThread extends Thread {
 	
-	private final NXTMotor motor;
+	private I2CPort I2Cport;
+	private I2CSensor I2Csensor;
+	
+	private static final byte FORWARD = (byte) 1;
+	private static final byte BACKWARD = (byte) 2;
+	private static final byte STOP = (byte) 0;
+	private static final byte KICK_SPEED = (byte) 200;
+	private static final byte CATCH_SPEED = (byte) 120;
+	
 	private final BluetoothDiceConnection conn;
 	
 	private KickerState state = KickerState.READY;
 	
-	public AttackKickerThread(BluetoothDiceConnection conn) {
+	@SuppressWarnings("deprecation")
+	public DefenceKickerThread(BluetoothDiceConnection conn) {
 		this.setDaemon(true);
 		this.conn = conn;
-		motor = new NXTMotor(MotorPort.B);
-		motor.setPower(100);
+		
+		// Set up multiplexer stuff
+		I2Cport = SensorPort.S1;
+		I2Cport.i2cEnable(I2CPort.STANDARD_MODE);
+		I2Csensor = new I2CSensor(I2Cport);
+		I2Csensor.setAddress(0xB4);
 	}
 	
 	@Override
@@ -39,46 +54,35 @@ public class AttackKickerThread extends Thread {
 	
 	private void open() {
 		// Shut fully in case open
-		motor.forward();
+		System.out.println(I2Csensor.sendData(0x01, BACKWARD));
+		System.out.println(I2Csensor.sendData(0x02, KICK_SPEED));
 		try {
 			sleep(1000);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
+		I2Csensor.sendData(0x01, STOP);
 		
 		// Open
-		motor.backward();
+		I2Csensor.sendData(0x01, FORWARD);
 		try {
-			sleep(85);
+			sleep(50);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
-		motor.stop();
+		I2Csensor.sendData(0x01, STOP);
 	}
 
 	private void kick() {
 		// Release ball
-		motor.backward();
+		I2Csensor.sendData(0x02, KICK_SPEED);
+		I2Csensor.sendData(0x01, FORWARD);
 		try {
-			sleep(100);
+			sleep(200);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
-		motor.stop();
-		try {
-			sleep(600);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		
-		// Return to default position
-		motor.forward();
-		try {
-			sleep(100);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		motor.stop();
+		I2Csensor.sendData(0x01, STOP);
 		
 		// Tell DICE we don't have the ball anymore.
 		byte[] hasBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
@@ -93,13 +97,15 @@ public class AttackKickerThread extends Thread {
 	}
 	
 	private void grab() {
-		motor.forward();
+		System.out.println("Grabbed.");
+		I2Csensor.sendData(0x02, CATCH_SPEED);
+		I2Csensor.sendData(0x01, BACKWARD);
 		try {
-			sleep(300);
+			sleep(200);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
-		motor.stop();
+		I2Csensor.sendData(0x01, STOP);
 		
 		// Notify DICE that we have the ball
 		byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
@@ -115,5 +121,6 @@ public class AttackKickerThread extends Thread {
 	
 	public void setKickerState(KickerState state) {
 		this.state = state;
-	}	
+	}
+
 }

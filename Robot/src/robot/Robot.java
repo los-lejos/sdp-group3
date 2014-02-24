@@ -24,7 +24,7 @@ import robot.communication.OnNewInstructionHandler;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 14;
+	private static final int FRONT_SENSOR_CUTOFF = 13;
 	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -36,7 +36,7 @@ public abstract class Robot {
     private MovementThread movementThread;
     
     private boolean isRunning = true;
-    protected boolean hasBall;
+    protected boolean hasBall = false;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
@@ -100,8 +100,6 @@ public abstract class Robot {
 				grab();
 				this.hasBall = true;
 			}
-			
-			System.out.println(BALL_SENSOR.getDistance());
 		}
 		
 		movementThread.exit();
