@@ -32,7 +32,8 @@ public class StrategyEvaluator {
 		MATCH,
 		SHOOTOUT,
 		M3_DEFENDER,
-		M3_ATTACKER
+		M3_ATTACKER,
+		NONE
 	}
 	
 	private RobotStrategyState attacker, defender;
@@ -54,9 +55,9 @@ public class StrategyEvaluator {
 		attacker.clearActions();
 		
 		if(this.type == StrategyType.MATCH) {
-			/*attacker.addAction(new InterceptAction(RobotType.ATTACKER));
+			/*attacker.addAction(new InterceptAction(RobotType.ATTACKER));*/
 			attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
-			attacker.addAction(new ShootAction(RobotType.ATTACKER));
+			/*attacker.addAction(new ShootAction(RobotType.ATTACKER));
 			attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new FaceBallAction(RobotType.ATTACKER));*/
@@ -66,7 +67,9 @@ public class StrategyEvaluator {
 		} else if(this.type == StrategyType.M3_ATTACKER) {
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 			//attacker.addAction(new ShootAction(RobotType.ATTACKER));
-		} 
+		} else if (this.type == StrategyType.NONE) {
+			// do nothing
+		}
 	}
 	
 	private void resetDefenderActions() {
