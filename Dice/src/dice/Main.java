@@ -125,6 +125,7 @@ public class Main {
 				Log.logInfo("List of commands:");
 				Log.logInfo("connect <robot> - starts up a bluetooth connection with the robot");
 				Log.logInfo("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
+				Log.logInfo("side <side> - Sets our side. Side is determined by the side our defender is on. Parameter is 'left' or 'right'");
 				Log.logError("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
 			}
 			else if(cmd[0].equals("vision")) {
