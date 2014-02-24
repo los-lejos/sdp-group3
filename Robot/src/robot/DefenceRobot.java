@@ -1,4 +1,4 @@
-package robot;
+	package robot;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
@@ -18,17 +18,16 @@ public class DefenceRobot extends Robot {
 	
 	private static final int tireDiameterMm = 48;
 	private static final int trackWidthMm = 127;
-	
-	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
-	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
+	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S3);
+	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S4);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
-	
 	private static final NXTRegulatedMotor leftMotor = Motor.B;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	private static final NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
-	
+
 	private final DifferentialPilot pilot;
-	
+	private final DefenceKickerThread kickerThread;
+
 	private final double lateralPowerMultiplier;
 	private final int lateralMinPower;
 	private double travelSpeed;
@@ -36,13 +35,13 @@ public class DefenceRobot extends Robot {
 	private boolean movingLat;
 	private int prevPower;
     
-    public DefenceRobot() {
+	public DefenceRobot() {
     	super(leftLightSensor, rightLightSensor, ballSensor);
     	
     	// Set up differential pilot.
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
-		rotateSpeed = pilot.getMaxRotateSpeed() * 0.2;
+		rotateSpeed = pilot.getMaxRotateSpeed() * 0.4;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 		
@@ -51,6 +50,9 @@ public class DefenceRobot extends Robot {
 		this.lateralMinPower = 20;
 		lateralMotor.setPower(0);
 		lateralMotor.forward();
+		
+		kickerThread = new DefenceKickerThread(conn);
+		kickerThread.start();
     }
 
 	@Override
@@ -120,6 +122,22 @@ public class DefenceRobot extends Robot {
 	public void stopLat() {
 		this.movingLat = false;
 		lateralMotor.flt();
+	}
+
+	@Override
+	public void kick() {
+		kickerThread.setKickerState(KickerState.KICK);
+		this.hasBall = false;
+	}
+
+	@Override
+	public void grab() {
+		kickerThread.setKickerState(KickerState.GRAB);
+	}
+
+	@Override
+	public void cleanup() {
+		kickerThread.setKickerState(KickerState.EXIT);
 	}
 	
 }
