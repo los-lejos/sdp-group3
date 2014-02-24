@@ -156,6 +156,10 @@ public class WorldState {
     public void setSide(Side side) {
         this.ourSide = side;
     }
+    
+    public Side getSide() {
+    	return ourSide;
+    }
 
     // populate the world. First all robots and the
     // ball must be created

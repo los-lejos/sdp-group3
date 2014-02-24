@@ -19,7 +19,11 @@ public class RecievePassAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_DEFEND_ZONE;
+		if (getTargetObject(state).getPos() != null) {
+			return state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_DEFEND_ZONE;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
