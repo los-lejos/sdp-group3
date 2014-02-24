@@ -29,14 +29,13 @@ public abstract class Robot {
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
-	private final KickerThread kickerThread;
 	
-	private final BluetoothDiceConnection conn;
-	private boolean isRunning = true;
+	protected final BluetoothDiceConnection conn;
 	
     private IssuedInstruction currentInstruction, newInstruction;
     private MovementThread movementThread;
     
+    private boolean isRunning = true;
     protected boolean hasBall;
     
     public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
@@ -55,9 +54,6 @@ public abstract class Robot {
 				isRunning = false;
 			}
 		});
-    	
-    	kickerThread = new KickerThread(conn);
-    	kickerThread.start();
     }
 
 	public void run() {
@@ -142,23 +138,14 @@ public abstract class Robot {
     private boolean objectAtFrontSensor() {
     	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
     }
-    
-    public void kick() {
-    	kickerThread.setKickerState(KickerState.KICK);
-    }
-    
-    public void grab() {
-    	kickerThread.setKickerState(KickerState.GRAB);
-    }
-    
-    public void cleanup() {
-    	kickerThread.setKickerState(KickerState.EXIT);
-    }
 
     public abstract boolean isMoving();
     public abstract void rotate(int heading);
     public abstract void move(int distance);
     public abstract void moveLat(int power);
     public abstract void stop();
+    public abstract void kick();
+    public abstract void grab();
+    public abstract void cleanup();
 	
 }

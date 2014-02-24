@@ -8,14 +8,14 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import shared.RobotInstructions;
 
-public class KickerThread extends Thread {
+public class AttackKickerThread extends Thread {
 	
 	private final NXTMotor motor;
 	private final BluetoothDiceConnection conn;
 	
 	private KickerState state = KickerState.READY;
 	
-	public KickerThread(BluetoothDiceConnection conn) {
+	public AttackKickerThread(BluetoothDiceConnection conn) {
 		this.setDaemon(true);
 		this.conn = conn;
 		motor = new NXTMotor(MotorPort.B);
@@ -119,6 +119,5 @@ public class KickerThread extends Thread {
 	
 	public void setKickerState(KickerState state) {
 		this.state = state;
-	}
-	
+	}	
 }

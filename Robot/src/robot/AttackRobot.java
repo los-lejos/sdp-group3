@@ -2,8 +2,6 @@ package robot;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
-import lejos.nxt.MotorPort;
-import lejos.nxt.NXTMotor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
@@ -18,7 +16,6 @@ public class AttackRobot extends Robot {
 	private static final int tireDiameterMm = 62;
 	private static final int trackWidthMm = 136; // Actual measured - 119, this works better
 	
-	private static final NXTMotor kickMotor = new NXTMotor(MotorPort.B);
 	private static final NXTRegulatedMotor leftMotor = Motor.C;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	
@@ -27,6 +24,7 @@ public class AttackRobot extends Robot {
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
 
 	private final DifferentialPilot pilot;
+	private final AttackKickerThread kickerThread;
 	
 	private double travelSpeed;
 	private double rotateSpeed;
@@ -42,7 +40,8 @@ public class AttackRobot extends Robot {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 		
-		kickMotor.setPower(50);
+		kickerThread = new AttackKickerThread(conn);
+    	kickerThread.start();
 	}
 
 	@Override
@@ -69,5 +68,20 @@ public class AttackRobot extends Robot {
 	public void moveLat(int power) {
 		throw new UnsupportedOperationException("Lateral movement is not possible for the attacker");
 	}
+	
+	@Override
+	public void kick() {
+    	kickerThread.setKickerState(KickerState.KICK);
+    }
+    
+	@Override
+    public void grab() {
+    	kickerThread.setKickerState(KickerState.GRAB);
+    }
+    
+	@Override
+    public void cleanup() {
+    	kickerThread.setKickerState(KickerState.EXIT);
+    }
 
 }
