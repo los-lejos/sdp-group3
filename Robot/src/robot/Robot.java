@@ -10,7 +10,6 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
-import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -25,11 +24,12 @@ import shared.RobotInstructions;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 8;
+	private static final int FRONT_SENSOR_CUTOFF = 14;
 	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
+	private final KickerThread kickerThread;
 	
 	private final BluetoothDiceConnection conn;
 	private boolean isRunning = true;
@@ -56,7 +56,8 @@ public abstract class Robot {
 			}
 		});
     	
-    	this.openKicker();
+    	kickerThread = new KickerThread(conn);
+    	kickerThread.start();
     }
 
 	public void run() {
@@ -95,24 +96,16 @@ public abstract class Robot {
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				this.movementThread.stopMovement();
-				System.out.println("Boundary detected! Waiting for further instructions.");
+				//this.movementThread.stopMovement();
+				//System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
-			if (objectAtFrontSensor()) {
+			if (objectAtFrontSensor() && !hasBall) {
 				grab();
-				
-				// Notify DICE that we have the ball
-				byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
-				
-				try {
-					conn.send(hasBallResponse);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
+				this.hasBall = true;
 			}
+			
+			System.out.println(BALL_SENSOR.getDistance());
 		}
 		
 		movementThread.exit();
@@ -150,16 +143,22 @@ public abstract class Robot {
     	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
     }
     
+    public void kick() {
+    	kickerThread.setKickerState(KickerState.KICK);
+    }
+    
+    public void grab() {
+    	kickerThread.setKickerState(KickerState.GRAB);
+    }
+    
+    public void cleanup() {
+    	kickerThread.setKickerState(KickerState.EXIT);
+    }
+
     public abstract boolean isMoving();
     public abstract void rotate(int heading);
     public abstract void move(int distance);
     public abstract void moveLat(int power);
     public abstract void stop();
-    
-    public abstract void kick();
-    public abstract void openKicker();
-    public abstract void grab();
-    
-    public abstract void cleanup();
 	
 }

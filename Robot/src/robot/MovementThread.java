@@ -187,7 +187,5 @@ public class MovementThread extends Thread {
 				}
 			}
 		}
-		
-		System.out.println("Out of movement loop");
 	}
 }

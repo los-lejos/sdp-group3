@@ -69,39 +69,5 @@ public class AttackRobot extends Robot {
 	public void moveLat(int power) {
 		throw new UnsupportedOperationException("Lateral movement is not possible for the attacker");
 	}
-	
-	// Robin: try and implement these. Good luck :)
-	
-	@Override
-	public void kick() {
-		// TODO kicking
-		this.hasBall = false;
-	}
-
-	@Override
-	public void openKicker() {
-		// TODO open kicker at start
-	}
-	
-	@Override
-	public void grab() {
-		if (!this.hasBall) {
-			// TODO close around ball.
-			this.hasBall = true;
-		} else {
-			System.out.println("Bad GRAB attempt.");
-		}
-		
-	}
-	
-	@Override
-	public void cleanup() {
-		if (this.hasBall) {
-			// TODO release ball (kick it away)
-			
-			this.hasBall = false;
-		}
-		// TODO close kicker (back to starting position)
-	}
 
 }
