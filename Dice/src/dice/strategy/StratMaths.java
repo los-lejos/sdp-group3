@@ -63,14 +63,14 @@ public final class StratMaths {
 	public static boolean isInFrontOf(GameObject me, GameObject it) {
 		Vector2 whereIAm = me.getPos();
 		Vector2 whereItIs = it.getPos();
-
-		// is where it is more-or-less in the same Y as me?
-		if (whereIAm.Y >= (whereItIs.Y - POSITION_FUZZ) &&
-				whereIAm.Y <= (whereItIs.Y + POSITION_FUZZ)) {
-			return true;
-		}
 		
-		return false;
+		Vector2 itStart = new Vector2(whereItIs.X, whereItIs.Y - POSITION_FUZZ);
+		Vector2 itEnd = new Vector2(whereItIs.X, whereItIs.Y + POSITION_FUZZ);
+
+		UnboundedLine meLine = new UnboundedLine(whereIAm, me.getRotation());
+		BoundedLine itLine = new BoundedLine(itStart,itEnd);
+		
+		return (itLine.withinBounds(meLine.intersect(itLine)));
 	}
 	
 	public static Double getBetweenY(GameObject ball, Vector2 ourGoal) {
