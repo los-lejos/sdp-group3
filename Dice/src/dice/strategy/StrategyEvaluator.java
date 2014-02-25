@@ -7,6 +7,7 @@ import dice.strategy.action.attacker.InterceptAction;
 import dice.strategy.action.attacker.RecievePassAction;
 import dice.strategy.action.attacker.ShootAction;
 import dice.strategy.action.attacker.ToZoneCenterAction;
+import dice.strategy.action.defender.PassAction;
 import dice.strategy.action.defender.SaveAction;
 import dice.strategy.action.defender.ToGoalCenterAction;
 import dice.strategy.action.shared.BlockAction;
@@ -78,6 +79,7 @@ public class StrategyEvaluator {
 		if(this.type == StrategyType.MATCH) {
 			defender.addAction(new SaveAction(RobotType.DEFENDER));
 			defender.addAction(new ToGoalCenterAction(RobotType.DEFENDER));
+			defender.addAction(new PassAction(RobotType.DEFENDER));
 			defender.addAction(new BlockAction(RobotType.DEFENDER));
 			defender.addAction(new FaceBallAction(RobotType.DEFENDER));
 			defender.addAction(new ToBallAction(RobotType.DEFENDER));

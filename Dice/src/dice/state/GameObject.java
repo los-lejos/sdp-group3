@@ -1,8 +1,11 @@
 package dice.state;
 
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.lang.Math;
 
 import dice.Log;
@@ -14,24 +17,58 @@ import dice.state.WorldState.PitchZone;
  */
 public class GameObject {
     // allow for a variation in possible position changes
+	private class Rotation {
+		private long timestamp;
+		private double angle;
+		public Rotation(double angle) {
+			this.angle = angle;
+			this.timestamp = System.currentTimeMillis();
+		}
+		public long getTimestamp() {
+			return timestamp;
+		}
+		public double getAngle() {
+			return angle;
+		}
+	}
+	private static class RotationComparator implements Comparator<Rotation> {
+		@Override
+		public int compare(Rotation a, Rotation b) {
+			return a.getAngle() < b.getAngle() ? -1 : a.getAngle() == b.getAngle() ? 0 : 1;
+		}
+	}
+	private class LimitedList<E> extends LinkedList<E> {
+	    private final int limit;
+	    public LimitedList(int limit) {
+	        this.limit = limit;
+	    }
+	    @Override
+	    public boolean add(E o) {
+	        super.add(o);
+	        while (size() > limit) { super.remove(); }
+	        return true;
+	    }
+	}
     private static double POSITION_VALIDATION_THRESH = 3;
-    
+    private static int MAX_ROTATIONS = 30;
+    private static int MAX_POSITIONS = 100;
     private static int ROTATION_VALIDATION_COUNT = 1;
     private static int ROTATION_VALIDATION_MIN_COUNT = 15;
     private static double ROTATION_VALIDATION_THRESH = Math.PI / 3;
+    private static long ROTATION_TIMEOUT = 3000; // in ms
 
-    private List<Vector2> positions;
-    private List<Double> rotations; // the rotation of the object relative
-                             // to 'up' (on the camera)
+    private LimitedList<Vector2> positions;
+    private LimitedList<Rotation> rotations; // the rotation of the object relative
+                          // to 'up' (on the camera)
 
     private PitchZone currentZone;
 
     public GameObject() {
-    	positions = new ArrayList<Vector2>();
-    	rotations = new ArrayList<Double>();
+    	positions = new LimitedList<Vector2>(MAX_POSITIONS);
+    	rotations = new LimitedList<Rotation>(MAX_ROTATIONS);
     	System.out.println("Initializing object.");
 
-    	this.rotations.add(0.0);
+    	this.rotations.add(new Rotation(0.0));
     }
     
     public PitchZone getCurrentZone() {
@@ -44,19 +81,17 @@ public class GameObject {
     
     public void setRotation(double rotation) {
     	if (validateRotation(rotation)) {
-    		this.rotations.add(rotation);
+    		this.rotations.add(new Rotation(rotation));
     	} else {
     		System.out.println("Invalid rotation value: " + rotation);
     	}
     }
     
     public boolean validateRotation(double rotation) {
-    	if (rotations.size() >= ROTATION_VALIDATION_MIN_COUNT) {
+    	ArrayList<Rotation> lastFew = getLastNRotations(rotations);
+    	if (lastFew.size() >= ROTATION_VALIDATION_MIN_COUNT) {
     		// get the median of the last rotations
-    		int countFromEnd = rotations.size() - ROTATION_VALIDATION_COUNT;
-    		List<Double> lastFew = rotations.subList(countFromEnd, rotations.size());
     		double medianRotation = getMedianRotation(lastFew);
-    		
     		// only accept the rotation if it is closeish to the median
     		// of the last few rotations
     		return (Math.abs(rotation - medianRotation) < ROTATION_VALIDATION_THRESH);
@@ -252,7 +287,7 @@ public class GameObject {
     // relative to the top of the screen
     public double getRotation() {
     	if (rotations.size() > 0) {
-    		return rotations.get(rotations.size() - 1);
+    		return rotations.get(rotations.size() - 1).getAngle();
     	} else {
     		return 0;
     	}
@@ -283,21 +318,31 @@ public class GameObject {
     	}
     }
     
-    private static double getMedianRotation(List<Double> newrotations) {
+    private static ArrayList<Rotation> getLastNRotations(LimitedList<Rotation> rotations) {
+    	ListIterator<Rotation> li = rotations.listIterator(rotations.size());
+    	// Iterate in reverse.
+    	ArrayList<Rotation> lastFew = new ArrayList();
+    	long timeNow = System.currentTimeMillis();
+    	while(li.hasPrevious()) {
+    		Rotation rotation = li.previous();
+    		if (timeNow - rotation.getTimestamp() > ROTATION_TIMEOUT && lastFew.size() < ROTATION_VALIDATION_THRESH) {
+    			lastFew.add(rotation);
+    		}
+    	}
+    	return lastFew;
+    }
+    private static double getMedianRotation(List<Rotation> newrotations) {
     	double result;
     	
-    	Collections.sort(newrotations);
+    	Collections.sort(newrotations, new RotationComparator());
     	if (newrotations.size() % 2 == 0) {
-    		result = (newrotations.get((int) Math.floor(newrotations.size() / 2.0)) +
-    			   newrotations.get((int) Math.ceil(newrotations.size() / 2.0)))
+    		result = (newrotations.get((int) Math.floor(newrotations.size() / 2.0)).getAngle() +
+    			   newrotations.get((int) Math.ceil(newrotations.size() / 2.0)).getAngle())
     			   / 2.0;
     	} else {
-    		result = newrotations.get((int) Math.floor(newrotations.size() / 2.0)); 
+    		result = newrotations.get((int) Math.floor(newrotations.size() / 2.0)).getAngle(); 
     	}
-    	
-    	System.out.println("Median value: " + result);
-    	
+    	    	
     	return result;
     }
-    
 }

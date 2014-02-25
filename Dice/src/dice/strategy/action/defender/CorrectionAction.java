@@ -10,6 +10,8 @@ import dice.strategy.StrategyAction;
 
 public class CorrectionAction extends StrategyAction {
 	
+	private final double NEEDS_CORRECTION_THRESH = Math.PI / 6.0;
+	
 	public CorrectionAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
@@ -22,11 +24,30 @@ public class CorrectionAction extends StrategyAction {
 		}
 	}
 	
+	/** The utility of this action should be high
+	 * when the angle is off by a certain amount (NEEDS_CORRECTION_THRESH)
+	 * Otherwise, it is worthless.
+	 */
 	public int calculateUtility(WorldState state) {
-		return 2;
+		// this action is higher utility if the angle is off by a lot
+		if (Math.abs(getAngleRelativeToHorizontal(state)) > NEEDS_CORRECTION_THRESH)
+			return 2;
+		else
+			return 0;
 	}
 	
 	public RobotInstruction getInstruction(WorldState state) {
+		double angle = getAngleRelativeToHorizontal(state);
+		
+		return RobotInstruction.CreateMoveTo(Math.toDegrees(angle), 0.0);
+	}
+	
+	/** Gets the angle relative to a point directly infront of the robot.
+	 * 
+	 * @param state - The world state
+	 * @return the angle in radians
+	 */
+	private static double getAngleRelativeToHorizontal(WorldState state) {
 		GameObject defender = state.getOurDefender();
 		
 		// get the rotation relative to a point just "infront"
@@ -42,6 +63,6 @@ public class CorrectionAction extends StrategyAction {
 		angle = defender.getRotationRelativeTo(
 				new Vector2(xPos, defender.getPos().Y));
 		
-		return RobotInstruction.CreateMoveTo(Math.toDegrees(angle), 0.0);
+		return angle;
 	}
 }

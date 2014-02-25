@@ -26,8 +26,9 @@ public class BlockAction extends StrategyAction {
 	@Override
 	public boolean isPossible(WorldState state) {
 		GameObject ball = state.getBall();
-				
-		if (ball != null) {
+		GameObject robot = getTargetObject(state);
+		
+		if (ball != null && robot != null && robot.getPos() != null) {
 			PitchZone ballZone = state.getBall().getCurrentZone();
 
 			if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) ||
@@ -61,11 +62,10 @@ public class BlockAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		
 		Vector2 ourGoalCenter = state.getOurGoal().getGoalCenter();
 		GameObject robot = getTargetObject(state);
 
-		double whereToBlockX = getTargetObject(state).getPos().X;
+		double whereToBlockX = robot.getPos().X;
 		double whereToBlockY = StratMaths.getBetweenY(state.getBall(), ourGoalCenter);
 		Vector2 whereToBlock = new Vector2 (whereToBlockX, whereToBlockY);
 		

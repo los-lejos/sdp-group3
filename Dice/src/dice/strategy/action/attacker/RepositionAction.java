@@ -35,7 +35,7 @@ public class RepositionAction extends StrategyAction {
 		if (!pointingAtGoal(us,goal)) {
 			// if not, please strongly consider pointing at the goal
 			// it makes the ball more likely to go in
-			return 2;
+			return 1;
 		} else if (inTheWay(us,annoyance,goal)) {
 			// we can't shoot through things
 			// yet

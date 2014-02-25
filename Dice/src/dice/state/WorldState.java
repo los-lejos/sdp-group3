@@ -34,10 +34,10 @@ public class WorldState {
     private static int PITCH_WIDTH = 580;
     private static int GOAL_WIDTH = 200;
 
-    private GameObject opponentDefender;
-    private GameObject opponentAttacker;
-    private GameObject ourDefender;
-    private GameObject ourAttacker;
+    private GameObject farLeftRobot;
+    private GameObject middleLeftRobot;
+    private GameObject middleRightRobot;
+    private GameObject farRightRobot;
     private GameObject ball;
     
     // pitch geometry
@@ -111,23 +111,24 @@ public class WorldState {
         this.top = line;
     }
 
+    // these values come in as seen from left to right on the pitch (except ball)
     public void updateState(Vector2 a, double aAngle, Vector2 b, double bAngle,
     		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
-        opponentDefender.setPos(convertYValue(a));
-        opponentDefender.setRotation(aAngle);
-        this.updateObjectZone(opponentDefender);
+        farLeftRobot.setPos(convertYValue(a));
+        farLeftRobot.setRotation(aAngle);
+        this.updateObjectZone(farLeftRobot);
         
-        ourAttacker.setPos(convertYValue(b));
-        ourAttacker.setRotation(bAngle);
-        this.updateObjectZone(ourAttacker);
+        middleLeftRobot.setPos(convertYValue(b));
+        middleLeftRobot.setRotation(bAngle);
+        this.updateObjectZone(middleLeftRobot);
         
-        opponentAttacker.setPos(convertYValue(c));
-        opponentAttacker.setRotation(cAngle);
-        this.updateObjectZone(opponentAttacker);
+        middleRightRobot.setPos(convertYValue(c));
+        middleRightRobot.setRotation(cAngle);
+        this.updateObjectZone(middleRightRobot);
         
-        ourDefender.setPos(convertYValue(d));
-        ourDefender.setRotation(dAngle);
-        this.updateObjectZone(ourDefender);
+        farRightRobot.setPos(convertYValue(d));
+        farRightRobot.setRotation(dAngle);
+        this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
         this.updateObjectZone(this.ball);
@@ -164,14 +165,14 @@ public class WorldState {
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(
-    		GameObject opponentDefender, GameObject opponentAttacker,
-    		GameObject ourDefender, GameObject ourAttacker,
+    		GameObject a, GameObject b,
+    		GameObject c, GameObject d,
     		GameObject ball, Side ourSide) {
         
-        this.opponentDefender = opponentDefender;
-        this.opponentAttacker = opponentAttacker;
-        this.ourDefender = ourDefender;
-        this.ourAttacker = ourAttacker;
+        this.farLeftRobot = a;
+        this.middleLeftRobot = b;
+        this.middleRightRobot = c;
+        this.farRightRobot = d;
         this.ball = ball;
 
         this.ourSide = ourSide;
@@ -299,19 +300,31 @@ public class WorldState {
     
     // getters for the various robots and ball
     public GameObject getOpponentDefender() {
-    	return opponentDefender;
+    	if (ourSide == Side.LEFT)
+    		return farRightRobot;
+    	else
+    		return farLeftRobot;
     }
 
     public GameObject getOpponentAttacker() {
-    	return opponentAttacker;
+    	if (ourSide == Side.LEFT)
+    		return middleLeftRobot;
+    	else
+    		return middleRightRobot;
     }
 
     public GameObject getOurDefender() {
-    	return ourDefender;
+    	if (ourSide == Side.LEFT)
+    		return farLeftRobot;
+    	else
+    		return farRightRobot;
     }
 
     public GameObject getOurAttacker() {
-    	return ourAttacker;
+    	if (ourSide == Side.LEFT)
+    		return middleRightRobot;
+    	else
+    		return middleLeftRobot;
     }
 
     public GameObject getBall() {
