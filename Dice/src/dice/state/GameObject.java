@@ -1,6 +1,7 @@
 package dice.state;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.lang.Math;
 
@@ -13,7 +14,11 @@ import dice.state.WorldState.PitchZone;
  */
 public class GameObject {
     // allow for a variation in possible position changes
-    private static double DELTA = 3; 
+    private static double POSITION_VALIDATION_THRESH = 3;
+    
+    private static int ROTATION_VALIDATION_COUNT = 1;
+    private static int ROTATION_VALIDATION_MIN_COUNT = 15;
+    private static double ROTATION_VALIDATION_THRESH = Math.PI / 3;
 
     private List<Vector2> positions;
     private List<Double> rotations; // the rotation of the object relative
@@ -38,7 +43,26 @@ public class GameObject {
     }
     
     public void setRotation(double rotation) {
-    	this.rotations.add(rotation);
+    	if (validateRotation(rotation)) {
+    		this.rotations.add(rotation);
+    	} else {
+    		System.out.println("Invalid rotation value: " + rotation);
+    	}
+    }
+    
+    public boolean validateRotation(double rotation) {
+    	if (rotations.size() >= ROTATION_VALIDATION_MIN_COUNT) {
+    		// get the median of the last rotations
+    		int countFromEnd = rotations.size() - ROTATION_VALIDATION_COUNT;
+    		List<Double> lastFew = rotations.subList(countFromEnd, rotations.size());
+    		double medianRotation = getMedianRotation(lastFew);
+    		
+    		// only accept the rotation if it is closeish to the median
+    		// of the last few rotations
+    		return (Math.abs(rotation - medianRotation) < ROTATION_VALIDATION_THRESH);
+    	} else {
+    		return true;
+    	}
     }
 
     public void setPos(double xPos, double yPos, double t) {
@@ -75,8 +99,8 @@ public class GameObject {
     
     // takes a new position and returns true if the new position
     // is reasonable given the objects current velocity and position
-    // ("reasonable" here means within bounds controlled by the DELTA
-    // constant)
+    // ("reasonable" here means within bounds controlled by the
+    // POSITION_VALIDATION_THRESH constant)
     private boolean isProjectedPosReasonable(Vector2 newPosition) {
     	Vector2 velocity = getVelocity();
         double newX = newPosition.X + getVelocity().X;
@@ -89,8 +113,8 @@ public class GameObject {
         // return false and report the positions
         double xDiff = Math.abs(newPosition.X - estimate.X);
         double yDiff = Math.abs(newPosition.Y - estimate.Y);
-        if (xDiff > Math.abs(velocity.X) * DELTA ||
-            yDiff > Math.abs(velocity.Y) * DELTA) {
+        if (xDiff > Math.abs(velocity.X) * POSITION_VALIDATION_THRESH ||
+            yDiff > Math.abs(velocity.Y) * POSITION_VALIDATION_THRESH) {
     
         	Log.logInfo("Unreasonable position. Currently at " + 
 				    getPos().X + "," + getPos().Y +
@@ -257,6 +281,23 @@ public class GameObject {
     	} else {
     		return 0;
     	}
+    }
+    
+    private static double getMedianRotation(List<Double> newrotations) {
+    	double result;
+    	
+    	Collections.sort(newrotations);
+    	if (newrotations.size() % 2 == 0) {
+    		result = (newrotations.get((int) Math.floor(newrotations.size() / 2.0)) +
+    			   newrotations.get((int) Math.ceil(newrotations.size() / 2.0)))
+    			   / 2.0;
+    	} else {
+    		result = newrotations.get((int) Math.floor(newrotations.size() / 2.0)); 
+    	}
+    	
+    	System.out.println("Median value: " + result);
+    	
+    	return result;
     }
     
 }
