@@ -32,8 +32,8 @@ public final class StratMaths {
 	}
 	
 	public static Vector2 whereToRecievePass(WorldState state) {
-		//TODO
-		return null;
+		//TODO needs to be properly implemented
+		return state.getOurAttacker().getPos();
 	}
 	
 	public static byte cartestanToPolarR(Vector2 v) {
