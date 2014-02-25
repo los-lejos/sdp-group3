@@ -22,7 +22,13 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
+		if (state.getBallPossession() != WorldState.BallPossession.OUR_ATTACKER ||
+			state.getBallPossession() != WorldState.BallPossession.OUR_DEFENDER) {
+			
+			return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
+		} else {
+			return false;
+		}
 	}
 
 	@Override
