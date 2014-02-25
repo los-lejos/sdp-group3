@@ -6,6 +6,7 @@ package robot.communication;
 
 public class BluetoothCommunicationException extends Exception {
 
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	public BluetoothCommunicationException(String msg) {

@@ -43,7 +43,7 @@ public class DefenceRobot extends Robot {
 		kickerThread = new DefenceKickerThread(conn);
 		kickerThread.start();
 		
-		strafeThread = new StrafeThread(this);
+		strafeThread = new StrafeThread();
 		strafeThread.start();
     }
 	
