@@ -294,9 +294,7 @@ public class GameObject {
     	} else {
     		result = newrotations.get((int) Math.floor(newrotations.size() / 2.0)); 
     	}
-    	
-    	System.out.println("Median value: " + result);
-    	
+    	    	
     	return result;
     }
     
