@@ -14,10 +14,7 @@ import dice.state.WorldState;
  */
 
 public final class StratMaths {
-	
-	// maximum angle relative to the goal we'll tolerate shooting at it from
-	public static final int SHOOT_ANGLE_TOLERANCE = 30; // arbitrary, adjust at your pleasure
-	
+
 	// tolerance if we want to find out if something's 'in the area of' a position
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 	
@@ -71,7 +68,7 @@ public final class StratMaths {
 		BoundedLine itLine = new BoundedLine(itStart,itEnd);
 		
 		return (itLine.withinBounds(meLine.intersect(itLine)));
-	}
+    }
 	
 	public static Double getBetweenY(GameObject ball, Vector2 ourGoal) {
 		return (ball.getPos().Y +ourGoal.Y)/2;
