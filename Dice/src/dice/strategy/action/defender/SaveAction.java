@@ -50,10 +50,12 @@ public class SaveAction extends StrategyAction {
 			yValue = -1;
 		}
 		
-		if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
-			whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
-		else
-			whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
+		if (ball.getPos() != null) {
+			if (ball.getSpeed() > 7 && yValue <= 320 && yValue >= 0)
+				whereToBlock = new Vector2(goalCenter.X, line.getYValue(goalCenter.X));
+			else
+				whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
+		}
 
 		return 2;
 	}
