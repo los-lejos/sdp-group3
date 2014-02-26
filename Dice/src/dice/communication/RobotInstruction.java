@@ -50,7 +50,7 @@ public class RobotInstruction {
 		byte angleUpper = (byte)(angle / 10);
 		byte angleLower = (byte)(angle % 10);
 		
-		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, (byte)0);
+		return new RobotInstruction(RobotInstructions.KICK_TOWARD, angleUpper, angleLower, (byte)0);
 	}
 	
 	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3) {

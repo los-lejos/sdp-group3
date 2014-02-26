@@ -41,12 +41,11 @@ public class IssuedInstruction {
 			return truncParams;
 		} else if (type == RobotInstructions.LAT_MOVE_TO) {
 			return Arrays.copyOfRange(parameters, 0, 1);
-			
+		} else if (type == RobotInstructions.SET_TRACK_WIDTH) {
+			return Arrays.copyOfRange(parameters, 0, 1);
 		} else {
 			System.out.println("Bad instruction.");
 			return parameters;
-		
-			
 		}
 	}
 	

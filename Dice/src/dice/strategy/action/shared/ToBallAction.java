@@ -30,6 +30,7 @@ public class ToBallAction extends StrategyAction {
 				
 				return (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH);
 			}
+			
 		}
 			
 		return false;
@@ -53,7 +54,7 @@ public class ToBallAction extends StrategyAction {
 		Vector2 ballPos = state.getBall().getPos();
 		GameObject robot = getTargetObject(state);
 
-		System.out.println(robot.getRotationRelativeTo(ballPos));
+		System.out.println("Rotation relative to ball " + robot.getRotationRelativeTo(ballPos));
         return  RobotInstruction.CreateMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				robot.getEuclidean(ballPos));

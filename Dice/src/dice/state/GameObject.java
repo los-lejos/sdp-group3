@@ -16,27 +16,33 @@ import dice.state.WorldState.PitchZone;
  * @author Craig Wilkinson
  */
 public class GameObject {
+	
     // allow for a variation in possible position changes
 	private class Rotation {
 		private long timestamp;
 		private double angle;
+		
 		public Rotation(double angle) {
 			this.angle = angle;
 			this.timestamp = System.currentTimeMillis();
 		}
+		
 		public long getTimestamp() {
 			return timestamp;
 		}
+		
 		public double getAngle() {
 			return angle;
 		}
 	}
+	
 	private static class RotationComparator implements Comparator<Rotation> {
 		@Override
 		public int compare(Rotation a, Rotation b) {
 			return a.getAngle() < b.getAngle() ? -1 : a.getAngle() == b.getAngle() ? 0 : 1;
 		}
 	}
+	
 	private class LimitedList<E> extends LinkedList<E> {
 	    private final int limit;
 	    public LimitedList(int limit) {
@@ -49,6 +55,7 @@ public class GameObject {
 	        return true;
 	    }
 	}
+	
     private static double POSITION_VALIDATION_THRESH = 3;
     private static int MAX_ROTATIONS = 30;
     private static int MAX_POSITIONS = 100;
@@ -110,7 +117,7 @@ public class GameObject {
     public void setPos(Vector2 position) {
         if (validatePos(position))
             positions.add(position);
-        }
+    }
 
     // decides if a new position for the object is viable given its
     // past positions
@@ -331,6 +338,7 @@ public class GameObject {
     	}
     	return lastFew;
     }
+    
     private static double getMedianRotation(List<Rotation> newrotations) {
     	double result;
     	

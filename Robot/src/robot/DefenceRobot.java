@@ -98,5 +98,11 @@ public class DefenceRobot extends Robot {
 		this.movingLat = false;
 		kickerThread.setKickerState(KickerState.EXIT);
 	}
+
+	@Override
+	public void setTrackWidth(int width) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

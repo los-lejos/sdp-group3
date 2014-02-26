@@ -14,7 +14,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 public class AttackRobot extends Robot {
 	
 	private static final int tireDiameterMm = 62;
-	private static final int trackWidthMm = 136; // Actual measured - 119, this works better
+	private static int trackWidthMm = 136; // Actual measured - 119, this works better
 	
 	private static final NXTRegulatedMotor leftMotor = Motor.C;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
@@ -23,7 +23,7 @@ public class AttackRobot extends Robot {
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
 
-	private final DifferentialPilot pilot;
+	private DifferentialPilot pilot;
 	private final AttackKickerThread kickerThread;
 	
 	private double travelSpeed;
@@ -85,4 +85,14 @@ public class AttackRobot extends Robot {
     	kickerThread.setKickerState(KickerState.EXIT);
     }
 
+	@Override
+	public void setTrackWidth(int width) {
+		trackWidthMm = width;
+		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
+		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
+		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
+		
+		pilot.setTravelSpeed(travelSpeed);
+		pilot.setRotateSpeed(rotateSpeed);
+	}
 }
