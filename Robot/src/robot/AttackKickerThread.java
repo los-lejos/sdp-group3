@@ -102,6 +102,7 @@ public class AttackKickerThread extends Thread {
 	}
 	
 	private void grab() {
+		motor.setPower(50);
 		motor.forward();
 		try {
 			sleep(50);
@@ -109,6 +110,7 @@ public class AttackKickerThread extends Thread {
 			System.out.println("Kicker wait exception");
 		}
 		motor.stop();
+		motor.setPower(100);
 		
 		// Notify DICE that we have the ball
 		byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
