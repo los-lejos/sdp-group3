@@ -27,7 +27,7 @@ public class FaceOppGoalAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 whereToShoot = StratMaths.whereToShoot(getTargetObject(state), state);
 		double relativeRot = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(whereToShoot));
-		return RobotInstruction.CreateMoveTo(relativeRot,0);
+		return RobotInstruction.createMoveTo(relativeRot,0);
 	}
 
 }
