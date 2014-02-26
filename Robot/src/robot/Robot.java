@@ -145,5 +145,6 @@ public abstract class Robot {
     public abstract void kick();
     public abstract void grab();
     public abstract void cleanup();
+    public abstract void setTrackWidth(int width);
 	
 }
