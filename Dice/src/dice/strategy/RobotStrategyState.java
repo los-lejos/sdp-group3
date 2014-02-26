@@ -9,6 +9,7 @@ import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.RepositionAction;
 
 /**
  * @author Joris S. Urbaitis
@@ -76,6 +77,11 @@ public class RobotStrategyState {
 	public void setCurrentAction(StrategyAction action, WorldState state) {
 		this.issuedAction = new IssuedAction();
 		this.strategyAction = action;
+		
+		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
+			RepositionAction reposAction = (RepositionAction) action;
+			reposAction.resetRepositionAttempts();
+		}
 		
 		RobotInstruction instruction = action.getInstruction(state);
 		instruction.setCallback(issuedAction.getCallback());

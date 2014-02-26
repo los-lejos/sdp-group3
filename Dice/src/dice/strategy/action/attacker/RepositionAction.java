@@ -15,14 +15,24 @@ import dice.strategy.StrategyAction;
 
 public class RepositionAction extends StrategyAction {
 
+	private static int MAX_ATTEMPTS;
+	
+	private int attempts;
+	
 	public RepositionAction(RobotType targetRobot) {
 		super(targetRobot);
+		
+		attempts = 0;
 	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
 		// only if the attacker has the ball
-		return (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER);
+		if (attempts <= MAX_ATTEMPTS) {
+			return (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER);
+		} else {
+			return false;
+		}
     }
 
 	@Override
@@ -78,6 +88,13 @@ public class RepositionAction extends StrategyAction {
 		return false; // shoot now, stop asking questions
 	}
 	
+	/** 
+	 * Reset the amount of attempts taken. This is done when another action is called
+	 * on the attacker robot. (See the RobotStrategyState class)
+	 */
+	public void resetRepositionAttempts() {
+		attempts = 0;
+	}
 	
 	/**
 	 * Work out where to move a robot such that shooting a ball from
@@ -121,7 +138,9 @@ public class RepositionAction extends StrategyAction {
 		GameObject us = state.getOurAttacker();
 		Goal goal = state.getOppGoal();
 		GameObject annoyance = state.getOpponentDefender();
-				
+			
+		attempts++; // there has been another attempts at the reposition
+		
 		if (!pointingAtGoal(us,goal)) {
 			// point robot at goal
 			return RobotInstruction.CreateMoveTo(
