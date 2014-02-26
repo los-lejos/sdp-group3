@@ -66,8 +66,6 @@ public class MovementThread extends Thread {
 	}
 	
 	private void validateParameters() {
-		// Convert from centimeters to millimeters
-		distance *= 10;
 
 		if(heading > 180) {
 			heading -= 360;
@@ -93,6 +91,10 @@ public class MovementThread extends Thread {
 				byte headingB = instructionParameters[1];
 				heading = (10 * headingA) + headingB;
 				distance = instructionParameters[2];
+				
+				// Convert from centimeters to millimeters
+				distance *= 10;
+				
 				currentState = State.MOVE_TO;
 			} else {
 				System.out.println("Error: wrong parameters for MOVE_TO");
@@ -112,9 +114,6 @@ public class MovementThread extends Thread {
 			}
 		} else if (instructionType == RobotInstructions.LAT_MOVE_TO) {
 			distance = instructionParameters[0];
-			
-			System.out.println("MOVE_LAT");
-			System.out.println("Power: " + distance);
 			currentState = State.MOVE_LAT;
 		} else if (instructionType == RobotInstructions.SET_TRACK_WIDTH) {
 			robot.setTrackWidth(instructionParameters[0]);

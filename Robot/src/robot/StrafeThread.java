@@ -20,7 +20,23 @@ public class StrafeThread extends Thread {
 		// Set up strafing motor.
 		this.lateralPowerMultiplier = 7;
 		this.lateralMinPower = 20;
-		lateralMotor.setPower(this.power);
+		lateralMotor.setPower(50);
+		lateralMotor.forward();
+		try {
+			sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		lateralMotor.setPower(50);
+		lateralMotor.backward();
+		try {
+			sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		lateralMotor.setPower(0);
 		lateralMotor.forward();
 	}
 	
@@ -28,7 +44,7 @@ public class StrafeThread extends Thread {
 	public void run() {
 		while (state != StrafeState.EXIT) {
 			if (state == StrafeState.STRAFE) {
-				moveLat(power);
+				moveLat();
 				state = StrafeState.READY;
 			} else if (state == StrafeState.STOP) {
 				stopLat();
@@ -39,22 +55,19 @@ public class StrafeThread extends Thread {
 		stopLat();
 	}
 	
-	private void moveLat(int power) {
-		System.out.println("MoveLat called in Strafethread.");
+	private void moveLat() {
 		int absPower = Math.abs(power);
 		int motorPower = (int) (lateralPowerMultiplier * absPower + lateralMinPower);
-		System.out.println(motorPower);
 		lateralMotor.setPower(motorPower);
 		this.flipLat(power);
-		System.out.println(lateralMotor.getPower());
 	}
 	
 	/*
 	 * Updates strafing direction.
 	 */
 	private void flipLat(int power) {
-		System.out.println(prevPower);
-		System.out.println(power);
+		
+		System.out.println("New: " + this.power);
 		
 		if (this.prevPower < 0 && power >= 0) {
 			// Set power to 0, stop smoothly.
@@ -94,6 +107,7 @@ public class StrafeThread extends Thread {
 	
 	public void updateLat(StrafeState state, int power) {
 		this.prevPower = this.power;
+		System.out.println("Prev: " + this.prevPower);
 		this.power = power;
 		this.state = state;
 	}

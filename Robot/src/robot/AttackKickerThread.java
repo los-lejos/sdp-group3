@@ -74,7 +74,16 @@ public class AttackKickerThread extends Thread {
 		// Return to default position
 		motor.forward();
 		try {
-			sleep(100);
+			sleep(300);
+		} catch (InterruptedException e) {
+			System.out.println("Kicker wait exception");
+		}
+		motor.stop();
+		
+		// Open
+		motor.backward();
+		try {
+			sleep(85);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
@@ -95,7 +104,7 @@ public class AttackKickerThread extends Thread {
 	private void grab() {
 		motor.forward();
 		try {
-			sleep(300);
+			sleep(50);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
