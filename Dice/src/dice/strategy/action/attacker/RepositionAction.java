@@ -41,33 +41,14 @@ public class RepositionAction extends StrategyAction {
 		Goal goal = state.getOppGoal();
 		GameObject annoyance = state.getOpponentDefender();
 				
-		// we have the ball but are we pointing roughly where the goal is?
-		if (!pointingAtGoal(us,goal)) {
-			// if not, please strongly consider pointing at the goal
-			// it makes the ball more likely to go in
-			return 1;
-		} else if (inTheWay(us,annoyance,goal)) {
+		if (inTheWay(us,annoyance,goal)) {
 			// we can't shoot through things
 			// yet
 			return 2;
 		}
 
         // TODO: fancy 'not actually pointing at goal' tricks eg bouncing ball off wall
-
         return 0;
-	}
-	
-	/**
-	 * Determine whether a thing is pointing in the general direction of a goal
-	 * 
-	 * @param us Thing that might be pointing at goal
-	 * @param goal Goal it might be pointing at
-	 * @return true or false
-	 */
-    private boolean pointingAtGoal(GameObject us, Goal goal) {
-		Vector2 whereGoalIs = goal.getGoalCenter();
-		
-		return (us.getRotationRelativeTo(whereGoalIs) < StratMaths.SHOOT_ANGLE_TOLERANCE);
 	}
 	
 	/**
@@ -135,20 +116,30 @@ public class RepositionAction extends StrategyAction {
 	
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		attempts++; // there has been another attempts at the reposition
+
 		GameObject us = state.getOurAttacker();
 		Goal goal = state.getOppGoal();
 		GameObject annoyance = state.getOpponentDefender();
-			
-		attempts++; // there has been another attempts at the reposition
-		
-		if (!pointingAtGoal(us,goal)) {
-			// point robot at goal
-			return RobotInstruction.CreateMoveTo(
-					us.getRotationRelativeTo(goal.getGoalCenter()),
-					0);
-		} else  {
-			// move robot somewhere where an annoyance isn't
-			return getAvoidanceInstruction(us, annoyance, goal, state);
-		}
+
+        // default to going nowhere
+        double goodPos = us.getPos().Y;
+
+        if (annoyance.getEuclidean(goal.getTopPost()) > annoyance.getEuclidean(goal.getBottomPost())) {
+           /*
+            * if the annoyance is closer to the bottom post,
+            * get between it and the top post
+            */
+            goodPos = StratMaths.getBetweenY(annoyance, goal.getTopPost());
+        } else {
+            /*
+             * otherwise, get between it and the bottom post
+             * (including the very unlikely case where it's an
+             *  equal distance from both posts)
+             */
+            goodPos = StratMaths.getBetweenY(annoyance, goal.getBottomPost());
+        }
+
+        return RobotInstruction.CreateLateralMoveTo(goodPos);
 	}
 }
