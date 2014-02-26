@@ -24,7 +24,7 @@ import robot.communication.OnNewInstructionHandler;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 13;
+	private static final int FRONT_SENSOR_CUTOFF = 15;
 	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -92,8 +92,8 @@ public abstract class Robot {
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				//this.movementThread.stopMovement();
-				//System.out.println("Boundary detected! Waiting for further instructions.");
+				// this.movementThread.stopMovement();
+				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
 			if (objectAtFrontSensor() && !hasBall) {
