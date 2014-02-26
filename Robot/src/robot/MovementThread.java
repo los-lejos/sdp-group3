@@ -107,16 +107,6 @@ public class MovementThread extends Thread {
 				System.out.println("Heading: " + heading);
 				
 				currentState = State.KICK_TOWARD;
-				
-				// Notify DICE that we no longer have the ball
-				byte[] releaseBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
-				try {
-					conn.send(releaseBallResponse);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BluetoothCommunicationException e) {
-					e.printStackTrace();
-				}
 			} else {
 				System.out.println("Error: wrong parameters for KICK_TOWARD");
 			}
