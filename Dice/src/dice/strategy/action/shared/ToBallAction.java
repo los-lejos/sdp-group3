@@ -55,7 +55,7 @@ public class ToBallAction extends StrategyAction {
 		GameObject robot = getTargetObject(state);
 
 		System.out.println("Rotation relative to ball " + robot.getRotationRelativeTo(ballPos));
-        return  RobotInstruction.CreateMoveTo(
+        return  RobotInstruction.createMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				robot.getEuclidean(ballPos));
 	}

@@ -26,7 +26,7 @@ public class PassAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		Vector2 attackerPos = state.getOurAttacker().getPos();
 		long relativeAttackerAngle = (long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(attackerPos));
-		return RobotInstruction.CreateShootTo(relativeAttackerAngle);
+		return RobotInstruction.createShootTo(relativeAttackerAngle);
 	}
 
 }

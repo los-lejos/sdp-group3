@@ -69,7 +69,7 @@ public class BlockAction extends StrategyAction {
 		double whereToBlockY = StratMaths.getBetweenY(state.getBall(), ourGoalCenter);
 		Vector2 whereToBlock = new Vector2 (whereToBlockX, whereToBlockY);
 		
-		return RobotInstruction.CreateMoveTo(
+		return RobotInstruction.createMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(whereToBlock)),
 				robot.getEuclidean(whereToBlock));
 	}

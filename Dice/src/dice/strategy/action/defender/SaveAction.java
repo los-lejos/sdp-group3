@@ -62,7 +62,7 @@ public class SaveAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return RobotInstruction.CreateLateralMoveTo(whereToBlock.Y - state.getOurDefender().getPos().Y);
+		return RobotInstruction.createLateralMoveTo(whereToBlock.Y - state.getOurDefender().getPos().Y);
 	}
 
 }

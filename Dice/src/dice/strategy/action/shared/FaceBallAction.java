@@ -39,7 +39,7 @@ public class FaceBallAction extends StrategyAction {
 		GameObject robot = getTargetObject(state);
 
 		// -1 because holonomics work with negatives for clockwise
-        return  RobotInstruction.CreateMoveTo(
+        return  RobotInstruction.createMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				0);
 	}

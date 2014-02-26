@@ -77,43 +77,6 @@ public class RepositionAction extends StrategyAction {
 		attempts = 0;
 	}
 	
-	/**
-	 * Work out where to move a robot such that shooting a ball from
-	 * there will not hit a thing
-	 * 
-	 * @param us A robot to instruct
-	 * @param annoyance Thing which gets in the way
-	 * @param goal A goal we want to shoot at
-	 * @return An instruction to give to the robot
-	 */
-	private RobotInstruction getAvoidanceInstruction(GameObject us, 
-			GameObject annoyance, Goal goal, WorldState state) {
-		
-		/*
-		 * Currently using the highly janky method of trying
-		 * to get the robot to move somewhere there isn't an 
-		 * obstacle in front of it. Obviously rotation needs to be 
-		 * considered in future.
-		 */
-		
-		Vector2 goodPos = state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE); // for relative positioning
-		
-		/*
-		 * this code is not intended to actually work
-		 * please replace it with a good way of figuring out an optimal position
-		 * or things will be bad 
-		 */
-		if (annoyance.getPos().Y < state.getCellCenter(WorldState.PitchZone.OUR_ATTACK_ZONE).Y) {
-			// favour moving +ve
-			goodPos.setY(goodPos.Y + 10); // replace this
-		} else {
-			// favour moving -ve
-			goodPos.setY(goodPos.Y - 10); // ...and this
-		}
-		
-		return RobotInstruction.CreateLateralMoveTo(goodPos.Y);
-	}
-	
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		attempts++; // there has been another attempts at the reposition
@@ -140,6 +103,6 @@ public class RepositionAction extends StrategyAction {
             goodPos = StratMaths.getBetweenY(annoyance, goal.getBottomPost());
         }
 
-        return RobotInstruction.CreateLateralMoveTo(goodPos);
+        return RobotInstruction.createLateralMoveTo(goodPos);
 	}
 }

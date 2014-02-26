@@ -35,12 +35,12 @@ public class RecievePassAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		// if target is already in a good position then rotate to the ball otherwise move to a better position
 		if (getTargetObject(state).getPos().equals(StratMaths.whereToRecievePass(state))) {
-			return RobotInstruction.CreateMoveTo(
+			return RobotInstruction.createMoveTo(
 					(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall())),0);
 		} else {
 			Vector2 whereToRecieve = StratMaths.whereToRecievePass(state);
 			
-			return RobotInstruction.CreateMoveTo(
+			return RobotInstruction.createMoveTo(
 					Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
 					getTargetObject(state).getEuclidean(whereToRecieve));
 		}
