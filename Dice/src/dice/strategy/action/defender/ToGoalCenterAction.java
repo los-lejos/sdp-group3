@@ -47,7 +47,7 @@ public class ToGoalCenterAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return RobotInstruction.CreateMoveTo(
+		return RobotInstruction.createMoveTo(
 				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(ourGoalCenter)), 
 				getTargetObject(state).getEuclidean(ourGoalCenter));
 	}

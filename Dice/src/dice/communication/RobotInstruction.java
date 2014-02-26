@@ -18,7 +18,7 @@ public class RobotInstruction {
 		return (byte)(distance * ratio);
 	}
 	
-	public static RobotInstruction CreateMoveTo(double angle, double distance) {
+	public static RobotInstruction createMoveTo(double angle, double distance) {
 		assert (angle >= 0) && (angle <= 360);
 		
 		angle = Math.round(angle);
@@ -36,13 +36,13 @@ public class RobotInstruction {
 		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, robotDistance);
 	}
 	
-	public static RobotInstruction CreateLateralMoveTo(double distance) {
+	public static RobotInstruction createLateralMoveTo(double distance) {
 		byte robotDistance = strategyToRobotDistance(distance);
 		
 		return new RobotInstruction(RobotInstructions.LAT_MOVE_TO, robotDistance, (byte) 0, (byte) 0);
 	}
 	
-	public static RobotInstruction CreateShootTo(double angle) {
+	public static RobotInstruction createShootTo(double angle) {
 		assert (angle >= 0) && (angle <= 360);
 		
 		angle = Math.round(angle);

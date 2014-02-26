@@ -39,7 +39,7 @@ public class CorrectionAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		double angle = getAngleRelativeToHorizontal(state);
 		
-		return RobotInstruction.CreateMoveTo(Math.toDegrees(angle), 0.0);
+		return RobotInstruction.createMoveTo(Math.toDegrees(angle), 0.0);
 	}
 	
 	/** Gets the angle relative to a point directly infront of the robot.

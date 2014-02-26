@@ -111,7 +111,7 @@ public class RepositionAction extends StrategyAction {
 			goodPos.setY(goodPos.Y - 10); // ...and this
 		}
 		
-		return RobotInstruction.CreateLateralMoveTo(goodPos.Y);
+		return RobotInstruction.createLateralMoveTo(goodPos.Y);
 	}
 	
 	@Override
@@ -140,6 +140,6 @@ public class RepositionAction extends StrategyAction {
             goodPos = StratMaths.getBetweenY(annoyance, goal.getBottomPost());
         }
 
-        return RobotInstruction.CreateLateralMoveTo(goodPos);
+        return RobotInstruction.createLateralMoveTo(goodPos);
 	}
 }

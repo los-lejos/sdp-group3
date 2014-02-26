@@ -73,7 +73,7 @@ public class RotationCalibration {
 		instrSet.setCallback(callback);
 		this.attackerComms.sendInstruction(instrSet);
 		Thread.sleep(1500);                   
-		RobotInstruction instrRot = RobotInstruction.CreateMoveTo(angleToTurn, 0);
+		RobotInstruction instrRot = RobotInstruction.createMoveTo(angleToTurn, 0);
 		callback.cont = false;
 		instrRot.setCallback(callback);
 		this.attackerComms.sendInstruction(instrRot);;

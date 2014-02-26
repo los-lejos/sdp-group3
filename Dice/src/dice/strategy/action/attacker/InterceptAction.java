@@ -49,7 +49,7 @@ public class InterceptAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		return RobotInstruction.CreateMoveTo(
+		return RobotInstruction.createMoveTo(
 				StratMaths.cartesianToPolarTheta(whereToIntercept),
 				StratMaths.cartestanToPolarR(whereToIntercept));
 	}

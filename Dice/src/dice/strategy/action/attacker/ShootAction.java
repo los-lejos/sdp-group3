@@ -37,7 +37,7 @@ public class ShootAction extends StrategyAction {
 		Goal opGoal = state.getOppGoal();
 		Vector2 opGoalCenter = opGoal.getGoalCenter();
 		
-		return RobotInstruction.CreateShootTo(
+		return RobotInstruction.createShootTo(
 				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
 	}
 }
