@@ -3,6 +3,7 @@ package dice.strategy;
 
 import dice.state.BoundedLine;
 import dice.state.GameObject;
+import dice.state.Goal;
 import dice.state.Path;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
@@ -18,6 +19,7 @@ public final class StratMaths {
 	// tolerance if we want to find out if something's 'in the area of' a position
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 	public static final double ROTATION_FINISHED_THRESH = Math.PI / 10;
+	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
 	public static boolean canReach(Vector2 v, GameObject o) {
 		//TODO
@@ -84,5 +86,23 @@ public final class StratMaths {
 	public static Vector2 relativePos(GameObject referenceFrame, Vector2 objPos) {
 		Vector2 rfPos = referenceFrame.getPos();
 		return new Vector2(objPos.X-rfPos.X,objPos.Y-rfPos.Y);
+	}
+
+	
+	/*
+	 * if we are left of the goal shoot at the left post, if we are to the right of the goal then
+	 * shoot at the right of the goal. otherwise shoot at the goal center
+	 */
+	public static Vector2 whereToShoot(GameObject robot, WorldState state) {
+		
+		Goal opGoal = state.getOppGoal();
+		
+		if (robot.getPos().Y > opGoal.getTopPost().Y) {
+			return new Vector2(opGoal.getTopPost().X, opGoal.getTopPost().Y - SHOOT_AIM_ADJUSTMENT);
+		} else if (robot.getPos().Y < opGoal.getBottomPost().Y){
+			return new Vector2(opGoal.getBottomPost().X, opGoal.getBottomPost().Y+ SHOOT_AIM_ADJUSTMENT);
+		} else {
+			return state.getOppGoal().getGoalCenter();
+		}
 	}
 }
