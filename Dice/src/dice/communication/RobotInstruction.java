@@ -46,6 +46,7 @@ public class RobotInstruction {
 		assert (angle >= 0) && (angle <= 360);
 		
 		angle = Math.round(angle);
+		angle *= -1;
 		
 		byte angleUpper = (byte)(angle / 10);
 		byte angleLower = (byte)(angle % 10);
