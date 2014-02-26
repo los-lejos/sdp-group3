@@ -24,7 +24,7 @@ public class ToBallAction extends StrategyAction {
 	public boolean isPossible(WorldState state) {
 		if (state.getBallPossession() != WorldState.BallPossession.OUR_ATTACKER ||
 			state.getBallPossession() != WorldState.BallPossession.OUR_DEFENDER) {
-			
+			System.out.println("Our zone: " + getTargetObject(state).getCurrentZone() + " Ball zone: " +state.getBall().getCurrentZone());
 			return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
 		} else {
 			return false;
@@ -48,7 +48,7 @@ public class ToBallAction extends StrategyAction {
 		Vector2 ballPos = state.getBall().getPos();
 		GameObject robot = getTargetObject(state);
 
-		System.out.println(robot.getRotationRelativeTo(ballPos));
+		System.out.println("Rotation relative to ball " + robot.getRotationRelativeTo(ballPos));
         return  RobotInstruction.CreateMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				robot.getEuclidean(ballPos));
