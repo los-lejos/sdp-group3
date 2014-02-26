@@ -6,7 +6,7 @@ import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StrategyAction;
-
+import dice.strategy.StratMaths;
 
 /*
  * @author Sam Stern
@@ -24,11 +24,17 @@ public class ToBallAction extends StrategyAction {
 	public boolean isPossible(WorldState state) {
 		if (state.getBallPossession() != WorldState.BallPossession.OUR_ATTACKER ||
 			state.getBallPossession() != WorldState.BallPossession.OUR_DEFENDER) {
-			System.out.println("Our zone: " + getTargetObject(state).getCurrentZone() + " Ball zone: " +state.getBall().getCurrentZone());
-			return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
-		} else {
-			return false;
+			
+			if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
+				double relativeRotation = getTargetObject(state).getRotationRelativeTo(state.getBall());
+				
+				return (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH);
+			}
+			
 		}
+			
+		return false;
+		
 	}
 
 	@Override

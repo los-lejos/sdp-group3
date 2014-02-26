@@ -17,6 +17,7 @@ public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
+	public static final double ROTATION_FINISHED_THRESH = Math.PI / 10;
 	
 	public static boolean canReach(Vector2 v, GameObject o) {
 		//TODO

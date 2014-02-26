@@ -58,6 +58,7 @@ public class Main {
 		@Override
 		public void onBallCaught() {
 			synchronized(worldState) {
+				System.out.println("Ball has been caught aw yeah.");
 				worldState.setBallPossession(BallPossession.OUR_DEFENDER);
 			}
 		}
