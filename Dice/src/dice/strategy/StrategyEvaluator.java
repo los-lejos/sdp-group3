@@ -120,6 +120,14 @@ public class StrategyEvaluator {
 		
 		// Action overrides	
 		
+		if (attacker.getCurrentAction() instanceof ToBallAction && !attacker.needsNewAction(state)) {
+			if (attacker.actionsAvailable()) {
+				bestAttackerAction = new ToBallAction(RobotType.ATTACKER);
+				attackerOverride = true;
+			}
+			
+		}
+		
 		// Check if we should send actions to the robots
 		if(bestDefenderAction != null && (defenderOverride || defender.needsNewAction(state))) {
 			defender.setCurrentAction(bestDefenderAction, state);
@@ -127,6 +135,7 @@ public class StrategyEvaluator {
 		
 		if(bestAttackerAction != null && (attackerOverride || attacker.needsNewAction(state))) {
 			attacker.setCurrentAction(bestAttackerAction, state);
+			attackerOverride = false; 
 		}
 	}
 }
