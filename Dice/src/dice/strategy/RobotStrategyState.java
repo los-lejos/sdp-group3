@@ -78,6 +78,8 @@ public class RobotStrategyState {
 		this.issuedAction = new IssuedAction();
 		this.strategyAction = action;
 		
+		
+		//Make sure we don't constantly reposition
 		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
 			RepositionAction reposAction = (RepositionAction) action;
 			reposAction.resetRepositionAttempts();
@@ -89,6 +91,7 @@ public class RobotStrategyState {
 	}
 	
 	public boolean needsNewAction(WorldState state) {
-		return issuedAction == null || issuedAction.isCompleted() || !strategyAction.isPossible(state);
+		//return issuedAction == null || issuedAction.isCompleted() || !strategyAction.isPossible(state);
+		return issuedAction == null || !strategyAction.isPossible(state);
 	}
 }
