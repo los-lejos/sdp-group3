@@ -1,6 +1,5 @@
 package dice.strategy;
 
-import dice.Log;
 import dice.communication.RobotCommunicationCallback;
 
 public class IssuedAction {

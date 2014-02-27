@@ -18,40 +18,33 @@ public class RobotInstruction {
 		return (byte)(distance * ratio);
 	}
 	
-	public static RobotInstruction createMoveTo(double angle, double distance) {
+	private static byte[] angleToBytes(double angle) {
 		assert (angle >= 0) && (angle <= 360);
-		
+		byte[] byteBytes = new byte[2];
 		angle = Math.round(angle);
-		
 		// multiply by -1, because the robot code
 		// works with positive anticlockwise values.
 		// we need to discuss this.
 		angle *= -1;
-		
-		byte angleUpper = (byte)(angle / 10);
-		byte angleLower = (byte)(angle % 10);
-
+		byteBytes[0] = (byte)(angle / 10);
+		byteBytes[1] = (byte)(angle % 10);
+		return byteBytes;
+	}
+	
+	public static RobotInstruction createMoveTo(double angle, double distance) {
+		byte[] angleBytes = angleToBytes(angle);
 		byte robotDistance = strategyToRobotDistance(distance);
-
-		return new RobotInstruction(RobotInstructions.MOVE_TO, angleUpper, angleLower, robotDistance);
+		return new RobotInstruction(RobotInstructions.MOVE_TO, angleBytes[0], angleBytes[1], robotDistance);
 	}
 	
 	public static RobotInstruction createLateralMoveTo(double distance) {
 		byte robotDistance = strategyToRobotDistance(distance);
-		
 		return new RobotInstruction(RobotInstructions.LAT_MOVE_TO, robotDistance, (byte) 0, (byte) 0);
 	}
 	
 	public static RobotInstruction createShootTo(double angle) {
-		assert (angle >= 0) && (angle <= 360);
-		
-		angle = Math.round(angle);
-		angle *= -1;
-		
-		byte angleUpper = (byte)(angle / 10);
-		byte angleLower = (byte)(angle % 10);
-		
-		return new RobotInstruction(RobotInstructions.KICK_TOWARD, angleUpper, angleLower, (byte)0);
+		byte[] angleBytes = angleToBytes(angle);
+		return new RobotInstruction(RobotInstructions.KICK_TOWARD, angleBytes[0], angleBytes[1], (byte)0);
 	}
 	
 	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3) {

@@ -25,7 +25,7 @@ public class ToZoneCenterAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (!(state.getBall().getCurrentZone() == WorldState.PitchZone.OPP_ATTACK_ZONE)){
+		if (state.getBall().getCurrentZone() != WorldState.PitchZone.OPP_ATTACK_ZONE){
 			return 1;
 		} else {
 			return 0;
