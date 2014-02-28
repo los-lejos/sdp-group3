@@ -23,6 +23,9 @@ public class DefenceRobot extends Robot {
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 
 	private final DifferentialPilot pilot;
+	
+	private double maxTravelSpeed;
+	private double maxRotateSpeed;
 	private final DefenceKickerThread kickerThread;
 	private final StrafeThread strafeThread;
 
@@ -35,8 +38,10 @@ public class DefenceRobot extends Robot {
     	
     	// Set up differential pilot.
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
-		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
-		rotateSpeed = pilot.getMaxRotateSpeed() * 0.4;
+    	maxTravelSpeed = pilot.getMaxTravelSpeed();
+		maxRotateSpeed = pilot.getMaxRotateSpeed();
+		travelSpeed = maxTravelSpeed * 0.5;
+		rotateSpeed = maxRotateSpeed * 0.4;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 
@@ -101,17 +106,18 @@ public class DefenceRobot extends Robot {
 
 	@Override
 	public void setTrackWidth(int width) {
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("setTrackWidth");
 	}
 
 	@Override
 	public void setTravelSpeed(int speed) {
-		throw new UnsupportedOperationException("setTravelSpeed");
+		travelSpeed = speed * 0.01 * maxTravelSpeed;
+		pilot.setTravelSpeed(travelSpeed);
 	}
 
 	@Override
 	public void setRotateSpeed(int speed) {
-		throw new UnsupportedOperationException("setRotateSpeed");
+		rotateSpeed = speed * 0.01 * maxRotateSpeed;
+		pilot.setRotateSpeed(rotateSpeed);
 	}
 }
