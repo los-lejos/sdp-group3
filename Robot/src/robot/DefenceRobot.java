@@ -102,7 +102,16 @@ public class DefenceRobot extends Robot {
 	@Override
 	public void setTrackWidth(int width) {
 		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("setTrackWidth");
 	}
-	
+
+	@Override
+	public void setTravelSpeed(int speed) {
+		throw new UnsupportedOperationException("setTravelSpeed");
+	}
+
+	@Override
+	public void setRotateSpeed(int speed) {
+		throw new UnsupportedOperationException("setRotateSpeed");
+	}
 }

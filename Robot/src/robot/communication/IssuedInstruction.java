@@ -42,6 +42,10 @@ public class IssuedInstruction {
 		} else if (type == RobotInstructions.LAT_MOVE_TO) {
 			return Arrays.copyOfRange(parameters, 0, 1);
 		} else if (type == RobotInstructions.SET_TRACK_WIDTH) {
+			return Arrays.copyOfRange(parameters, 0, 2);
+		} else if (type == RobotInstructions.SET_TRAVEL_SPEED) {
+			return Arrays.copyOfRange(parameters, 0, 1);
+		} else if (type == RobotInstructions.SET_ROTATE_SPEED) {
 			return Arrays.copyOfRange(parameters, 0, 1);
 		} else {
 			System.out.println("Bad instruction.");

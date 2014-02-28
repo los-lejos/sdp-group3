@@ -22,9 +22,12 @@ public class AttackRobot extends Robot {
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
+	
+	private double maxTravelSpeed;
+	private double maxRotateSpeed;
 
-	private DifferentialPilot pilot;
 	private final AttackKickerThread kickerThread;
+	private DifferentialPilot pilot;
 	
 	private double travelSpeed;
 	private double rotateSpeed;
@@ -33,9 +36,10 @@ public class AttackRobot extends Robot {
 		super(leftLightSensor, rightLightSensor, ballSensor);
 		
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
-		
-		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
-		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
+		maxTravelSpeed = pilot.getMaxTravelSpeed();
+		maxRotateSpeed = pilot.getMaxRotateSpeed();
+		travelSpeed = maxTravelSpeed * 0.5;
+		rotateSpeed = maxRotateSpeed * 0.3;
 		
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
@@ -87,12 +91,24 @@ public class AttackRobot extends Robot {
 
 	@Override
 	public void setTrackWidth(int width) {
+		// Speed stays default anyway???
+		// Not to be used 
+		pilot.stop();
 		trackWidthMm = width;
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
-		travelSpeed = pilot.getMaxTravelSpeed() * 0.5;
-		rotateSpeed = pilot.getMaxRotateSpeed() * 0.3;
-		
 		pilot.setTravelSpeed(travelSpeed);
+		pilot.setRotateSpeed(rotateSpeed);
+	}
+
+	@Override
+	public void setTravelSpeed(int speed) {
+		travelSpeed = speed * 0.01 * maxTravelSpeed;
+		pilot.setTravelSpeed(travelSpeed);
+	}
+
+	@Override
+	public void setRotateSpeed(int speed) {
+		rotateSpeed = speed * 0.01 * maxRotateSpeed;
 		pilot.setRotateSpeed(rotateSpeed);
 	}
 }
