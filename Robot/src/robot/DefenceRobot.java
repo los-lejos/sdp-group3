@@ -110,14 +110,14 @@ public class DefenceRobot extends Robot {
 	}
 
 	@Override
-	public void setTravelSpeed(int speed) {
-		travelSpeed = speed * 0.01 * maxTravelSpeed;
+	public void setTravelSpeed(int speedPercentage) {
+		travelSpeed = speedPercentage * 0.01 * maxTravelSpeed;
 		pilot.setTravelSpeed(travelSpeed);
 	}
 
 	@Override
-	public void setRotateSpeed(int speed) {
-		rotateSpeed = speed * 0.01 * maxRotateSpeed;
+	public void setRotateSpeed(int speedPercentage) {
+		rotateSpeed = speedPercentage * 0.01 * maxRotateSpeed;
 		pilot.setRotateSpeed(rotateSpeed);
 	}
 }

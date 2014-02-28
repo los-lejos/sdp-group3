@@ -119,6 +119,7 @@ public class MovementThread extends Thread {
 			}
 		} catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("Error: wrong params for instruction: " + instructionType);
+			currentState = State.READY;
 		}
 	}
 	
