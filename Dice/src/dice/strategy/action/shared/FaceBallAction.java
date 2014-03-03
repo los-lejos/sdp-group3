@@ -20,7 +20,15 @@ public class FaceBallAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
+		boolean ourAttHasBall = WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession();
+		boolean ourDefHasBall = WorldState.BallPossession.OUR_DEFENDER == state.getBallPossession();
+		
+		if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
+			return getTargetObject(state) == state.getOurAttacker() && ourAttHasBall ||
+				getTargetObject(state) == state.getOurDefender() && ourDefHasBall;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
