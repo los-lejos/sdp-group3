@@ -53,7 +53,7 @@ public class DefenceKickerThread extends Thread {
 				state = KickerState.READY;
 			}
 		}
-		//grab();
+		grab();
 	}
 	
 	private void open() {

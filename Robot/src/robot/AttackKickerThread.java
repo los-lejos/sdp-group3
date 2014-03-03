@@ -10,6 +10,7 @@ import shared.RobotInstructions;
 
 public class AttackKickerThread extends Thread {
 	
+	//private final NXTMotor motor;
 	private final NXTMotor motor;
 	private final BluetoothDiceConnection conn;
 	
@@ -49,7 +50,7 @@ public class AttackKickerThread extends Thread {
 		// Open
 		motor.backward();
 		try {
-			sleep(85);
+			sleep(120);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
@@ -74,7 +75,7 @@ public class AttackKickerThread extends Thread {
 		// Return to default position
 		motor.forward();
 		try {
-			sleep(300);
+			sleep(360);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
@@ -83,7 +84,7 @@ public class AttackKickerThread extends Thread {
 		// Open
 		motor.backward();
 		try {
-			sleep(85);
+			sleep(120);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}
