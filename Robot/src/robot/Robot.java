@@ -147,5 +147,7 @@ public abstract class Robot {
     public abstract void grab();
     public abstract void cleanup();
     public abstract void setTrackWidth(int width);
+    public abstract void setTravelSpeed(int speedPercentage);
+    public abstract void setRotateSpeed(int speedPercentage);
 	
 }
