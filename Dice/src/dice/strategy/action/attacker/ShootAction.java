@@ -21,7 +21,7 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		Vector2 whereToShoot = StratMaths.whereToShoot(getTargetObject(state), state);
+		/*Vector2 whereToShoot = StratMaths.whereToShoot(getTargetObject(state), state);
 		double relativeRotation = getTargetObject(state).getRotationRelativeTo(whereToShoot);
 		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER ) {
 			if (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH) {
@@ -29,6 +29,9 @@ public class ShootAction extends StrategyAction {
 			}
 		}
 		return false;
+		*/
+		
+		return (WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession());
 	}
 
 	@Override
