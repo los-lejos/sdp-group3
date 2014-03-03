@@ -24,7 +24,8 @@ import robot.communication.OnNewInstructionHandler;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 15;
+	//private static final int FRONT_SENSOR_CUTOFF = 15;
+	private static final int FRONT_SENSOR_CUTOFF = 10;
 	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -146,7 +147,5 @@ public abstract class Robot {
     public abstract void grab();
     public abstract void cleanup();
     public abstract void setTrackWidth(int width);
-    public abstract void setTravelSpeed(int speedPercentage);
-    public abstract void setRotateSpeed(int speedPercentage);
 	
 }

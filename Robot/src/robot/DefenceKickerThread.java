@@ -17,6 +17,9 @@ public class DefenceKickerThread extends Thread {
 	
 	private static final byte FORWARD = (byte) 1;
 	private static final byte BACKWARD = (byte) 2;
+	//private static final byte FORWARD = (byte) 2;
+	//private static final byte BACKWARD = (byte) 1;
+	
 	private static final byte STOP = (byte) 0;
 	private static final byte KICK_SPEED = (byte) 200;
 	private static final byte CATCH_SPEED = (byte) 120;
@@ -31,10 +34,11 @@ public class DefenceKickerThread extends Thread {
 		this.conn = conn;
 		
 		// Set up multiplexer stuff
-		I2Cport = SensorPort.S1;
+		I2Cport = SensorPort.S4;
 		I2Cport.i2cEnable(I2CPort.STANDARD_MODE);
 		I2Csensor = new I2CSensor(I2Cport);
 		I2Csensor.setAddress(0xB4);
+		//I2Csensor.setAddress(0x5A);
 	}
 	
 	@Override
@@ -49,12 +53,12 @@ public class DefenceKickerThread extends Thread {
 				state = KickerState.READY;
 			}
 		}
-		grab();
+		//grab();
 	}
 	
 	private void open() {
 		// Shut fully in case open
-		System.out.println(I2Csensor.sendData(0x01, BACKWARD));
+		System.out.println(I2Csensor.sendData(0x01, FORWARD));
 		System.out.println(I2Csensor.sendData(0x02, KICK_SPEED));
 		try {
 			sleep(1000);
@@ -64,7 +68,7 @@ public class DefenceKickerThread extends Thread {
 		I2Csensor.sendData(0x01, STOP);
 		
 		// Open
-		I2Csensor.sendData(0x01, FORWARD);
+		I2Csensor.sendData(0x01, BACKWARD);
 		try {
 			sleep(50);
 		} catch (InterruptedException e) {
@@ -76,7 +80,7 @@ public class DefenceKickerThread extends Thread {
 	private void kick() {
 		// Release ball
 		I2Csensor.sendData(0x02, KICK_SPEED);
-		I2Csensor.sendData(0x01, FORWARD);
+		I2Csensor.sendData(0x01, BACKWARD);
 		try {
 			sleep(200);
 		} catch (InterruptedException e) {
@@ -99,7 +103,7 @@ public class DefenceKickerThread extends Thread {
 	private void grab() {
 		System.out.println("Grabbed.");
 		I2Csensor.sendData(0x02, CATCH_SPEED);
-		I2Csensor.sendData(0x01, BACKWARD);
+		I2Csensor.sendData(0x01, FORWARD);
 		try {
 			sleep(200);
 		} catch (InterruptedException e) {
