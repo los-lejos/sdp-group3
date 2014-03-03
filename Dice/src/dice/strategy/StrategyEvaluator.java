@@ -60,7 +60,7 @@ public class StrategyEvaluator {
 			//attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 			//attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
-			//attacker.addAction(new BlockAction(RobotType.ATTACKER));
+			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new FaceBallAction(RobotType.ATTACKER));
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {

@@ -82,7 +82,6 @@ public class AttackRobot extends Robot {
 	@Override
     public void grab() {
     	kickerThread.setKickerState(KickerState.GRAB);
-    	this.hasBall = true;
     }
     
 	@Override

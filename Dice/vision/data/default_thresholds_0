@@ -16,7 +16,7 @@ p6
 (lp8
 I172
 aI132
-aI195
+aI148
 aa(lp9
 I0
 aI255
@@ -25,11 +25,11 @@ aasS'yellow'
 p10
 (lp11
 (lp12
-I15
-aI209
+I11
+aI147
 aI0
 aa(lp13
-I34
+I22
 aI255
 aI255
 aasS'dot'
@@ -42,5 +42,5 @@ aI0
 aa(lp17
 I179
 aI210
-aI73
+aI68
 aas.

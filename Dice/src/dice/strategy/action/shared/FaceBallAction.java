@@ -23,20 +23,25 @@ public class FaceBallAction extends StrategyAction {
 		boolean ourAttHasBall = WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession();
 		boolean ourDefHasBall = WorldState.BallPossession.OUR_DEFENDER == state.getBallPossession();
 		
-		if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
-			return getTargetObject(state) == state.getOurAttacker() && ourAttHasBall ||
-				getTargetObject(state) == state.getOurDefender() && ourDefHasBall;
-		} else {
-			return false;
-		}
+		//boolean ballInTargetZone = getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone();
+		
+		
+		return (getTargetObject(state) == state.getOurAttacker() && !ourAttHasBall) ||
+				(getTargetObject(state) == state.getOurDefender() && !ourDefHasBall);
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
-			return 2;
+		boolean ballInTargetZone = getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone();
+		
+		if (ballInTargetZone) {
+			if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
+				return 2;
+			} else {
+				return 0;
+			}
 		} else {
-			return 0;
+			return 1;
 		}
 	}
 

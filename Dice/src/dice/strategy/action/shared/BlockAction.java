@@ -28,7 +28,21 @@ public class BlockAction extends StrategyAction {
 		GameObject ball = state.getBall();
 		GameObject robot = getTargetObject(state);
 		
+		boolean ballInAttZone = WorldState.PitchZone.OUR_ATTACK_ZONE == state.getBall().getCurrentZone();
+		boolean ballInDefZone = WorldState.PitchZone.OUR_DEFEND_ZONE == state.getBall().getCurrentZone();
+		
 		if (ball != null && robot != null && robot.getPos() != null) {
+			if (getTargetObject(state) == state.getOurAttacker() && !ballInAttZone) {
+				return true;
+			} else if (getTargetObject(state) == state.getOurDefender() && !ballInDefZone) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+		/*if (ball != null && robot != null && robot.getPos() != null) {
 			PitchZone ballZone = state.getBall().getCurrentZone();
 
 			if ((ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) ||
@@ -38,15 +52,32 @@ public class BlockAction extends StrategyAction {
 		}
 			
 		return false;
+		*/
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		GameObject ball = state.getBall();
 		
+		GameObject ball = state.getBall();
 		PitchZone ballZone = state.getBall().getCurrentZone();
+		GameObject target = getTargetObject(state);
+		
+		double distToBallY = Math.abs(target.getPos().Y - ball.getPos().Y);
+		boolean distYMoreThanFuzz = distToBallY > StratMaths.POSITION_FUZZ;
 		
 		if (ball.getVelocity() != null) {
+			if (target == state.getOurAttacker() && distYMoreThanFuzz) {
+				return 2;
+			} else if (ballZone != WorldState.PitchZone.OUR_DEFEND_ZONE) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+		
+		/*if (ball.getVelocity() != null) {
 			if ((getTargetObject(state) == state.getOurDefender()) && (ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) 
 					&& (Math.abs(state.getBall().getVelocity().Y) < criticalVel)) {
 				return 2;
@@ -57,7 +88,7 @@ public class BlockAction extends StrategyAction {
 			}
 		} else {
 			return 0;
-		}
+		} */
 	}
 
 	@Override

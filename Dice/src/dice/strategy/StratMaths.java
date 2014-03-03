@@ -17,7 +17,7 @@ import dice.state.WorldState;
 public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
-	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
+	public static final double POSITION_FUZZ = 40.0; // arbitrary, make it nicer
 	public static final double ROTATION_FINISHED_THRESH = Math.PI / 10;
 	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
@@ -97,12 +97,16 @@ public final class StratMaths {
 		
 		Goal opGoal = state.getOppGoal();
 		
-		if (robot.getPos().Y > opGoal.getTopPost().Y) {
+		
+		/*if (robot.getPos().Y > opGoal.getTopPost().Y) {
 			return new Vector2(opGoal.getTopPost().X, opGoal.getTopPost().Y - SHOOT_AIM_ADJUSTMENT);
 		} else if (robot.getPos().Y < opGoal.getBottomPost().Y){
 			return new Vector2(opGoal.getBottomPost().X, opGoal.getBottomPost().Y+ SHOOT_AIM_ADJUSTMENT);
 		} else {
-			return state.getOppGoal().getGoalCenter();
+			return opGoal.getGoalCenter();
 		}
+		*/
+		
+		return opGoal.getGoalCenter();
 	}
 }
