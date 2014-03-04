@@ -1,14 +1,13 @@
-package robot;
+package robot.attacker;
 
 /*
  * @author Joris Urbaitis
  */
 
-public class DefenderMain {
+public class AttackerMain {
 	
 	public static void main(String[] args) {
-		DefenceRobot robot = new DefenceRobot();
+		AttackRobot robot = new AttackRobot();
 		robot.run();
 	}
 }
- 

@@ -1,4 +1,4 @@
-package robot;
+package robot.attacker;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
@@ -6,6 +6,7 @@ import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
+import robot.Robot;
 
 /*
  * @author Owen Gillespie
@@ -26,14 +27,13 @@ public class AttackRobot extends Robot {
 	private double maxTravelSpeed;
 	private double maxRotateSpeed;
 
-	private final AttackKickerThread kickerThread;
 	private DifferentialPilot pilot;
 	
 	private double travelSpeed;
 	private double rotateSpeed;
 	
 	public AttackRobot() {
-		super(leftLightSensor, rightLightSensor, ballSensor);
+		super(leftLightSensor, rightLightSensor, ballSensor, new AttackKickerController());
 		
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
@@ -43,9 +43,6 @@ public class AttackRobot extends Robot {
 		
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
-		
-		kickerThread = new AttackKickerThread(conn);
-    	kickerThread.start();
 	}
 
 	@Override
@@ -74,22 +71,6 @@ public class AttackRobot extends Robot {
 	}
 	
 	@Override
-	public void kick() {
-    	kickerThread.setKickerState(KickerState.KICK);
-    	this.hasBall = false;
-    }
-    
-	@Override
-    public void grab() {
-    	kickerThread.setKickerState(KickerState.GRAB);
-    }
-    
-	@Override
-    public void cleanup() {
-    	kickerThread.setKickerState(KickerState.EXIT);
-    }
-
-	@Override
 	public void setTrackWidth(int width) {
 		// Speed stays default anyway???
 		// Not to be used 
@@ -110,5 +91,9 @@ public class AttackRobot extends Robot {
 	public void setRotateSpeed(int speedPercentage) {
 		rotateSpeed = speedPercentage * 0.01 * maxRotateSpeed;
 		pilot.setRotateSpeed(rotateSpeed);
+	}
+
+	@Override
+	public void cleanup() {
 	}
 }

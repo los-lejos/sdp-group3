@@ -10,6 +10,7 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
+import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -25,7 +26,8 @@ public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	//private static final int FRONT_SENSOR_CUTOFF = 15;
-	private static final int FRONT_SENSOR_CUTOFF = 12;
+	private static final int FRONT_SENSOR_CUTOFF = 14
+	;
 	
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -35,14 +37,16 @@ public abstract class Robot {
 	
     private IssuedInstruction currentInstruction, newInstruction;
     private MovementThread movementThread;
+    private KickerController kicker;
     
     private boolean isRunning = true;
-    protected boolean hasBall = false;
     
-    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
+    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR, KickerController kicker) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
+    	
+    	this.kicker = kicker;
     	
     	conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
 			@Override
@@ -55,6 +59,10 @@ public abstract class Robot {
 				isRunning = false;
 			}
 		});
+    }
+    
+    public KickerController getKicker() {
+    	return this.kicker;
     }
 
 	public void run() {
@@ -97,9 +105,9 @@ public abstract class Robot {
 				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
-			if (objectAtFrontSensor() && !hasBall) {
-				grab();
-				this.hasBall = true;
+			if (objectAtFrontSensor() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+				this.kicker.grab();
+				this.sendCaughtBallMessage();
 			}
 		}
 		
@@ -121,9 +129,23 @@ public abstract class Robot {
 			e.printStackTrace();
 		}
 		
+		this.kicker.cleanup();
 		this.cleanup();
 		
 		System.out.println("Exiting");
+	}
+	
+	private void sendCaughtBallMessage() {
+		// Notify DICE that we have the ball
+		byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
+		
+		try {
+			conn.send(hasBallResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
 	}
 	
     private boolean rightSensorOnBoundary() {
@@ -143,8 +165,6 @@ public abstract class Robot {
     public abstract void move(int distance);
     public abstract void moveLat(int power);
     public abstract void stop();
-    public abstract void kick();
-    public abstract void grab();
     public abstract void cleanup();
     public abstract void setTrackWidth(int width);
     public abstract void setTravelSpeed(int speedPercentage);

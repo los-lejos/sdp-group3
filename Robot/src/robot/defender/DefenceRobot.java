@@ -1,4 +1,4 @@
-	package robot;
+package robot.defender;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
@@ -6,6 +6,9 @@ import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
+import robot.Robot;
+import robot.StrafeState;
+import robot.StrafeThread;
 
 /*
  * @author Owen Gillespie
@@ -26,7 +29,6 @@ public class DefenceRobot extends Robot {
 	
 	private double maxTravelSpeed;
 	private double maxRotateSpeed;
-	private final DefenceKickerThread kickerThread;
 	private final StrafeThread strafeThread;
 
 	private double travelSpeed;
@@ -34,7 +36,7 @@ public class DefenceRobot extends Robot {
 	private boolean movingLat = false;
     
 	public DefenceRobot() {
-    	super(leftLightSensor, rightLightSensor, ballSensor);
+    	super(leftLightSensor, rightLightSensor, ballSensor, new DefenceKickerController());
     	
     	// Set up differential pilot.
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
@@ -45,9 +47,6 @@ public class DefenceRobot extends Robot {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 
-		kickerThread = new DefenceKickerThread(conn);
-		kickerThread.start();
-		
 		strafeThread = new StrafeThread();
 		strafeThread.start();
     }
@@ -87,21 +86,9 @@ public class DefenceRobot extends Robot {
 	}
 
 	@Override
-	public void kick() {
-		kickerThread.setKickerState(KickerState.KICK);
-		this.hasBall = false;
-	}
-
-	@Override
-	public void grab() {
-		kickerThread.setKickerState(KickerState.GRAB);
-	}
-
-	@Override
 	public void cleanup() {
 		strafeThread.updateLat(StrafeState.EXIT);
 		this.movingLat = false;
-		kickerThread.setKickerState(KickerState.EXIT);
 	}
 
 	@Override

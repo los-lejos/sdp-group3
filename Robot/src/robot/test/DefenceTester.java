@@ -3,7 +3,7 @@ package robot.test;
 import lejos.nxt.Button;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
-import robot.DefenceRobot;
+import robot.defender.DefenceRobot;
 
 public class DefenceTester {
 
@@ -42,7 +42,9 @@ public class DefenceTester {
 		while (Button.readButtons() == 0) {
 			System.out.println(ballSense.getDistance());
 			if (ballSense.getDistance() <= 10){
-				ballE.grab();
+				ballE.getKicker().grab();
+				
+				ballE.getKicker().kick();
 			}
 		}
 		

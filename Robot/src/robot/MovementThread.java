@@ -129,8 +129,8 @@ public class MovementThread extends Thread {
 				robot.rotate(heading);
 				while(robot.isMoving() && !interrupted);
 				if(!interrupted) {
-					robot.kick();
-					while(robot.isMoving() && !interrupted);
+					robot.getKicker().kick();
+					while(robot.getKicker().isMoving() && !interrupted);
 				} else {
 					robot.stop();
 				}
