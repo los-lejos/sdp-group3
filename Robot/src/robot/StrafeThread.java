@@ -34,7 +34,7 @@ public class StrafeThread extends Thread {
 	
 	public void move(int distance) {
 		// Calculations based on power being 100
-		this.movementDelay = distance*1000/48; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		this.movementDelay = Math.abs(distance)*1000/48; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
 		this.forwardDirection = distance > 0;
 		this.isMoving = true;
 
