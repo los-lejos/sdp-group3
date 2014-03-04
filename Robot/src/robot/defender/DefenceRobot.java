@@ -7,7 +7,6 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import robot.Robot;
-import robot.StrafeState;
 import robot.StrafeThread;
 
 /*
@@ -33,7 +32,6 @@ public class DefenceRobot extends Robot {
 
 	private double travelSpeed;
 	private double rotateSpeed;
-	private boolean movingLat = false;
     
 	public DefenceRobot() {
     	super(leftLightSensor, rightLightSensor, ballSensor, new DefenceKickerController());
@@ -53,14 +51,13 @@ public class DefenceRobot extends Robot {
 	
 	@Override
 	public void stop() {
-		strafeThread.updateLat(StrafeState.STOP);
-		this.movingLat = false;
+		stopLat();
 		pilot.stop();
 	}
 
 	@Override
 	public boolean isMoving() {
-		return pilot.isMoving() || this.movingLat;
+		return pilot.isMoving() || this.strafeThread.isMoving();
 	}
 
 	@Override
@@ -75,20 +72,18 @@ public class DefenceRobot extends Robot {
 		pilot.travel(distance, true);
 	}
 	
-	public void moveLat(int power) {
-		strafeThread.updateLat(StrafeState.STRAFE, power);
-		this.movingLat = true;
+	@Override
+	public void moveLat(int distance) {
+		strafeThread.move(distance);
 	}
 	
 	public void stopLat() {
-		strafeThread.updateLat(StrafeState.STOP);
-		this.movingLat = false;
+		strafeThread.stop();
 	}
 
 	@Override
 	public void cleanup() {
-		strafeThread.updateLat(StrafeState.EXIT);
-		this.movingLat = false;
+		strafeThread.cleanup();
 	}
 
 	@Override

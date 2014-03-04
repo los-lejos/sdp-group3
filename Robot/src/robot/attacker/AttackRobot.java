@@ -66,7 +66,7 @@ public class AttackRobot extends Robot {
 	}
 	
 	@Override
-	public void moveLat(int power) {
+	public void moveLat(int distance) {
 		throw new UnsupportedOperationException("Lateral movement is not possible for the attacker");
 	}
 	

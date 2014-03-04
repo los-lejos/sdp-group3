@@ -5,39 +5,45 @@ import lejos.nxt.NXTMotor;
 
 public class StrafeThread extends Thread {
 	
+	private enum StrafeState {
+		READY, STRAFE, STOP, EXIT
+	}
+	
+	private final int POWER = 100;
+	
 	private final NXTMotor lateralMotor;
-	private final double lateralPowerMultiplier;
-	private final int lateralMinPower;
-	
 	private StrafeState state = StrafeState.READY;
-	private int power = 0;
-	private int prevPower = 0;
 	
+	private boolean forwardDirection;
+	private long movementDelay = 0;
+	
+	private boolean isMoving = false;
+
 	public StrafeThread() {
 		this.setDaemon(true);
 		lateralMotor = new NXTMotor(MotorPort.C);
-		
-		// Set up strafing motor.
-		this.lateralPowerMultiplier = 7;
-		this.lateralMinPower = 20;
-		lateralMotor.setPower(50);
-		lateralMotor.forward();
-		try {
-			sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		lateralMotor.setPower(50);
-		lateralMotor.backward();
-		try {
-			sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		lateralMotor.setPower(0);
-		lateralMotor.forward();
+	}
+	
+	public void cleanup() {
+		this.state = StrafeState.EXIT;
+	}
+	
+	public boolean isMoving() {
+		return this.isMoving;
+	}
+	
+	public void move(int distance) {
+		// Calculations based on power being 100
+		this.movementDelay = distance*1000/48; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		this.forwardDirection = distance > 0;
+		this.isMoving = true;
+
+		this.state = StrafeState.STRAFE;
+	}
+	
+	public void stop() {
+		this.isMoving = false;
+		this.state = StrafeState.STOP;
 	}
 	
 	@Override
@@ -45,75 +51,46 @@ public class StrafeThread extends Thread {
 		while (state != StrafeState.EXIT) {
 			if (state == StrafeState.STRAFE) {
 				moveLat();
+				this.isMoving = false;
 				state = StrafeState.READY;
 			} else if (state == StrafeState.STOP) {
-				stopLat();
+				stopMotor();
 				state = StrafeState.READY;
 			}
 		}
-		System.out.println("Exited loop");
-		stopLat();
+		
+		stopMotor();
 	}
 	
 	private void moveLat() {
-		int absPower = Math.abs(power);
-		int motorPower = (int) (lateralPowerMultiplier * absPower + lateralMinPower);
-		lateralMotor.setPower(motorPower);
-		this.flipLat(power);
-	}
-	
-	/*
-	 * Updates strafing direction.
-	 */
-	private void flipLat(int power) {
+		System.out.println("MOVING AT THE POWER OF " + this.POWER + " POWERS");
+		this.lateralMotor.setPower(this.POWER);
 		
-		System.out.println("New: " + this.power);
-		
-		if (this.prevPower < 0 && power >= 0) {
-			// Set power to 0, stop smoothly.
-			lateralMotor.flt();
-			System.out.println("Floated");
-			
-			// Allow wheel to spin out.
-			try {
-				sleep(800);
-				System.out.println("Slept.");
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			// Turn the other way
-			lateralMotor.backward();
-			System.out.println("Flipped backward.");
-		} else if (this.prevPower >= 0 && power < 0) {
-			lateralMotor.flt();
-			System.out.println("Floated");
-			
-			try {
-				sleep(800);
-				System.out.println("Slept.");
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			lateralMotor.forward();
-			System.out.println("Flipped forward.");
+		if(this.forwardDirection) {
+			this.lateralMotor.forward();
+		} else {
+			this.lateralMotor.backward();
 		}
+		
+		// Wait to move the required distance
+		try {
+			sleep(this.movementDelay);
+		} catch (InterruptedException e) {
+		}
+		
+		this.stopMotor();
 	}
 	
-	private void stopLat() {
-		lateralMotor.flt();
-	}
-	
-	public void updateLat(StrafeState state, int power) {
-		this.prevPower = this.power;
-		System.out.println("Prev: " + this.prevPower);
-		this.power = power;
-		this.state = state;
-	}
-	
-	public void updateLat(StrafeState state) {
-		updateLat(state, 0);
+	private void stopMotor() {
+		this.isMoving = false;
+		this.lateralMotor.flt();
+		
+		// Allow wheel to spin out.
+		try {
+			sleep(800);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

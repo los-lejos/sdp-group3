@@ -28,8 +28,9 @@ public class DefenceKickerController extends KickerController {
 	
 	protected void performOpen() {
 		// Shut fully in case open
-		System.out.println(I2Csensor.sendData(0x01, FORWARD));
-		System.out.println(I2Csensor.sendData(0x02, KICK_SPEED));
+		I2Csensor.sendData(0x01, FORWARD);
+		I2Csensor.sendData(0x02, KICK_SPEED);
+		
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

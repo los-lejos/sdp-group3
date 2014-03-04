@@ -112,15 +112,7 @@ public abstract class Robot {
 		}
 		
 		movementThread.exit();
-		
-		try {
-			movementThread.join();
-			System.out.println("Joined movementThread.");
-		} catch (InterruptedException e) {
-			System.out.println("Couldn't join movementThread.");
-			//e.printStackTrace();
-		}
-		
+
 		try {
 			conn.closeConnection();
 		} catch (IOException e) {
@@ -163,7 +155,7 @@ public abstract class Robot {
     public abstract boolean isMoving();
     public abstract void rotate(int heading);
     public abstract void move(int distance);
-    public abstract void moveLat(int power);
+    public abstract void moveLat(int distance);
     public abstract void stop();
     public abstract void cleanup();
     public abstract void setTrackWidth(int width);

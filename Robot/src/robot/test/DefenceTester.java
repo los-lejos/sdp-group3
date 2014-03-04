@@ -1,6 +1,9 @@
 package robot.test;
 
 import lejos.nxt.Button;
+import lejos.nxt.Motor;
+import lejos.nxt.MotorPort;
+import lejos.nxt.NXTMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import robot.defender.DefenceRobot;
@@ -39,14 +42,20 @@ public class DefenceTester {
 		System.out.println("Right - Done");
 		System.out.println("Done :) ");
 */
-		while (Button.readButtons() == 0) {
-			System.out.println(ballSense.getDistance());
-			if (ballSense.getDistance() <= 10){
-				ballE.getKicker().grab();
-				
-				ballE.getKicker().kick();
-			}
-		}
+		NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
+		lateralMotor.setPower(100);
+		lateralMotor.forward();
+
+		System.out.println("Doing something");
+		
+//		while (Button.readButtons() == 0) {
+//			System.out.println(ballSense.getDistance());
+//			if (ballSense.getDistance() <= 10){
+//				ballE.getKicker().grab();
+//				
+//				ballE.getKicker().kick();
+//			}
+//		}
 		
 		Button.waitForAnyPress();
 	}

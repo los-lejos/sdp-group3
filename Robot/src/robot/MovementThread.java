@@ -95,8 +95,6 @@ public class MovementThread extends Thread {
 				break;
 			case RobotInstructions.KICK_TOWARD:
 				heading = (10 * instructionParams[0]) + instructionParams[1];
-				System.out.println("KICK_TOWARD");
-				System.out.println("Heading: " + heading);
 				currentState = State.KICK_TOWARD;
 				break;
 			case RobotInstructions.LAT_MOVE_TO:
@@ -144,11 +142,10 @@ public class MovementThread extends Thread {
 					robot.stop();
 				}
 			} else if (currentState == State.MOVE_LAT) {
-				if(!interrupted) {
-					robot.moveLat(distance);
-				} else {
-					robot.stop();
-				}
+				System.out.println("Executing lat move " + this.distance);
+				robot.moveLat(distance);
+				while(robot.isMoving() && !interrupted);
+				robot.stop();
 			}
 			
 			synchronized(this.instructionLock) {
