@@ -51,7 +51,6 @@ public class MovementThread extends Thread {
 	
 	public void setInstruction(IssuedInstruction instruction) {
 		// If we're doing something, stop.
-		robot.stop();
 		interrupted = true;
 		currentState = State.READY;
 		
@@ -148,6 +147,8 @@ public class MovementThread extends Thread {
 				robot.stop();
 			}
 			
+			currentState = State.READY;
+			
 			synchronized(this.instructionLock) {
 				interrupted = false;
 				
@@ -166,7 +167,6 @@ public class MovementThread extends Thread {
 					}
 					
 					this.currentInstruction = null;
-					this.currentState = State.READY;
 				}
 				
 				if(this.newInstruction != currentInstruction) {
