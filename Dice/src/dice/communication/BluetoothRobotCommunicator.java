@@ -50,7 +50,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		}
 		
 		try {
-			Log.logInfo("Sending isntruction to " + this.robotType.toString());
+			Log.logInfo("Sending instruction to " + this.robotType.toString());
 			conn.send(instruction);
 		} catch (IOException e) {
 			instruction.getCallback().onError();
