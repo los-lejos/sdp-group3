@@ -152,9 +152,13 @@ public class BluetoothRobotConnection extends Thread {
 		if (!connected) {
 			throw new BluetoothCommunicationException("Failed to connect to " + nxtInfo.name + " (is it switched on?)");
 		}
+		
+		Log.logInfo("Connected to robot " + nxtInfo.name);
 
 	    out = nxtConn.getOutputStream();
 	    in = nxtConn.getInputStream();
+	    
+	    this.connected = true;
 	}
 	
 	public void handshake() throws BluetoothCommunicationException {
@@ -179,8 +183,6 @@ public class BluetoothRobotConnection extends Thread {
 		else {
 			throw new BluetoothCommunicationException("Handshake failed with " + nxtInfo.name);
 		}
-		
-		connected = true;
 	}
 	
 	public void closeConnection() throws IOException {

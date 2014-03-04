@@ -25,7 +25,6 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		
 		try {
 			conn.openConnection();
-			conn.handshake();
 			conn.start();
 		} catch (BluetoothCommunicationException e) {
 			Log.logException(e);
