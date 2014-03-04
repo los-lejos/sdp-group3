@@ -25,13 +25,12 @@ import shared.RobotInstructions;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	//private static final int FRONT_SENSOR_CUTOFF = 15;
-	private static final int FRONT_SENSOR_CUTOFF = 14
-	;
-	
+
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
+	
+	private final int frontSensorCutoff;
 	
 	protected final BluetoothDiceConnection conn;
 	
@@ -41,10 +40,11 @@ public abstract class Robot {
     
     private boolean isRunning = true;
     
-    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR, KickerController kicker) {
+    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR, int frontSensorCutoff, KickerController kicker) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
+    	this.frontSensorCutoff = frontSensorCutoff;
     	
     	this.kicker = kicker;
     	
@@ -149,7 +149,7 @@ public abstract class Robot {
     }
 
     private boolean objectAtFrontSensor() {
-    	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
+    	return BALL_SENSOR.getDistance() <= frontSensorCutoff;
     }
 
     public abstract boolean isMoving();

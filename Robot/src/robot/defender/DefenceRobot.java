@@ -16,6 +16,8 @@ import robot.StrafeThread;
 
 public class DefenceRobot extends Robot {
 	
+	private static final int FRONT_SENSOR_CUTOFF = 12;
+	
 	private static final int tireDiameterMm = 48;
 	private static final int trackWidthMm = 127;
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S3);
@@ -34,7 +36,7 @@ public class DefenceRobot extends Robot {
 	private double rotateSpeed;
     
 	public DefenceRobot() {
-    	super(leftLightSensor, rightLightSensor, ballSensor, new DefenceKickerController());
+    	super(leftLightSensor, rightLightSensor, ballSensor, FRONT_SENSOR_CUTOFF, new DefenceKickerController());
     	
     	// Set up differential pilot.
     	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);

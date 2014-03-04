@@ -14,6 +14,8 @@ import robot.Robot;
 
 public class AttackRobot extends Robot {
 	
+	private static final int FRONT_SENSOR_CUTOFF = 14;
+	
 	private static final int tireDiameterMm = 62;
 	private static int trackWidthMm = 136; // Actual measured - 119, this works better
 	
@@ -33,7 +35,7 @@ public class AttackRobot extends Robot {
 	private double rotateSpeed;
 	
 	public AttackRobot() {
-		super(leftLightSensor, rightLightSensor, ballSensor, new AttackKickerController());
+		super(leftLightSensor, rightLightSensor, ballSensor, FRONT_SENSOR_CUTOFF, new AttackKickerController());
 		
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
