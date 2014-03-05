@@ -57,11 +57,11 @@ public class StrategyEvaluator {
 		
 		if(this.type == StrategyType.MATCH) {
 			//attacker.addAction(new InterceptAction(RobotType.ATTACKER));
-			//attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
+			attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 			//attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
-			attacker.addAction(new FaceBallAction(RobotType.ATTACKER));
+			//attacker.addAction(new FaceBallAction(RobotType.ATTACKER));
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
@@ -81,7 +81,7 @@ public class StrategyEvaluator {
 			//defender.addAction(new ToGoalCenterAction(RobotType.DEFENDER));
 			defender.addAction(new PassAction(RobotType.DEFENDER));
 			//defender.addAction(new BlockAction(RobotType.DEFENDER));
-			//defender.addAction(new FaceBallAction(RobotType.DEFENDER));
+			defender.addAction(new FaceBallAction(RobotType.DEFENDER));
 			defender.addAction(new ToBallAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			

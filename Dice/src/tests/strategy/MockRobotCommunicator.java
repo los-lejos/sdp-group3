@@ -18,6 +18,11 @@ public class MockRobotCommunicator implements RobotCommunicator {
 	@Override
 	public void close() {
 	}
+	
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
 
 	@Override
 	public void sendInstruction(RobotInstruction instruction) {

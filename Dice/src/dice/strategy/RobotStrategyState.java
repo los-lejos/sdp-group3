@@ -66,7 +66,6 @@ public class RobotStrategyState {
 		}
 		
 		if(possibleActions.size() == 0) {
-			Log.logError("No possible actions for " + this.robotType.toString());
 			return null;
 		}
 		
@@ -83,9 +82,14 @@ public class RobotStrategyState {
 			reposAction.resetRepositionAttempts();
 		}
 		
-		RobotInstruction instruction = action.getInstruction(state);
-		instruction.setCallback(issuedAction.getCallback());
-		robotComms.sendInstruction(instruction);
+		Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
+		
+		// Send instruction if we are connected
+		if(robotComms.isConnected()) {
+			RobotInstruction instruction = action.getInstruction(state);
+			instruction.setCallback(issuedAction.getCallback());
+			robotComms.sendInstruction(instruction);
+		}
 	}
 	
 	public boolean needsNewAction(WorldState state) {
