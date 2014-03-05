@@ -13,6 +13,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 	private BluetoothRobotConnection conn;
 	private RobotType robotType;
 
+	@Override
 	public void init(RobotType robot, RobotEventListener eventListener) {
 		this.robotType = robot;
 		
@@ -32,6 +33,7 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		}
 	}
 	
+	@Override
 	public void close() {
 		if(conn != null) {
 			try {
@@ -41,7 +43,13 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 			}
 		}
 	}
+	
+	@Override
+	public boolean isConnected() {
+		return conn != null;
+	}
 
+	@Override
 	public void sendInstruction(RobotInstruction instruction) {
 		if(conn == null) {
 			Log.logError("Must call init before sending instruction");
