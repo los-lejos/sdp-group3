@@ -31,7 +31,7 @@ public class BlockAction extends StrategyAction {
 		boolean ballInAttZone = WorldState.PitchZone.OUR_ATTACK_ZONE == state.getBall().getCurrentZone();
 		boolean ballInDefZone = WorldState.PitchZone.OUR_DEFEND_ZONE == state.getBall().getCurrentZone();
 		
-		if (ball != null && robot != null && robot.getPos() != null) {
+		if (ball != null && robot != null && robot.getPos() != null && ball.getPos() != null) {
 			if (getTargetObject(state) == state.getOurAttacker() && !ballInAttZone) {
 				return true;
 			} else if (getTargetObject(state) == state.getOurDefender() && !ballInDefZone) {
@@ -61,7 +61,7 @@ public class BlockAction extends StrategyAction {
 		GameObject ball = state.getBall();
 		PitchZone ballZone = state.getBall().getCurrentZone();
 		GameObject target = getTargetObject(state);
-		
+
 		double distToBallY = Math.abs(target.getPos().Y - ball.getPos().Y);
 		boolean distYMoreThanFuzz = distToBallY > StratMaths.POSITION_FUZZ;
 		
