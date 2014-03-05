@@ -50,8 +50,25 @@ class Preprocessor:
     def preprocess(self, frame, scale):
         
         if self.has_pitch_size:
+            iplframe = frame.getBitmap()
+            avg = self.get_average_val(iplframe)
+            normal_diff = int(avg - 111)
             frame = frame.crop(*self._crop_rect).scale(scale)
-        return frame
+        return (frame, normal_diff)
+
+    def get_average_val(self, frame):
+        sum = 0
+        c = 0
+        w = frame.width
+        h = frame.height
+        # Only look at the middle of the frame:
+        for i in range(w/20, 19*w/20):
+            for j in range(h/5, 4*h/5):
+                s = cv.Get2D(frame, j, i)
+                sum += s[2]
+                c += 1
+        avg = sum / c
+        return avg
 
     def set_next_pitch_corner(self, point):
 

@@ -104,7 +104,8 @@ class Vision:
         else:
             frame = self.cam.getImageUndistort()
 
-        frame = self.preprocessor.preprocess(frame, self.scale)
+        frame, normal_diff = self.preprocessor.preprocess(frame, self.scale)
+        self.threshold.set_normal_diff(normal_diff)
         self.gui.update_layer('raw', frame)
 
         if self.preprocessor.has_pitch_size:
