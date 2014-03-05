@@ -36,7 +36,6 @@ class Threshold:
         self._path_thresholds = os.path.join('data', 'default_thresholds_{0}').format(self._pitch_num)
         self._reset_thresholds = reset_thresholds
         self.__get_defaults()
-        self._normal_diff = 0
 
     def __get_defaults(self):
 
@@ -47,9 +46,6 @@ class Threshold:
 
     def __save_defaults(self):
         util.dump_to_file(self._threshold_values, self._path_thresholds.format(self._pitch_num))
-
-    def set_normal_diff(self,normal_diff):
-        self._normal_diff = normal_diff
 
     def yellowT(self, frame):
         return self.threshold(frame, self._threshold_values['yellow'][0], self._threshold_values['yellow'][1])
@@ -72,12 +68,14 @@ class Threshold:
         assert frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
 
         iplframe = frame.getBitmap()
+
         crossover = False
         if threshmin[0] > threshmax[0]:
             # Handle hue threshold crossing over
             # angle boundry e. g. when thresholding on red
-            hMax = threshmin[0]+self._normal_diff
-            hMin = threshmax[0]+self._normal_diff
+
+            hMax = threshmin[0]
+            hMin = threshmax[0]
 
             crossover = True
             threshmax2 = [hMin, threshmax[1], threshmax[2]]
