@@ -19,11 +19,7 @@ public class SaveAction extends StrategyAction {
 	private Vector2 goalCenter;
 
 	public SaveAction(RobotType targetRobot) {
-		super(targetRobot);
-		
-		goalCenter = new Vector2(10, 160);//ourGoal.getGoalCenter();
-
-		whereToBlock = goalCenter;	
+		super(targetRobot);	
 	}
 
 	@Override
@@ -43,6 +39,8 @@ public class SaveAction extends StrategyAction {
 		Line line = ball.getLineFromVelocity();
 		ball.getSpeed();
 		
+		goalCenter = state.getOppGoal().getGoalCenter();
+		
 		double yValue;
 		if (line != null) {
 			yValue = line.getYValue(goalCenter.X);
@@ -56,8 +54,12 @@ public class SaveAction extends StrategyAction {
 			else
 				whereToBlock = new Vector2(goalCenter.X, ball.getPos().Y);
 		}
-
-		return 2;
+		
+		if (WorldState.PitchZone.OUR_DEFEND_ZONE != state.getBall().getCurrentZone()) {
+			return 2;			
+		} else {
+			return 0;
+		}
 	}
 
 	@Override

@@ -29,9 +29,13 @@ public class CorrectionAction extends StrategyAction {
 	 * Otherwise, it is worthless.
 	 */
 	public int calculateUtility(WorldState state) {
+		boolean ballInDefZone = WorldState.PitchZone.OUR_DEFEND_ZONE == state.getBall().getCurrentZone();
 		// this action is higher utility if the angle is off by a lot
 		if (Math.abs(getAngleRelativeToHorizontal(state)) > NEEDS_CORRECTION_THRESH)
-			return 2;
+			if (!ballInDefZone)
+				return 2;
+			else
+				return 0;
 		else
 			return 0;
 	}
