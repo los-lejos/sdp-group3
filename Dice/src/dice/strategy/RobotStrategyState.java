@@ -9,6 +9,7 @@ import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.RepositionAction;
 
 /**
  * @author Joris S. Urbaitis
@@ -65,7 +66,6 @@ public class RobotStrategyState {
 		}
 		
 		if(possibleActions.size() == 0) {
-			Log.logError("No possible actions for " + this.robotType.toString());
 			return null;
 		}
 		
@@ -77,9 +77,19 @@ public class RobotStrategyState {
 		this.issuedAction = new IssuedAction();
 		this.strategyAction = action;
 		
-		RobotInstruction instruction = action.getInstruction(state);
-		instruction.setCallback(issuedAction.getCallback());
-		robotComms.sendInstruction(instruction);
+		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
+			RepositionAction reposAction = (RepositionAction) action;
+			reposAction.resetRepositionAttempts();
+		}
+		
+		Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
+		
+		// Send instruction if we are connected
+		if(robotComms.isConnected()) {
+			RobotInstruction instruction = action.getInstruction(state);
+			instruction.setCallback(issuedAction.getCallback());
+			robotComms.sendInstruction(instruction);
+		}
 	}
 	
 	public boolean needsNewAction(WorldState state) {

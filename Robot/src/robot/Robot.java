@@ -10,6 +10,7 @@ import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
 import robot.communication.OnNewInstructionHandler;
+import shared.RobotInstructions;
 
 /*
  * @author Joris Urbaitis
@@ -24,24 +25,28 @@ import robot.communication.OnNewInstructionHandler;
 public abstract class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int FRONT_SENSOR_CUTOFF = 13;
-	
+
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
 	private final UltrasonicSensor BALL_SENSOR;
+	
+	private final int frontSensorCutoff;
 	
 	protected final BluetoothDiceConnection conn;
 	
     private IssuedInstruction currentInstruction, newInstruction;
     private MovementThread movementThread;
+    private KickerController kicker;
     
     private boolean isRunning = true;
-    protected boolean hasBall = false;
     
-    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR) {
+    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR, int frontSensorCutoff, KickerController kicker) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
+    	this.frontSensorCutoff = frontSensorCutoff;
+    	
+    	this.kicker = kicker;
     	
     	conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
 			@Override
@@ -54,6 +59,10 @@ public abstract class Robot {
 				isRunning = false;
 			}
 		});
+    }
+    
+    public KickerController getKicker() {
+    	return this.kicker;
     }
 
 	public void run() {
@@ -92,26 +101,18 @@ public abstract class Robot {
 			
 			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
 				// Provisional: just stop and wait
-				//this.movementThread.stopMovement();
-				//System.out.println("Boundary detected! Waiting for further instructions.");
+				// this.movementThread.stopMovement();
+				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
-			if (objectAtFrontSensor() && !hasBall) {
-				grab();
-				this.hasBall = true;
+			if (objectAtFrontSensor() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+				this.kicker.grab();
+				this.sendCaughtBallMessage();
 			}
 		}
 		
 		movementThread.exit();
-		
-		try {
-			movementThread.join();
-			System.out.println("Joined movementThread.");
-		} catch (InterruptedException e) {
-			System.out.println("Couldn't join movementThread.");
-			//e.printStackTrace();
-		}
-		
+
 		try {
 			conn.closeConnection();
 		} catch (IOException e) {
@@ -120,9 +121,23 @@ public abstract class Robot {
 			e.printStackTrace();
 		}
 		
+		this.kicker.cleanup();
 		this.cleanup();
 		
 		System.out.println("Exiting");
+	}
+	
+	private void sendCaughtBallMessage() {
+		// Notify DICE that we have the ball
+		byte[] hasBallResponse = {RobotInstructions.CAUGHT_BALL, 0, 0, 0};
+		
+		try {
+			conn.send(hasBallResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
 	}
 	
     private boolean rightSensorOnBoundary() {
@@ -134,16 +149,17 @@ public abstract class Robot {
     }
 
     private boolean objectAtFrontSensor() {
-    	return BALL_SENSOR.getDistance() <= FRONT_SENSOR_CUTOFF;
+    	return BALL_SENSOR.getDistance() <= frontSensorCutoff;
     }
 
     public abstract boolean isMoving();
     public abstract void rotate(int heading);
     public abstract void move(int distance);
-    public abstract void moveLat(int power);
+    public abstract void moveLat(int distance);
     public abstract void stop();
-    public abstract void kick();
-    public abstract void grab();
     public abstract void cleanup();
+    public abstract void setTrackWidth(int width);
+    public abstract void setTravelSpeed(int speedPercentage);
+    public abstract void setRotateSpeed(int speedPercentage);
 	
 }

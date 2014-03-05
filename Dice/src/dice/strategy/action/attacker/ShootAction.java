@@ -6,6 +6,7 @@ import dice.communication.RobotType;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 /*
@@ -20,11 +21,17 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) {
-			return true;
-		} else {
-			return false;
+		/*Vector2 whereToShoot = StratMaths.whereToShoot(getTargetObject(state), state);
+		double relativeRotation = getTargetObject(state).getRotationRelativeTo(whereToShoot);
+		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER ) {
+			if (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH) {
+				return true;
+			}
 		}
+		return false;
+		*/
+		
+		return (WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession());
 	}
 
 	@Override
@@ -37,7 +44,7 @@ public class ShootAction extends StrategyAction {
 		Goal opGoal = state.getOppGoal();
 		Vector2 opGoalCenter = opGoal.getGoalCenter();
 		
-		return RobotInstruction.CreateShootTo(
+		return RobotInstruction.createShootTo(
 				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
 	}
 }

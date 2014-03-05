@@ -20,15 +20,28 @@ public class FaceBallAction extends StrategyAction {
 	
 	@Override
 	public boolean isPossible(WorldState state) {
-		return (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone());
+		boolean ourAttHasBall = WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession();
+		boolean ourDefHasBall = WorldState.BallPossession.OUR_DEFENDER == state.getBallPossession();
+		
+		//boolean ballInTargetZone = getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone();
+		
+		
+		return (getTargetObject(state) == state.getOurAttacker() && !ourAttHasBall) ||
+				(getTargetObject(state) == state.getOurDefender() && !ourDefHasBall);
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
-			return 2;
+		boolean ballInTargetZone = getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone();
+		
+		if (ballInTargetZone) {
+			if (StratMaths.willCollideWithBall(getTargetObject(state),state)) {
+				return 2;
+			} else {
+				return 0;
+			}
 		} else {
-			return 0;
+			return 1;
 		}
 	}
 
@@ -39,7 +52,7 @@ public class FaceBallAction extends StrategyAction {
 		GameObject robot = getTargetObject(state);
 
 		// -1 because holonomics work with negatives for clockwise
-        return  RobotInstruction.CreateMoveTo(
+        return  RobotInstruction.createMoveTo(
 				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
 				0);
 	}

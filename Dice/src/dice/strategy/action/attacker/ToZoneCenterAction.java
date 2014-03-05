@@ -25,7 +25,7 @@ public class ToZoneCenterAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		if (!(state.getBall().getCurrentZone() == WorldState.PitchZone.OPP_ATTACK_ZONE)){
+		if (state.getBall().getCurrentZone() != WorldState.PitchZone.OPP_ATTACK_ZONE){
 			return 1;
 		} else {
 			return 0;
@@ -39,7 +39,7 @@ public class ToZoneCenterAction extends StrategyAction {
 		double angle = Math.toDegrees(getTargetObject(state).getRotationRelativeTo(zoneCenter));
 		double dist = getTargetObject(state).getEuclidean(zoneCenter);
 		
-		return RobotInstruction.CreateMoveTo(angle, dist);
+		return RobotInstruction.createMoveTo(angle, dist);
 	}
 
 }
