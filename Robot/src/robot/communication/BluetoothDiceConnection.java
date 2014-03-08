@@ -17,10 +17,10 @@ import lejos.nxt.comm.NXTConnection;
 
 public class BluetoothDiceConnection extends Thread {
 
-	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3, -4, -5};
-	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2, -1, -0};
+	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3};
+	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2};
 	
-	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1, -1};
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1};
 
 	private boolean connected = false;
 	private boolean isRunning = true;

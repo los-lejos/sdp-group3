@@ -17,7 +17,6 @@ import dice.strategy.action.attacker.RepositionAction;
 
 public class RobotStrategyState {
 	// Currently assigned action
-	private IssuedAction issuedAction;
 	private StrategyAction strategyAction;
 	
 	// List of actions the robot can perform
@@ -74,7 +73,6 @@ public class RobotStrategyState {
 	}
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {
-		this.issuedAction = new IssuedAction();
 		this.strategyAction = action;
 		
 		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
@@ -87,12 +85,7 @@ public class RobotStrategyState {
 		// Send instruction if we are connected
 		if(robotComms.isConnected()) {
 			RobotInstruction instruction = action.getInstruction(state);
-			instruction.setCallback(issuedAction.getCallback());
 			robotComms.sendInstruction(instruction);
 		}
-	}
-	
-	public boolean needsNewAction(WorldState state) {
-		return issuedAction == null || issuedAction.isCompleted() || !strategyAction.isPossible(state);
 	}
 }

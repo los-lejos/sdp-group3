@@ -4,7 +4,6 @@ package dice.strategy;
 import dice.state.BoundedLine;
 import dice.state.GameObject;
 import dice.state.Goal;
-import dice.state.Path;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -17,7 +16,7 @@ import dice.state.WorldState;
 public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
-	public static final double POSITION_FUZZ = 40.0; // arbitrary, make it nicer
+	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 	public static final double ROTATION_FINISHED_THRESH = Math.PI / 10;
 	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
@@ -35,23 +34,7 @@ public final class StratMaths {
 		//TODO needs to be properly implemented
 		return state.getOurAttacker().getPos();
 	}
-	
-	public static byte cartestanToPolarR(Vector2 v) {
-		return (byte) Math.sqrt(Math.pow(v.X, 2) + Math.pow(v.Y, 2));
-	}
-	
-	public static long cartesianToPolarTheta(Vector2 v) {
-		return (long) Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
-	}
-	
-	public static boolean willCollideWithBall(GameObject robot, WorldState state) {
-		Vector2 robotPos = robot.getPos();
-		GameObject ball = state.getBall();
-		Path ballPath = ball.projectPathFromVelocity(state);
-		//return robotPos.willIntercept(ballPath); TODO
-		return false;
-	}
-	
+
 	/**
 	 * Method which will tell you whether an object is in front
 	 * of another object (straight line...ish)

@@ -9,8 +9,7 @@ import shared.RobotInstructions;
 public class RobotInstruction {
 
 	private byte[] instruction;
-	private RobotCommunicationCallback callback;
-	
+
 	private static byte strategyToRobotDistance(double distance) {
 		// The pitch is 237 x 114 cm
 		// The vision coordinate system is 580 x 320
@@ -31,43 +30,38 @@ public class RobotInstruction {
 		return byteBytes;
 	}
 	
-	public static RobotInstruction createMoveTo(double angle, double distance) {
-		byte[] angleBytes = angleToBytes(angle);
+	public static RobotInstruction createMove(double distance) {
+		
 		byte robotDistance = strategyToRobotDistance(distance);
-		return new RobotInstruction(RobotInstructions.MOVE_TO, angleBytes[0], angleBytes[1], robotDistance);
+		return new RobotInstruction(RobotInstructions.MOVE, robotDistance, (byte)0);
 	}
 	
-	public static RobotInstruction createLateralMoveTo(double distance) {
-		byte robotDistance = strategyToRobotDistance(distance);
-		return new RobotInstruction(RobotInstructions.LAT_MOVE_TO, robotDistance, (byte) 0, (byte) 0);
-	}
-	
-	public static RobotInstruction createShootTo(double angle) {
+	public static RobotInstruction createRotate(double angle) {
+		angle = Math.toDegrees(angle);
 		byte[] angleBytes = angleToBytes(angle);
-		return new RobotInstruction(RobotInstructions.KICK_TOWARD, angleBytes[0], angleBytes[1], (byte)0);
+		return new RobotInstruction(RobotInstructions.ROTATE, angleBytes[0], angleBytes[1]);
 	}
 	
-	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3) {
-		// Position 0 in the instruction is reserved for the unique id of this instruction
+	public static RobotInstruction createLateralMove(double distance) {
+		byte robotDistance = strategyToRobotDistance(distance);
+		return new RobotInstruction(RobotInstructions.LAT_MOVE, robotDistance, (byte) 0);
+	}
+	
+	public static RobotInstruction createKick() {
+		return new RobotInstruction(RobotInstructions.KICK, (byte)0, (byte)0);
+	}
+	
+	public RobotInstruction(byte instructionType, byte param1, byte param2) {
 		this.instruction = new byte[RobotInstructions.LENGTH];
-		this.instruction[1] = instructionType;
-		this.instruction[2] = param1;
-		this.instruction[3] = param2;
-		this.instruction[4] = param3;
+		this.instruction[0] = instructionType;
+		this.instruction[1] = param1;
+		this.instruction[2] = param2;
 	}
 
 	public byte[] getInstruction() {
 		return instruction;
 	}
-	
-	public RobotCommunicationCallback getCallback() {
-		return callback;
-	}
-	
-	public void setCallback(RobotCommunicationCallback callback) {
-		this.callback = callback;
-	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer();

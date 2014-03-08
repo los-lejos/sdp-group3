@@ -1,4 +1,4 @@
-package robot;
+package robot.defender;
 
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
@@ -10,6 +10,7 @@ public class StrafeThread extends Thread {
 	}
 	
 	private final int POWER = 100;
+	private final int MAX_DELAY = 3000;
 	
 	private final NXTMotor lateralMotor;
 	private StrafeState state = StrafeState.READY;
@@ -34,7 +35,12 @@ public class StrafeThread extends Thread {
 	
 	public void move(int distance) {
 		// Calculations based on power being 100
-		this.movementDelay = Math.abs(distance)*1000/38; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		this.movementDelay = Math.abs(distance)*14; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		
+		if(this.movementDelay > MAX_DELAY) {
+			this.movementDelay = MAX_DELAY;
+		}
+		
 		this.forwardDirection = distance > 0;
 		this.isMoving = true;
 
@@ -63,7 +69,6 @@ public class StrafeThread extends Thread {
 	}
 	
 	private void moveLat() {
-		System.out.println("MOVING AT THE POWER OF " + this.POWER + " POWERS");
 		this.lateralMotor.setPower(this.POWER);
 		
 		if(this.forwardDirection) {

@@ -29,7 +29,7 @@ public class RepositionAction extends StrategyAction {
 	public boolean isPossible(WorldState state) {
 		// only if the attacker has the ball
 		if (attempts <= MAX_ATTEMPTS) {
-			return (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER);
+			return (state.getObjectWithBall() == state.getOurAttacker());
 		} else {
 			return false;
 		}
@@ -103,6 +103,6 @@ public class RepositionAction extends StrategyAction {
             goodPos = StratMaths.getBetweenY(annoyance, goal.getBottomPost());
         }
 
-        return RobotInstruction.createLateralMoveTo(goodPos);
+        return RobotInstruction.createLateralMove(goodPos);
 	}
 }

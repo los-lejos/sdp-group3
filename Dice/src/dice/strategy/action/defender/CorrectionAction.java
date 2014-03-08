@@ -3,25 +3,43 @@ package dice.strategy.action.defender;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
-import dice.state.Line;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.PitchZone;
+import dice.state.WorldState.Side;
+import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 public class CorrectionAction extends StrategyAction {
 	
-	private final double NEEDS_CORRECTION_THRESH = Math.PI / 6.0;
+	private boolean shouldRotate;
+	private double dist;
 	
 	public CorrectionAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 	
 	public boolean isPossible(WorldState state) {
-		if (state.getOurDefender().getPos() != null) {
+		GameObject target = this.getTargetObject(state);
+		
+		Vector2 zoneMiddle = state.getCellCenter(PitchZone.OUR_DEFEND_ZONE);
+		
+		double heading = this.getAngleRelativeToHorizontal(state);
+		double deltaX = zoneMiddle.X - target.getPos().X;
+		
+		if(heading > StratMaths.ROTATION_FINISHED_THRESH) {
+			shouldRotate = true;
+			this.dist = heading;
+			
 			return true;
-		} else {
-			return false;
+		} else if(deltaX > StratMaths.POSITION_FUZZ) {
+			shouldRotate = false;
+			this.dist = deltaX;
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/** The utility of this action should be high
@@ -29,17 +47,15 @@ public class CorrectionAction extends StrategyAction {
 	 * Otherwise, it is worthless.
 	 */
 	public int calculateUtility(WorldState state) {
-		// this action is higher utility if the angle is off by a lot
-		if (Math.abs(getAngleRelativeToHorizontal(state)) > NEEDS_CORRECTION_THRESH)
-			return 2;
-		else
-			return 0;
+		return 1;
 	}
 	
 	public RobotInstruction getInstruction(WorldState state) {
-		double angle = getAngleRelativeToHorizontal(state);
-		
-		return RobotInstruction.createMoveTo(Math.toDegrees(angle), 0.0);
+		if(this.shouldRotate) {
+			return RobotInstruction.createRotate(this.dist);
+		} else {
+			return RobotInstruction.createMove(this.dist);
+		}
 	}
 	
 	/** Gets the angle relative to a point directly infront of the robot.
@@ -47,22 +63,20 @@ public class CorrectionAction extends StrategyAction {
 	 * @param state - The world state
 	 * @return the angle in radians
 	 */
-	private static double getAngleRelativeToHorizontal(WorldState state) {
-		GameObject defender = state.getOurDefender();
+	private double getAngleRelativeToHorizontal(WorldState state) {
+		GameObject target = this.getTargetObject(state);
 		
 		// get the rotation relative to a point just "infront"
 		// of the defender
-		double angle;
-		double xPos;
-		if (state.getSide() == WorldState.Side.LEFT) {
-			xPos = defender.getPos().X + 1;
-		} else {
-			xPos = defender.getPos().X - 1;
-		}
-			
-		angle = defender.getRotationRelativeTo(
-				new Vector2(xPos, defender.getPos().Y));
+		Vector2 pos = target.getPos();
+		Vector2 forward = null;
 		
-		return angle;
+		if(state.getSide() == Side.LEFT) {
+			forward = new Vector2(pos.X + 1, pos.Y);
+		} else {
+			forward = new Vector2(pos.X - 1, pos.Y);
+		}
+		
+		return target.getRotationRelativeTo(forward);
 	}
 }

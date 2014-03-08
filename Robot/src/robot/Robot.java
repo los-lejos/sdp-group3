@@ -35,17 +35,21 @@ public abstract class Robot {
 	protected final BluetoothDiceConnection conn;
 	
     private IssuedInstruction currentInstruction, newInstruction;
-    private MovementThread movementThread;
+    private MovementController movementController;
     private KickerController kicker;
     
     private boolean isRunning = true;
     
-    public Robot(LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR, UltrasonicSensor BALL_SENSOR, int frontSensorCutoff, KickerController kicker) {
+    public Robot(
+    		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
+    		UltrasonicSensor BALL_SENSOR, int frontSensorCutoff,
+    		KickerController kicker, MovementController movementController) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
     	this.BALL_SENSOR = BALL_SENSOR;
     	this.frontSensorCutoff = frontSensorCutoff;
     	
+    	this.movementController = movementController;
     	this.kicker = kicker;
     	
     	conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
@@ -66,7 +70,6 @@ public abstract class Robot {
     }
 
 	public void run() {
-		
 		// Start Bluetooth
 		try {
 			conn.openConnection();
@@ -77,25 +80,20 @@ public abstract class Robot {
 		}
 		
 		conn.start();
-		
-		movementThread = new MovementThread(this, conn);
-		movementThread.start();
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
-				System.out.println(Arrays.toString(newInstruction.getCompletedResponse()));
+				System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
 				
 				currentInstruction = newInstruction;
 				
 				// If we have encountered an instruction beginning with '0'
 				// assume error and terminate
 				if(currentInstruction.getType() == 0) {
-					System.out.println("Received an instruction with type 0");
-					
+					System.out.println("Instruction type 0");
 					this.isRunning = false;
-					continue;
 				} else {
-					movementThread.setInstruction(currentInstruction);
+					this.handleInstruction(currentInstruction);
 				}
 			}
 			
@@ -110,8 +108,6 @@ public abstract class Robot {
 				this.sendCaughtBallMessage();
 			}
 		}
-		
-		movementThread.exit();
 
 		try {
 			conn.closeConnection();
@@ -122,9 +118,53 @@ public abstract class Robot {
 		}
 		
 		this.kicker.cleanup();
-		this.cleanup();
+		this.movementController.cleanup();
 		
 		System.out.println("Exiting");
+	}
+
+	private void handleInstruction(IssuedInstruction instruction) {
+		byte instructionType = instruction.getType();
+		int[] instructionParams = instruction.getParameters();
+		
+		if(instructionParams == null) { return; }
+		
+		int heading, distance;
+
+		try {
+			switch(instructionType) {
+			case RobotInstructions.MOVE:
+				distance = instructionParams[0];
+				this.movementController.move(distance);
+				break;
+			case RobotInstructions.ROTATE:
+				heading = instructionParams[0];
+				this.movementController.rotate(heading);
+				break;
+			case RobotInstructions.KICK:
+				this.kicker.kick();
+				break;
+			case RobotInstructions.LAT_MOVE:
+				distance = instructionParams[0];
+				this.movementController.moveLat(distance);
+				break;
+			case RobotInstructions.SET_TRACK_WIDTH:
+				int mm = instructionParams[0];
+				this.movementController.setTrackWidth(mm);
+				break;
+			case RobotInstructions.SET_TRAVEL_SPEED:
+				this.movementController.setTravelSpeed(instructionParams[0]);
+				break;
+			case RobotInstructions.SET_ROTATE_SPEED:
+				this.movementController.setRotateSpeed(instructionParams[0]);
+				break;
+			default: 
+				System.out.println("Unknown instruction: " + instructionType);
+				break;
+			}
+		} catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Error: wrong params for instruction: " + instructionType);
+		}
 	}
 	
 	private void sendCaughtBallMessage() {
@@ -151,15 +191,8 @@ public abstract class Robot {
     private boolean objectAtFrontSensor() {
     	return BALL_SENSOR.getDistance() <= frontSensorCutoff;
     }
-
-    public abstract boolean isMoving();
-    public abstract void rotate(int heading);
-    public abstract void move(int distance);
-    public abstract void moveLat(int distance);
-    public abstract void stop();
-    public abstract void cleanup();
-    public abstract void setTrackWidth(int width);
-    public abstract void setTravelSpeed(int speedPercentage);
-    public abstract void setRotateSpeed(int speedPercentage);
-	
+    
+    private static int extractHeading(byte high, byte low) {
+    	return  (10 * high) + low;
+    }
 }

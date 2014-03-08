@@ -1,20 +1,16 @@
 package dice.misc;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import shared.RobotInstructions;
-
 import dice.Log;
 import dice.communication.BluetoothRobotCommunicator;
-import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotEventListener;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.WorldState;
-import dice.state.WorldState.BallPossession;
 import dice.strategy.StrategyEvaluator;
 import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
@@ -65,17 +61,12 @@ public class RotationCalibration {
 	
 	public void setWidthAndTurn(int i) throws InterruptedException {
 		double angleToTurn = 180;
-		UsefulCallback callback = new UsefulCallback();
 		byte byte1 = (byte) (i / 10);
 		byte byte2 = (byte) (i % 10);
-		byte byte3 = (byte) 0;
-		RobotInstruction instrSet = new RobotInstruction(RobotInstructions.SET_TRACK_WIDTH, byte1, byte2, byte3);
-		instrSet.setCallback(callback);
+		RobotInstruction instrSet = new RobotInstruction(RobotInstructions.SET_TRACK_WIDTH, byte1, byte2);
 		this.attackerComms.sendInstruction(instrSet);
 		Thread.sleep(1500);                   
-		RobotInstruction instrRot = RobotInstruction.createMoveTo(angleToTurn, 0);
-		callback.cont = false;
-		instrRot.setCallback(callback);
+		RobotInstruction instrRot = RobotInstruction.createRotate(angleToTurn);
 		this.attackerComms.sendInstruction(instrRot);;
 		Thread.sleep(1500);
 	}
