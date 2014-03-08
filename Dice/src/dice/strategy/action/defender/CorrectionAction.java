@@ -27,14 +27,19 @@ public class CorrectionAction extends StrategyAction {
 		double heading = this.getAngleRelativeToHorizontal(state);
 		double deltaX = zoneMiddle.X - target.getPos().X;
 		
-		if(heading > StratMaths.ROTATION_FINISHED_THRESH) {
+		if(Math.abs(heading) > StratMaths.ROTATION_FINISHED_THRESH) {
 			shouldRotate = true;
 			this.dist = heading;
 			
 			return true;
-		} else if(deltaX > StratMaths.POSITION_FUZZ) {
+		} else if(Math.abs(deltaX) > StratMaths.POSITION_FUZZ) {
 			shouldRotate = false;
-			this.dist = deltaX;
+			
+			if(state.getSide() == Side.LEFT) {
+				this.dist = deltaX;
+			} else {
+				this.dist = -deltaX;
+			}
 			
 			return true;
 		}

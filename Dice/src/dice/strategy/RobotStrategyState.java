@@ -73,15 +73,18 @@ public class RobotStrategyState {
 	}
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {
+		// If we are assigning a new action, print info
+		if(this.strategyAction == null || action.getClass() != this.strategyAction.getClass()) {
+			Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
+		}
+		
 		this.strategyAction = action;
 		
 		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
 			RepositionAction reposAction = (RepositionAction) action;
 			reposAction.resetRepositionAttempts();
 		}
-		
-		Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
-		
+
 		// Send instruction if we are connected
 		if(robotComms.isConnected()) {
 			RobotInstruction instruction = action.getInstruction(state);
