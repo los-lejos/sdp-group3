@@ -41,7 +41,7 @@ public class DefenceKickerController extends KickerController {
 		// Open
 		I2Csensor.sendData(0x01, BACKWARD);
 		try {
-			Thread.sleep(50);
+			Thread.sleep(60);
 		} catch (InterruptedException e) {
 			System.out.println("Kicker wait exception");
 		}

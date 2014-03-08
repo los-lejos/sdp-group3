@@ -86,6 +86,7 @@ public abstract class MovementController {
 				currentState = State.READY;
 				
 				if(newState != State.READY) {
+					stop();
 					currentState = newState;
 					newState = State.READY;
 				}

@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
-import lejos.nxt.UltrasonicSensor;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
@@ -28,9 +27,6 @@ public abstract class Robot {
 
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
-	private final UltrasonicSensor BALL_SENSOR;
-	
-	private final int frontSensorCutoff;
 	
 	protected final BluetoothDiceConnection conn;
 	
@@ -42,13 +38,10 @@ public abstract class Robot {
     
     public Robot(
     		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
-    		UltrasonicSensor BALL_SENSOR, int frontSensorCutoff,
     		KickerController kicker, MovementController movementController) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
-    	this.BALL_SENSOR = BALL_SENSOR;
-    	this.frontSensorCutoff = frontSensorCutoff;
-    	
+
     	this.movementController = movementController;
     	this.kicker = kicker;
     	
@@ -103,7 +96,15 @@ public abstract class Robot {
 				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
-			if (objectAtFrontSensor() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+			// If we tried to catch the ball but didn't, restore kicker
+			if(this.kicker.getHasBall() && !this.isDetectingBallInKicker() && !this.kicker.isMoving()) {
+				System.out.println("Didn't catch");
+				this.kicker.kick();
+				this.sendReleasedBallMessage();
+			}
+			// If the ball is in front of the kicker, try to grab
+			else if(this.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+				System.out.println("Trying to catch");
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 			}
@@ -143,6 +144,7 @@ public abstract class Robot {
 				break;
 			case RobotInstructions.KICK:
 				this.kicker.kick();
+				this.sendReleasedBallMessage();
 				break;
 			case RobotInstructions.LAT_MOVE:
 				distance = instructionParams[0];
@@ -180,6 +182,19 @@ public abstract class Robot {
 		}
 	}
 	
+	private void sendReleasedBallMessage() {
+		// Notify DICE that we have the ball
+		byte[] hasBallResponse = {RobotInstructions.RELEASED_BALL, 0, 0, 0};
+		
+		try {
+			conn.send(hasBallResponse);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
+	}
+	
     private boolean rightSensorOnBoundary() {
     	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
@@ -188,11 +203,6 @@ public abstract class Robot {
     	return LEFT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
 
-    private boolean objectAtFrontSensor() {
-    	return BALL_SENSOR.getDistance() <= frontSensorCutoff;
-    }
-    
-    private static int extractHeading(byte high, byte low) {
-    	return  (10 * high) + low;
-    }
+	public abstract boolean isDetectingBallInKicker();
+	public abstract boolean isBallNearby();
 }

@@ -22,12 +22,13 @@ public class AttackerMovementController extends MovementController {
 	private double rotateSpeed;
 	
 	public AttackerMovementController() {
+		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
+		
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
 		travelSpeed = maxTravelSpeed * 0.5;
 		rotateSpeed = maxRotateSpeed * 0.3;
-		
-		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
+
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 	}

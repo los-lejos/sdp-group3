@@ -11,7 +11,8 @@ import robot.Robot;
 
 public class AttackRobot extends Robot {
 	
-	private static final int FRONT_SENSOR_CUTOFF = 14;
+	private static final int BALL_SENSOR_NEARBY_CUTOFF = 14;
+	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 10;
 
 	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
 	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
@@ -19,8 +20,17 @@ public class AttackRobot extends Robot {
 
 	public AttackRobot() {
 		super(leftLightSensor, rightLightSensor,
-				ballSensor, FRONT_SENSOR_CUTOFF,
 				new AttackKickerController(),
 				new AttackerMovementController());
+	}
+	
+	@Override
+	public boolean isDetectingBallInKicker() {
+    	return ballSensor.getDistance() <= BALL_SENSOR_IN_KICKER_CUTOFF;
+	}
+	
+	@Override
+	public boolean isBallNearby() {
+		return ballSensor.getDistance() <= BALL_SENSOR_NEARBY_CUTOFF;
 	}
 }
