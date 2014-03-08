@@ -127,13 +127,21 @@ public class Main {
 				Log.logInfo("connect <robot> - starts up a bluetooth connection with the robot");
 				Log.logInfo("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
 				Log.logInfo("side <side> - Sets our side. Side is determined by the side our defender is on. Parameter is 'left' or 'right'");
-				Log.logError("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+				Log.logInfo("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+				Log.logInfo("pause - pauses execution of strategy and state logic");
+				Log.logInfo("resume - resumes execution of strategy and state logic");
 			}
 			else if(cmd[0].equals("vision")) {
 				startVision(cmd);		
 			} 
 			else if(cmd[0].equals("side")) {
 				setSide(cmd);
+			}
+			else if(cmd[0].equals("pause")) {
+				this.visionReader.pause();
+			}
+			else if (cmd[0].equals("resume")) {
+				this.visionReader.resume();
 			}
 			else if(!cmd[0].equals("quit")) {
 				Log.logError("Unrecognized command");

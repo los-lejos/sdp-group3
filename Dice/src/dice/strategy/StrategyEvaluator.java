@@ -79,7 +79,7 @@ public class StrategyEvaluator {
 		if(this.type == StrategyType.MATCH) {
 			defender.addAction(new SaveAction(RobotType.DEFENDER));
 			//defender.addAction(new ToGoalCenterAction(RobotType.DEFENDER));
-			defender.addAction(new PassAction(RobotType.DEFENDER));
+			//defender.addAction(new PassAction(RobotType.DEFENDER));
 			//defender.addAction(new BlockAction(RobotType.DEFENDER));
 			defender.addAction(new FaceBallAction(RobotType.DEFENDER));
 			defender.addAction(new ToBallAction(RobotType.DEFENDER));
