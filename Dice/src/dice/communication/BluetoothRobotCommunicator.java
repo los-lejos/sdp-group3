@@ -18,8 +18,11 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		this.robotType = robot;
 		
 		if(conn != null) {
-			Log.logError("Communicator already initialized");
-			return;
+			try {
+				conn.closeConnection();
+			} catch (IOException e) {
+				Log.logError("Error while closing connection");
+			}
 		}
 
 		conn = new BluetoothRobotConnection(robot, eventListener);
