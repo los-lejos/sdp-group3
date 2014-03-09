@@ -19,6 +19,9 @@ public class RobotStrategyState {
 	// Currently assigned action
 	private StrategyAction strategyAction;
 	
+	// Currently assigned instruction
+	private RobotInstruction currentInstruction;
+	
 	// List of actions the robot can perform
 	private List<StrategyAction> actions = new ArrayList<StrategyAction>();
 	
@@ -86,8 +89,13 @@ public class RobotStrategyState {
 		}
 
 		// Send instruction if we are connected
-		if(robotComms.isConnected()) {
-			RobotInstruction instruction = action.getInstruction(state);
+		// and if the new instruction is different from the currently
+		// assigned one
+		RobotInstruction instruction = action.getInstruction(state);
+		boolean newInstruction = this.currentInstruction == null || !this.currentInstruction.equals(instruction);
+		
+		if(robotComms.isConnected() && newInstruction) {
+			this.currentInstruction = instruction;
 			robotComms.sendInstruction(instruction);
 		}
 	}

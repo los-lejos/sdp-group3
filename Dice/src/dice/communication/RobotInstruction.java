@@ -1,5 +1,7 @@
 package dice.communication; 
 
+import java.util.Arrays;
+
 import shared.RobotInstructions;
 
 /*
@@ -70,5 +72,15 @@ public class RobotInstruction {
 		}
 		
 		return result.toString();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof RobotInstruction) {
+			RobotInstruction i2 = (RobotInstruction)other;
+			return Arrays.equals(i2.getInstruction(), this.getInstruction());
+		}
+		
+		return false;
 	}
 }
