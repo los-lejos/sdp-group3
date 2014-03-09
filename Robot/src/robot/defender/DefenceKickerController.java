@@ -17,8 +17,9 @@ public class DefenceKickerController extends KickerController {
 	private static final byte KICK_SPEED = (byte) 200;
 	private static final byte CATCH_SPEED = (byte) 120;
 	
-	private static final int DELAY_OPEN = 60;
-	private static final int DELAY_KICK = 80;
+	private static final int DELAY_OPEN = 40;
+	private static final int DELAY_KICK = 120;
+	private static final int DELAY_KICK_CLOSE = 10;
 	private static final int DELAY_CLOSE = 200;
 	
 	private I2CPort I2Cport;
@@ -58,6 +59,11 @@ public class DefenceKickerController extends KickerController {
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
 		Thread.sleep(DELAY_KICK);
 
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+		
+		// Return to normal
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+		Thread.sleep(DELAY_KICK_CLOSE);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 	}
 	
