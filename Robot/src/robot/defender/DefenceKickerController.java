@@ -6,16 +6,23 @@ import lejos.nxt.SensorPort;
 import robot.KickerController;
 
 public class DefenceKickerController extends KickerController {
+
+	private static final int REGISTER_ADDRESS_STATE = 0x01;
+	private static final int REGISTER_ADDRESS_SPEED = 0x02;
 	
-	private I2CPort I2Cport;
-	private I2CSensor I2Csensor;
-	
-	private static final byte FORWARD = (byte) 1;
-	private static final byte BACKWARD = (byte) 2;
+	private static final byte FORWARD = (byte) 2;
+	private static final byte BACKWARD = (byte) 1;
 	private static final byte STOP = (byte) 0;
 	
 	private static final byte KICK_SPEED = (byte) 200;
 	private static final byte CATCH_SPEED = (byte) 120;
+	
+	private static final int DELAY_OPEN = 60;
+	private static final int DELAY_KICK = 80;
+	private static final int DELAY_CLOSE = 200;
+	
+	private I2CPort I2Cport;
+	private I2CSensor I2Csensor;
 
 	@SuppressWarnings("deprecation")
 	public DefenceKickerController() {
@@ -24,53 +31,44 @@ public class DefenceKickerController extends KickerController {
 		I2Cport.i2cEnable(I2CPort.STANDARD_MODE);
 		I2Csensor = new I2CSensor(I2Cport);
 		I2Csensor.setAddress(0xB4);
-	}
-	
-	protected void performOpen() {
-		// Shut fully in case open
-		I2Csensor.sendData(0x01, FORWARD);
-		I2Csensor.sendData(0x02, KICK_SPEED);
-		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		I2Csensor.sendData(0x01, STOP);
-		
-		// Open
-		I2Csensor.sendData(0x01, BACKWARD);
-		try {
-			Thread.sleep(60);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		I2Csensor.sendData(0x01, STOP);
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 	}
 
-	protected void performKick() {
+	@Override
+	protected void performOpen() throws InterruptedException {
+		// Shut fully in case open
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+		Thread.sleep(DELAY_CLOSE);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+		
+		// Open
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
+		Thread.sleep(DELAY_OPEN);
+
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+	}
+
+	@Override
+	protected void performKick() throws InterruptedException {
+		// Shut fully in case open
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+		Thread.sleep(DELAY_CLOSE);
+		
 		// Release ball
-		I2Csensor.sendData(0x02, KICK_SPEED);
-		I2Csensor.sendData(0x01, BACKWARD);
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		I2Csensor.sendData(0x01, STOP);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
+		Thread.sleep(DELAY_KICK);
+
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 	}
 	
-	protected void performGrab() {
-		System.out.println("Grabbed.");
-		I2Csensor.sendData(0x02, CATCH_SPEED);
-		I2Csensor.sendData(0x01, FORWARD);
-		
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			System.out.println("Kicker wait exception");
-		}
-		
-		I2Csensor.sendData(0x01, STOP);
+	@Override
+	protected void performGrab() throws InterruptedException {
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+
+		Thread.sleep(DELAY_CLOSE);
+
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 	}
 }

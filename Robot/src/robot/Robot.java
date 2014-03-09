@@ -21,7 +21,7 @@ import shared.RobotInstructions;
  * run() method contains main robot loop.
  */
 
-public abstract class Robot {
+public class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
 
@@ -31,19 +31,23 @@ public abstract class Robot {
 	protected final BluetoothDiceConnection conn;
 	
     private IssuedInstruction currentInstruction, newInstruction;
+    
     private MovementController movementController;
     private KickerController kicker;
+    private final BallSensorController ballSensor;
     
     private boolean isRunning = true;
     
     public Robot(
     		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
-    		KickerController kicker, MovementController movementController) {
+    		KickerController kicker, MovementController movementController,
+    		BallSensorController ballSensor) {
     	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
     	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
 
     	this.movementController = movementController;
     	this.kicker = kicker;
+    	this.ballSensor = ballSensor;
     	
     	conn = new BluetoothDiceConnection(new OnNewInstructionHandler() {
 			@Override
@@ -56,10 +60,6 @@ public abstract class Robot {
 				isRunning = false;
 			}
 		});
-    }
-    
-    public KickerController getKicker() {
-    	return this.kicker;
     }
 
 	public void run() {
@@ -96,17 +96,23 @@ public abstract class Robot {
 				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
+			// Update the sensor
+			this.ballSensor.takeReading();
+			
 			// If we tried to catch the ball but didn't, restore kicker
-			if(this.kicker.getHasBall() && !this.isDetectingBallInKicker() && !this.kicker.isMoving()) {
+			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
 				System.out.println("Didn't catch");
-				this.kicker.kick();
+				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker, try to grab
-			else if(this.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
 				System.out.println("Trying to catch");
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
+				
+				// Reset so that we gather some measurements to make sure we have the ball
+				this.ballSensor.resetMeasurements();
 			}
 		}
 
@@ -202,7 +208,4 @@ public abstract class Robot {
     private boolean leftSensorOnBoundary() {
     	return LEFT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
     }
-
-	public abstract boolean isDetectingBallInKicker();
-	public abstract boolean isBallNearby();
 }

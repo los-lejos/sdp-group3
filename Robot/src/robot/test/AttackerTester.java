@@ -3,7 +3,6 @@ package robot.test;
 import lejos.nxt.Button;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
-import robot.attacker.AttackRobot;
 
 public class AttackerTester {
 
