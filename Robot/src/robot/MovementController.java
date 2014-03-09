@@ -75,18 +75,22 @@ public abstract class MovementController {
 		@Override
 		public void run() {		
 			while(currentState != State.EXIT) {
-				if(currentState == State.MOVE) {
+				if(currentState == State.MOVE && !isMoving()) {
 					performMove(distance);
-				} else if(currentState == State.ROTATE) {
+				} else if(currentState == State.ROTATE && !isMoving()) {
 					performRotate(heading);
-				} else if(currentState == State.MOVE_LAT) {
+				} else if(currentState == State.MOVE_LAT && !isMoving()) {
 					performMoveLat(distance);
 				}
 				
 				currentState = State.READY;
-				
+
 				if(newState != State.READY) {
-					stop();
+					// Only stop if we are about to do something different
+					if(currentState != newState) {
+						stop();
+					}
+					
 					currentState = newState;
 					newState = State.READY;
 				}

@@ -48,13 +48,11 @@ public class DefenderMovementController extends MovementController {
 
 	@Override
 	protected void performRotate(int heading) {
-		this.stopLat();
 		pilot.rotate(heading, true);
 	}
 
 	@Override
 	protected void performMove(int distance) {
-		this.stopLat();
 		pilot.travel(distance, true);
 	}
 	
