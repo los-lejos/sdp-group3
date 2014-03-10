@@ -26,8 +26,8 @@ public class AttackerMovementController extends MovementController {
 		
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
-		travelSpeed = maxTravelSpeed * 0.5;
-		rotateSpeed = maxRotateSpeed * 0.3;
+		travelSpeed = maxTravelSpeed * 0.7;
+		rotateSpeed = maxRotateSpeed * 0.2;
 
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
