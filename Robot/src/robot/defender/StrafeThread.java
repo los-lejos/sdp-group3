@@ -14,6 +14,7 @@ public class StrafeThread extends Thread {
 	
 	private final NXTMotor lateralMotor;
 	private StrafeState state = StrafeState.READY;
+	private StrafeState newState = StrafeState.READY;
 	
 	private boolean forwardDirection;
 	private long movementDelay = 0;
@@ -26,7 +27,7 @@ public class StrafeThread extends Thread {
 	}
 	
 	public void cleanup() {
-		this.state = StrafeState.EXIT;
+		this.newState = StrafeState.EXIT;
 	}
 	
 	public boolean isMoving() {
@@ -44,12 +45,12 @@ public class StrafeThread extends Thread {
 		this.forwardDirection = distance > 0;
 		this.isMoving = true;
 
-		this.state = StrafeState.STRAFE;
+		this.newState = StrafeState.STRAFE;
 	}
 	
 	public void stop() {
 		this.isMoving = false;
-		this.state = StrafeState.STOP;
+		this.newState = StrafeState.STOP;
 	}
 	
 	@Override
@@ -62,6 +63,11 @@ public class StrafeThread extends Thread {
 			} else if (state == StrafeState.STOP) {
 				stopMotor();
 				state = StrafeState.READY;
+			}
+			
+			if(newState != StrafeState.READY) {
+				state = newState;
+				newState = StrafeState.READY;
 			}
 		}
 		

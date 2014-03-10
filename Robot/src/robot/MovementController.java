@@ -66,7 +66,7 @@ public abstract class MovementController {
     	if(this.currentState != desiredState) {
 			return true;
 		} else {
-			return (newParam < 0 && oldParam > 0) || (newParam > 0 && oldParam < 0);
+			return (newParam <= 0 && oldParam >= 0) || (newParam >= 0 && oldParam <= 0);
 		}
     }
 
@@ -87,17 +87,16 @@ public abstract class MovementController {
 		public void run() {		
 			while(currentState != State.EXIT) {
 				if(newState != State.READY) {
-					System.out.println("SOFT");
 					stop();
 
 					currentState = newState;
 					newState = State.READY;
 					
-					if(currentState == State.MOVE && !isMoving()) {
+					if(currentState == State.MOVE) {
 						performMove(distance);
-					} else if(currentState == State.ROTATE && !isMoving()) {
+					} else if(currentState == State.ROTATE) {
 						performRotate(heading);
-					} else if(currentState == State.MOVE_LAT && !isMoving()) {
+					} else if(currentState == State.MOVE_LAT) {
 						performMoveLat(distance);
 					}
 				} else if(!isMoving()) {
@@ -105,7 +104,6 @@ public abstract class MovementController {
 					
 					// If we are not being issued commands to do anything anymore and have
 					// finished moving, just stop
-					System.out.println("HARD");
 					stop();
 				}
 			}
