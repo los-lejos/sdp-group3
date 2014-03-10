@@ -26,7 +26,7 @@ public class DefenderMovementController extends MovementController {
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
     	maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
-		travelSpeed = maxTravelSpeed * 0.4;
+		travelSpeed = maxTravelSpeed * 0.7;
 		rotateSpeed = maxRotateSpeed * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
