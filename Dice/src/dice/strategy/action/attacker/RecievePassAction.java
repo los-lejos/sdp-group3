@@ -4,6 +4,7 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.WorldState;
+import dice.state.WorldState.PitchZone;
 import dice.strategy.StrategyAction;
 
 
@@ -18,7 +19,8 @@ public class RecievePassAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return state.getObjectWithBall() == state.getOurDefender();
+		return state.getObjectWithBall() == state.getOurDefender() ||
+		state.getBall().getCurrentZone() == PitchZone.OUR_DEFEND_ZONE;
 	}
 
 	@Override

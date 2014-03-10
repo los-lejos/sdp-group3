@@ -28,10 +28,12 @@ public class PassAction extends StrategyAction {
 		GameObject defender = state.getOurDefender();
 		GameObject attacker = state.getOurAttacker();
 		
-		double heading = defender.getRotationRelativeTo(attacker);
+		double headingDefender = defender.getRotationRelativeTo(attacker);
+		double headingAttacker = attacker.getRotationRelativeTo(defender);
 		
-		if(heading > StratMaths.ROTATION_FINISHED_THRESH) {
-			return RobotInstruction.createRotate(heading);
+		if(headingDefender > StratMaths.ROTATION_FINISHED_THRESH ||
+		   headingAttacker > StratMaths.ROTATION_FINISHED_THRESH) {
+			return RobotInstruction.createRotate(headingDefender);
 		} else {
 			return RobotInstruction.createKick();
 		}
