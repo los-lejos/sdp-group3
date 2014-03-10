@@ -67,11 +67,11 @@ class Detection:
             cropped_img = hsv.crop(x, y, w, h)
 
             if self._colour_order[i] == 'b':
-                thresholds[i] = self._threshold.blueT(cropped_img).smooth(grayscale=True)
+                thresholds[i] = self._threshold.blueT(cropped_img, i).smooth(grayscale=True)
                 if self._render_tlayers:
                     blue.dl().blit(thresholds[i], (x, y))
             elif self._colour_order[i] == 'y':
-                thresholds[i] = self._threshold.yellowT(cropped_img).smooth(grayscale=True)
+                thresholds[i] = self._threshold.yellowT(cropped_img, i).smooth(grayscale=True)
                 if self._render_tlayers:
                     yellow.dl().blit(thresholds[i], (x, y))
 

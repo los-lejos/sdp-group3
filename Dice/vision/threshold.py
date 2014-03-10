@@ -23,10 +23,14 @@ class Threshold:
 
     default_thresholds = [{ 'yellow': [[179, 235, 164], [24, 255, 255]],
                             'blue': [[88, 93, 0], [109, 129, 114]],
+                            'yellow2': [[179, 235, 164], [24, 255, 255]],
+                            'blue2': [[88, 93, 0], [109, 129, 114]],
                             'ball': [[149, 178, 185], [0, 255, 240]],
                             'dot': [[0, 0, 0], [0, 0, 0]] },
                           { 'yellow': [[11, 32, 198], [42, 255, 255]],
                             'blue': [[84, 80, 17], [139, 122, 255]],
+                            'yellow2': [[11, 32, 198], [42, 255, 255]],
+                            'blue2': [[84, 80, 17], [139, 122, 255]],
                             'ball': [[0, 0, 79], [15, 255, 255]],
                             'dot': [[0, 0, 0], [0, 0, 0]] }]
 
@@ -47,11 +51,17 @@ class Threshold:
     def __save_defaults(self):
         util.dump_to_file(self._threshold_values, self._path_thresholds.format(self._pitch_num))
 
-    def yellowT(self, frame):
-        return self.threshold(frame, self._threshold_values['yellow'][0], self._threshold_values['yellow'][1])
+    def yellowT(self, frame, num):
+        thing = 'yellow'
+        if num > 1:
+            thing = 'yellow2'
+        return self.threshold(frame, self._threshold_values[thing][0], self._threshold_values[thing][1])
 
-    def blueT(self, frame):
-        return self.threshold(frame, self._threshold_values['blue'][0], self._threshold_values['blue'][1])
+    def blueT(self, frame, num):
+        thing = 'blue'
+        if num > 1:
+            thing = 'blue2'
+        return self.threshold(frame, self._threshold_values[thing][0], self._threshold_values[thing][1])
 
     def ball(self, frame):
         return self.threshold(frame, self._threshold_values['ball'][0], self._threshold_values['ball'][1])
