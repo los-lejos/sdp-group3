@@ -26,8 +26,8 @@ public class AttackerMovementController extends MovementController {
 		
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
-		travelSpeed = maxTravelSpeed * 0.5;
-		rotateSpeed = maxRotateSpeed * 0.3;
+		travelSpeed = maxTravelSpeed * 0.7;
+		rotateSpeed = maxRotateSpeed * 0.2;
 
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
@@ -46,11 +46,21 @@ public class AttackerMovementController extends MovementController {
 	@Override
 	public void performRotate(int heading) {
 		pilot.rotate(heading, true);
+//		if(heading < 0) {
+//			pilot.rotateRight();
+//		} else {
+//			pilot.rotateLeft();
+//		}
 	}
 
 	@Override
 	public void performMove(int distance) {
 		pilot.travel(distance, true);
+//		if(distance > 0) {
+//			pilot.forward();
+//		} else {
+//			pilot.backward();
+//		}
 	}
 	
 	@Override

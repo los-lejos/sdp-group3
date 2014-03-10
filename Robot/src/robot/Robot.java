@@ -73,6 +73,7 @@ public class Robot {
 		}
 		
 		conn.start();
+		this.movementController.init();
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {

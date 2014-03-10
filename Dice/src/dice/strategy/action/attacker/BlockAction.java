@@ -39,12 +39,12 @@ public class BlockAction extends StrategyAction {
 
 		Vector2 vertical = new Vector2(robotPos.X, robotPos.Y - 1);
 		double heading = robot.getRotationRelativeTo(vertical);
-		boolean shouldRotate = heading > StratMaths.ROTATION_FINISHED_THRESH;
+		boolean shouldRotate = Math.abs(heading) > StratMaths.ROTATION_FINISHED_THRESH;
 		
 		if(shouldRotate) {
 			return RobotInstruction.createRotate(heading);
 		} else {
-			double distToBallY = Math.abs(robotPos.Y - ball.getPos().Y);
+			double distToBallY = robotPos.Y - ball.getPos().Y;
 			return RobotInstruction.createMove(distToBallY);
 		}
 	}

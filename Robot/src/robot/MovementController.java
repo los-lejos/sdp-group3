@@ -7,11 +7,14 @@ public abstract class MovementController {
 		READY, EXIT, MOVE, ROTATE, MOVE_LAT                                                                     
 	}
 	
-	private final MovementThread thread;
+	private MovementThread thread;
 
 	private int heading, distance;
+	
+	private State currentState = State.READY;
+	private State newState = State.READY;
 
-    public MovementController() {
+    public void init() {
     	this.thread = new MovementThread();
     	this.thread.setDaemon(true);
     	this.thread.start();
@@ -26,30 +29,45 @@ public abstract class MovementController {
     public abstract void setRotateSpeed(int speedPercentage);
     
     // Public interface for initiating movement
-    public void move(int distance) {
-		this.distance = distance;
-		
-		// Convert to cm
-		this.distance *= 10;
-		this.thread.setState(State.MOVE);
+    public void move(int newDistance) {
+		if(shouldChangeMovement(State.MOVE, this.distance, newDistance)) {
+			this.distance = newDistance;
+			
+			// Convert to cm
+			this.distance *= 10;
+			this.newState = State.MOVE;
+		}
     }
     
-    public void rotate(int heading) {
-    	if(heading > 180) {
-			heading -= 360;
-		} else if(heading < -180) {
-			heading += 360;
+    public void rotate(int newHeading) {
+    	if(newHeading > 180) {
+    		newHeading -= 360;
+		} else if(newHeading < -180) {
+			newHeading += 360;
 		}
 		
-		assert (heading >= -180) && (heading <= 180);
-		
-		this.heading = heading;
-		this.thread.setState(State.ROTATE);
+		assert (newHeading >= -180) && (newHeading <= 180);
+
+		if(shouldChangeMovement(State.ROTATE, this.heading, newHeading)) {
+			this.heading = newHeading;
+			this.newState = State.ROTATE;
+		}
     }
     
-    public void moveLat(int distance) {
-    	this.distance = distance;
-    	this.thread.setState(State.MOVE_LAT);
+    public void moveLat(int newDistance) {
+    	// Only issue a new state if we are actually changing direction or movement type
+		if(shouldChangeMovement(State.MOVE_LAT, this.distance, newDistance)) {
+			this.distance = newDistance;
+	    	this.newState = State.MOVE_LAT;
+		}
+    }
+    
+    private boolean shouldChangeMovement(State desiredState, int oldParam, int newParam) {
+    	if(this.currentState != desiredState) {
+			return true;
+		} else {
+			return (newParam <= 0 && oldParam >= 0) || (newParam >= 0 && oldParam <= 0);
+		}
     }
 
     // Abstract methods that implement movement logic
@@ -58,41 +76,35 @@ public abstract class MovementController {
     protected abstract void performMoveLat(int distance);
 
     public void cleanup() {
-    	this.thread.setState(State.EXIT);
+    	this.newState = State.EXIT;
     }
 
 	private class MovementThread extends Thread {
-		
-		private State currentState = State.READY;
-		private State newState = State.READY;
 
 		public MovementThread() { }
-		
-		public void setState(State newState) {
-			this.newState = newState;
-		}
 
 		@Override
 		public void run() {		
 			while(currentState != State.EXIT) {
-				if(currentState == State.MOVE && !isMoving()) {
-					performMove(distance);
-				} else if(currentState == State.ROTATE && !isMoving()) {
-					performRotate(heading);
-				} else if(currentState == State.MOVE_LAT && !isMoving()) {
-					performMoveLat(distance);
-				}
-				
-				currentState = State.READY;
-
 				if(newState != State.READY) {
-					// Only stop if we are about to do something different
-					if(currentState != newState) {
-						stop();
-					}
-					
+					stop();
+
 					currentState = newState;
 					newState = State.READY;
+					
+					if(currentState == State.MOVE) {
+						performMove(distance);
+					} else if(currentState == State.ROTATE) {
+						performRotate(heading);
+					} else if(currentState == State.MOVE_LAT) {
+						performMoveLat(distance);
+					}
+				} else if(!isMoving()) {
+					currentState = State.READY;
+					
+					// If we are not being issued commands to do anything anymore and have
+					// finished moving, just stop
+					stop();
 				}
 			}
 		}

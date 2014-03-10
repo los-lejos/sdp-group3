@@ -33,7 +33,6 @@ public class RobotInstruction {
 	}
 	
 	public static RobotInstruction createMove(double distance) {
-		
 		byte robotDistance = strategyToRobotDistance(distance);
 		return new RobotInstruction(RobotInstructions.MOVE, robotDistance, (byte)0);
 	}

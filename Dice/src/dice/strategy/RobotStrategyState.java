@@ -77,7 +77,7 @@ public class RobotStrategyState {
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {
 		// If we are assigning a new action, print info
-		if(this.strategyAction == null || action.getClass() != this.strategyAction.getClass()) {
+		if(this.robotType == RobotType.ATTACKER && (this.strategyAction == null || action.getClass() != this.strategyAction.getClass())) {
 			Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
 		}
 		

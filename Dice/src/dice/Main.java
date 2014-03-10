@@ -197,6 +197,11 @@ public class Main {
 	}
 	
 	private RobotType getRobotTypeFromCommand(String[] cmd) {
+		if(cmd.length < 2) {
+			Log.logInfo("Robot type not specified");
+			return null;
+		}
+		
 		if(cmd[1].equals("d")) {
 			return RobotType.DEFENDER;
 		} else if(cmd[1].equals("a")) {
