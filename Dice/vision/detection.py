@@ -30,7 +30,7 @@ class Detection:
     # Format: (area_min, area_expected, area_max)
     shape_sizes = { 'ball': [40, 160, 175],
                     'blue': [120, 150, 280],
-                    'dot': [60, 80, 100] }
+                    'dot': [30, 45, 60] }
     shape_sizes['yellow'] = map(lambda x: int(0.9*x), shape_sizes['blue'])
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
@@ -156,10 +156,10 @@ class Detection:
         # If coordinates are negative there is no object, ABORT
         if x == -1 or y == -1: return
         # Get coordinates of possible centers
-        c1_x = x + int(0.3 * radius * math.cos(angle))
-        c1_y = y + int(0.3 * radius * math.sin(angle))
-        c2_x = x - int(0.3 * radius * math.cos(angle))
-        c2_y = y - int(0.3 * radius * math.sin(angle))
+        c1_x = x + int(0.4 * radius * math.cos(angle))
+        c1_y = y + int(0.4 * radius * math.sin(angle))
+        c2_x = x - int(0.4 * radius * math.cos(angle))
+        c2_y = y - int(0.4 * radius * math.sin(angle))
         c1_x1 = max(c1_x - DOT_RADIUS, 0)
         c1_y1 = max(c1_y - DOT_RADIUS, 0)
         c1_x2 = min(c1_x + DOT_RADIUS, image.width)
@@ -189,8 +189,8 @@ class Detection:
         else:
             cropped_imgs_thresh.pop(0)
         # Crop out a rectangle for where the dot is supposed to be
-        c_x = x - int(0.6 * radius * math.cos(angle))
-        c_y = y - int(0.6 * radius * math.sin(angle))
+        c_x = x - int(0.7 * radius * math.cos(angle))
+        c_y = y - int(0.7 * radius * math.sin(angle))
         c_x1 = max(c_x - DOT_RADIUS, 0)
         c_y1 = max(c_y - DOT_RADIUS, 0)
         c_x2 = min(c_x + DOT_RADIUS, image.width)
