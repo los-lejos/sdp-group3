@@ -17,10 +17,10 @@ public class DefenceKickerController extends KickerController {
 	private static final byte KICK_SPEED = (byte) 200;
 	private static final byte CATCH_SPEED = (byte) 120;
 	
-	private static final int DELAY_OPEN = 40;
+	private static final int DELAY_OPEN = 70;
 	private static final int DELAY_KICK = 120;
-	private static final int DELAY_KICK_CLOSE = 10;
-	private static final int DELAY_CLOSE = 200;
+	private static final int DELAY_KICK_CLOSE = 5;
+	private static final int DELAY_CLOSE = 300;
 	
 	private I2CPort I2Cport;
 	private I2CSensor I2Csensor;

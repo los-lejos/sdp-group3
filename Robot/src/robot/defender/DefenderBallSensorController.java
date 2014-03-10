@@ -27,7 +27,8 @@ public class DefenderBallSensorController extends BallSensorController {
 			return true;
 		}
 
-		return this.getRecentReadingMin() >= BALL_SENSOR_IN_KICKER_CUTOFF;
+		return true;
+		//return this.getRecentReadingMin() >= BALL_SENSOR_IN_KICKER_CUTOFF;
 	}
 
 }
