@@ -3,8 +3,8 @@ S'blue'
 p2
 (lp3
 (lp4
-I85
-aI71
+I93
+aI76
 aI0
 aa(lp5
 I128
@@ -16,7 +16,7 @@ p6
 (lp8
 I154
 aI178
-aI185
+aI95
 aa(lp9
 I0
 aI255
@@ -37,8 +37,8 @@ p14
 (lp15
 (lp16
 I14
-aI96
-aI176
+aI129
+aI138
 aa(lp17
 I37
 aI248
@@ -47,11 +47,11 @@ aasS'blue2'
 p18
 (lp19
 (lp20
-I87
-aI109
-aI93
+I93
+aI83
+aI135
 aa(lp21
-I125
+I116
 aI255
 aI255
 aasS'dot'
@@ -62,7 +62,7 @@ I0
 aI0
 aI0
 aa(lp25
-I179
+I100
 aI255
-aI119
+aI122
 aas.
