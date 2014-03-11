@@ -20,7 +20,7 @@ public final class StratMaths {
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 8;
 	private static final double ROTATION_THRESH_MIN = Math.PI / 10;
-	private static final double ROTATION_THRESH_MAX = Math.PI / 25;
+	private static final double ROTATION_THRESH_MAX = Math.PI / 20;
 	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
 	public static boolean canReach(Vector2 v, GameObject o) {
@@ -77,7 +77,7 @@ public final class StratMaths {
 	public static double getRotationTreshold(Vector2 obj, Vector2 target) {
 		double dist = obj.getEuclidean(target);
 		
-		double threshold = dist * (Math.PI / 1250.0);
+		double threshold = dist * (Math.PI / 1500.0);
 		
 		if(threshold > ROTATION_THRESH_MAX) {
 			threshold = ROTATION_THRESH_MAX;
