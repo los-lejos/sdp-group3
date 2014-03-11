@@ -15,10 +15,10 @@ public class DefenceKickerController extends KickerController {
 	private static final byte STOP = (byte) 0;
 	
 	private static final byte KICK_SPEED = (byte) 200;
-	private static final byte CATCH_SPEED = (byte) 120;
+	private static final byte CATCH_SPEED = (byte) 160;
 	
-	private static final int DELAY_OPEN = 30;
-	private static final int DELAY_KICK = 120;
+	private static final int DELAY_OPEN = 70;
+	private static final int DELAY_KICK = 200;
 	private static final int DELAY_KICK_CLOSE = 20;
 	private static final int DELAY_CLOSE = 300;
 	
@@ -37,6 +37,7 @@ public class DefenceKickerController extends KickerController {
 
 	@Override
 	protected void performOpen() throws InterruptedException {
+		System.out.println("Performed open.");
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
@@ -51,6 +52,7 @@ public class DefenceKickerController extends KickerController {
 
 	@Override
 	protected void performKick() throws InterruptedException {
+		System.out.println("Performed kick.");
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
@@ -69,6 +71,7 @@ public class DefenceKickerController extends KickerController {
 	
 	@Override
 	protected void performGrab() throws InterruptedException {
+		System.out.println("Performed grab.");
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 
