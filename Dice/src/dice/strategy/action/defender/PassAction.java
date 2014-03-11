@@ -31,8 +31,8 @@ public class PassAction extends StrategyAction {
 		double headingDefender = defender.getRotationRelativeTo(attacker);
 		double headingAttacker = attacker.getRotationRelativeTo(defender);
 		
-		double defenderThresh = StratMaths.getRotationTreshold(defender.getPos(), attacker.getPos());
-		double attackerThresh = StratMaths.getRotationTreshold(attacker.getPos(), defender.getPos());
+		double defenderThresh = StratMaths.SHOOT_AIM_ADJUSTMENT;
+		double attackerThresh = StratMaths.SHOOT_AIM_ADJUSTMENT;
 		
 		if(headingDefender > defenderThresh ||
 		   headingAttacker > attackerThresh) {
