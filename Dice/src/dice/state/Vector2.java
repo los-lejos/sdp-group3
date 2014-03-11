@@ -35,6 +35,14 @@ public class Vector2 {
     	this.X = position.X;
     	this.Y = position.Y;
     }
+    
+    // get the euclidean distance from the object
+    public double getEuclidean(Vector2 position) {
+    	if(position == null) return 0;
+    	
+        return Math.sqrt(Math.pow(position.X - this.X, 2) +
+                         Math.pow(position.Y - this.Y, 2));
+    }
 
     @Override
     public String toString() {

@@ -88,7 +88,7 @@ public class RepositionAction extends StrategyAction {
         // default to going nowhere
         double goodPos = us.getPos().Y;
 
-        if (annoyance.getEuclidean(goal.getTopPost()) > annoyance.getEuclidean(goal.getBottomPost())) {
+        if (annoyance.getPos().getEuclidean(goal.getTopPost()) > annoyance.getPos().getEuclidean(goal.getBottomPost())) {
            /*
             * if the annoyance is closer to the bottom post,
             * get between it and the top post
