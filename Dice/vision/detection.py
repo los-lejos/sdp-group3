@@ -222,7 +222,7 @@ class Detection:
         # Look for the dot
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img_thresh, size, dot=True)
-        if not entity_blob is None:
+        if False:
             entity.rect3 = ((c_x1 + x_offset, c_y1), (c_x2 - c_x1, c_y2 - c_y1))
             dot_x, dot_y = tuple(map(lambda x: int(x), entity_blob.centroid()))
             entity.dot = (dot_x, dot_y)
