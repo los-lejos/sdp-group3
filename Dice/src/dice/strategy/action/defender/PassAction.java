@@ -30,12 +30,9 @@ public class PassAction extends StrategyAction {
 		
 		double headingDefender = defender.getRotationRelativeTo(attacker);
 		double headingAttacker = attacker.getRotationRelativeTo(defender);
-		
-		double defenderThresh = StratMaths.SHOOT_AIM_ADJUSTMENT;
-		double attackerThresh = StratMaths.SHOOT_AIM_ADJUSTMENT;
-		
-		if(headingDefender > defenderThresh ||
-		   headingAttacker > attackerThresh) {
+
+		if(Math.abs(headingDefender) > StratMaths.ROTATION_SHOOT_THRESH ||
+		   Math.abs(headingAttacker) > StratMaths.ROTATION_SHOOT_THRESH) {
 			return RobotInstruction.createRotate(headingDefender);
 		} else {
 			return RobotInstruction.createKick();
