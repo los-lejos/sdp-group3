@@ -23,6 +23,7 @@ public abstract class BallSensorController {
 	
 	public void takeReading() {
 		readings[readingIndex] = ballSensor.getDistance();
+		System.out.println(""+readings[readingIndex]);
 		readingIndex++;
 		
 		if(readingIndex >= BALL_SENSOR_READING_MAX) {
@@ -39,7 +40,7 @@ public abstract class BallSensorController {
 	
 	public boolean hasEnoughReadings() {
 		// Wait for a good number of readings so that any initial noise is overwritten
-		return this.numberOfReadings >= BALL_SENSOR_READING_MAX * 2;
+		return this.numberOfReadings >= BALL_SENSOR_READING_MAX * 1.5;
 	}
 	
 	protected int getRecentReadingMedian() {
