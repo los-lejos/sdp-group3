@@ -182,8 +182,17 @@ class Detection:
         # (might happen if robot is crossing the edge of its area)
         if cropped_imgs[0] == None or cropped_imgs[1] == None: return
         # Threshold areas to be compared
-        cropped_imgs_thresh[0] = self._threshold.dotT(cropped_imgs[0]).applyBinaryMask(self._dot_mask)
-        cropped_imgs_thresh[1] = self._threshold.dotT(cropped_imgs[1]).applyBinaryMask(self._dot_mask)
+        cropped_imgs_thresh[0] = self._threshold.dotT(cropped_imgs[0])
+        cropped_imgs_thresh[1] = self._threshold.dotT(cropped_imgs[1])
+        try:
+            cropped_imgs_thresh_temp1 = cropped_imgs_thresh[0].applyBinaryMask(self._dot_mask)
+            cropped_imgs_thresh_temp2 = cropped_imgs_thresh[1].applyBinaryMask(self._dot_mask)
+            if not cropped_imgs_thresh_temp1 is None:
+                cropped_imgs_thresh[0] = cropped_imgs_thresh_temp1
+            if not cropped_imgs_thresh_temp2 is None:
+                cropped_imgs_thresh[1] = cropped_imgs_thresh_temp2
+        except:
+            pass
         # Set entity.rect1 and entity.rect2 for drawing
         entity.rect1 = ((c1_x1 + x_offset, c1_y1), (c1_x2 - c1_x1, c1_y2 - c1_y1))
         entity.rect2 = ((c2_x1 + x_offset, c2_y1), (c2_x2 - c2_x1, c2_y2 - c2_y1))
@@ -203,7 +212,13 @@ class Detection:
         c_x2 = min(c_x + DOT_RADIUS, image.width)
         c_y2 = min(c_y + DOT_RADIUS, image.height)
         cropped_img = image.crop((c_x1, c_y1), (c_x2, c_y2))
-        cropped_img_thresh = self._threshold.dotT(cropped_img).smooth(grayscale=True).applyBinaryMask(self._dot_mask)
+        cropped_img_thresh = self._threshold.dotT(cropped_img).smooth(grayscale=True)
+        try:
+            cropped_img_thresh_temp = cropped_img_thresh.applyBinaryMask(self._dot_mask)
+            if not cropped_img_thresh_temp is None:
+                cropped_img_thresh = cropped_img_thresh_temp
+        except:
+            pass
         # Look for the dot
         size = map(lambda x: int(x*self._scale), self.shape_sizes['dot'])
         entity_blob = self.__find_entity_blob(cropped_img_thresh, size, dot=True)
