@@ -6,13 +6,11 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import dice.communication.BluetoothRobotCommunicator;
-import dice.communication.RobotCommunicationCallback;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotEventListener;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
-import dice.state.WorldState.BallPossession;
 import dice.strategy.StrategyEvaluator;
 import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
@@ -42,14 +40,14 @@ public class Main {
 		@Override
 		public void onBallCaught() {
 			synchronized(worldState) {
-				worldState.setBallPossession(BallPossession.OUR_ATTACKER);
+				worldState.setObjectWithBall(worldState.getOurAttacker());
 			}
 		}
 
 		@Override
 		public void onBallReleased() {
 			synchronized(worldState) {
-				worldState.setBallPossession(BallPossession.NONE);
+				worldState.setObjectWithBall(null);
 			}
 		}
 	};
@@ -59,14 +57,14 @@ public class Main {
 		public void onBallCaught() {
 			synchronized(worldState) {
 				System.out.println("Ball has been caught aw yeah.");
-				worldState.setBallPossession(BallPossession.OUR_DEFENDER);
+				worldState.setObjectWithBall(worldState.getOurDefender());
 			}
 		}
 
 		@Override
 		public void onBallReleased() {
 			synchronized(worldState) {
-				worldState.setBallPossession(BallPossession.NONE);
+				worldState.setObjectWithBall(null);
 			}
 		}
 	};
@@ -127,13 +125,21 @@ public class Main {
 				Log.logInfo("connect <robot> - starts up a bluetooth connection with the robot");
 				Log.logInfo("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
 				Log.logInfo("side <side> - Sets our side. Side is determined by the side our defender is on. Parameter is 'left' or 'right'");
-				Log.logError("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+				Log.logInfo("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
+				Log.logInfo("pause - pauses execution of strategy and state logic");
+				Log.logInfo("resume - resumes execution of strategy and state logic");
 			}
 			else if(cmd[0].equals("vision")) {
 				startVision(cmd);		
 			} 
 			else if(cmd[0].equals("side")) {
 				setSide(cmd);
+			}
+			else if(cmd[0].equals("pause")) {
+				this.visionReader.pause();
+			}
+			else if (cmd[0].equals("resume")) {
+				this.visionReader.resume();
 			}
 			else if(!cmd[0].equals("quit")) {
 				Log.logError("Unrecognized command");
@@ -157,7 +163,7 @@ public class Main {
 	}
 	
 	private void execSend(String[] cmd) {
-		if(cmd.length < 6) {
+		if(cmd.length < 5) {
 			Log.logInfo("Not enough parameters specified");
 			return;
 		}
@@ -168,30 +174,8 @@ public class Main {
 			byte instructionType = Byte.parseByte(cmd[2]);
 			byte param1 = Byte.parseByte(cmd[3]);
 			byte param2 = Byte.parseByte(cmd[4]);
-			byte param3 = Byte.parseByte(cmd[5]);
 
-			final String display = "" + instructionType + param1 + param2 + param3;
-			
-			RobotCommunicationCallback callback = new RobotCommunicationCallback() {
-				@Override
-				public void onError() {
-					Log.logError("\nError occured while sending instruction:\n" + display);
-				}
-	
-				@Override
-				public void onTimeout() {
-					Log.logError("\nTimeout occured while sending instruction:\n" + display);
-				}
-	
-				@Override
-				public void onDone() {
-					Log.logError("\nRobot sent completion response for instruction:\n" + display);
-				}
-			};
-			
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3);
-			instruction.setCallback(callback);
-			
+			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2);
 			if(type == RobotType.ATTACKER) {
 				this.attackerComms.sendInstruction(instruction);
 			} else {
@@ -213,6 +197,11 @@ public class Main {
 	}
 	
 	private RobotType getRobotTypeFromCommand(String[] cmd) {
+		if(cmd.length < 2) {
+			Log.logInfo("Robot type not specified");
+			return null;
+		}
+		
 		if(cmd[1].equals("d")) {
 			return RobotType.DEFENDER;
 		} else if(cmd[1].equals("a")) {

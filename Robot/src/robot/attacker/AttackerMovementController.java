@@ -1,52 +1,38 @@
 package robot.attacker;
 
-import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
-import robot.Robot;
+import robot.MovementController;
 
-/*
- * @author Owen Gillespie
- */
+public class AttackerMovementController extends MovementController {
 
-public class AttackRobot extends Robot {
-	
-	private static final int FRONT_SENSOR_CUTOFF = 14;
+	private static final NXTRegulatedMotor leftMotor = Motor.C;
+	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	
 	private static final int tireDiameterMm = 62;
 	private static int trackWidthMm = 136; // Actual measured - 119, this works better
 	
-	private static final NXTRegulatedMotor leftMotor = Motor.C;
-	private static final NXTRegulatedMotor rightMotor = Motor.A;
-	
-	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S4);
-	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S1);
-	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
+	private DifferentialPilot pilot;
 	
 	private double maxTravelSpeed;
 	private double maxRotateSpeed;
 
-	private DifferentialPilot pilot;
-	
 	private double travelSpeed;
 	private double rotateSpeed;
 	
-	public AttackRobot() {
-		super(leftLightSensor, rightLightSensor, ballSensor, FRONT_SENSOR_CUTOFF, new AttackKickerController());
-		
+	public AttackerMovementController() {
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
+		
 		maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
-		travelSpeed = maxTravelSpeed * 0.5;
-		rotateSpeed = maxRotateSpeed * 0.3;
-		
+		travelSpeed = maxTravelSpeed * 0.7;
+		rotateSpeed = maxRotateSpeed * 0.2;
+
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 	}
-
+	
 	@Override
 	public void stop() {
 		pilot.stop();
@@ -58,18 +44,29 @@ public class AttackRobot extends Robot {
 	}
 
 	@Override
-	public void rotate(int heading) {
+	public void performRotate(int heading) {
 		pilot.rotate(heading, true);
+//		if(heading < 0) {
+//			pilot.rotateRight();
+//		} else {
+//			pilot.rotateLeft();
+//		}
 	}
 
 	@Override
-	public void move(int distance) {
+	public void performMove(int distance) {
 		pilot.travel(distance, true);
+//		if(distance > 0) {
+//			pilot.forward();
+//		} else {
+//			pilot.backward();
+//		}
 	}
 	
 	@Override
-	public void moveLat(int distance) {
-		throw new UnsupportedOperationException("Lateral movement is not possible for the attacker");
+	public void performMoveLat(int distance) {
+		// Not throwing an exception since we want robustness, not correctness
+		System.out.println("Lateral movement is not possible for the attacker");
 	}
 	
 	@Override
@@ -97,5 +94,6 @@ public class AttackRobot extends Robot {
 
 	@Override
 	public void cleanup() {
+		super.cleanup();
 	}
 }

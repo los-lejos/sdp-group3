@@ -1,7 +1,5 @@
 package robot.communication;
 
-import java.util.Arrays;
-
 import shared.RobotInstructions;
 
 /*
@@ -10,47 +8,46 @@ import shared.RobotInstructions;
 
 public class IssuedInstruction {
 
-	private byte type;
-	private byte[] response;
-	private byte param1;
-	private byte param2;
-	private byte param3;
+	private byte[] instruction;
 	
 	public IssuedInstruction(byte[] instruction) {
-		this.response = instruction;
-		this.type = instruction[1];
-		this.param1 = instruction[2];
-		this.param2 = instruction[3];
-		this.param3 = instruction[4];
+		this.instruction = instruction;
 	}
-	
-	public byte[] getCompletedResponse() {
-		return response;
-	}
-	
+
 	public byte getType() {
-		return this.type;
+		return this.instruction[0];
 	}
 	
-	public byte[] getParameters() {
-		byte[] parameters = {this.param1, this.param2, this.param3};
-		if (type == RobotInstructions.MOVE_TO) {
-			return parameters;
-		} else if (type == RobotInstructions.KICK_TOWARD) {
-			byte[] truncParams = Arrays.copyOfRange(parameters, 0, 2);
-			return truncParams;
-		} else if (type == RobotInstructions.LAT_MOVE_TO) {
-			return Arrays.copyOfRange(parameters, 0, 1);
-		} else if (type == RobotInstructions.SET_TRACK_WIDTH) {
-			return Arrays.copyOfRange(parameters, 0, 2);
-		} else if (type == RobotInstructions.SET_TRAVEL_SPEED) {
-			return Arrays.copyOfRange(parameters, 0, 1);
-		} else if (type == RobotInstructions.SET_ROTATE_SPEED) {
-			return Arrays.copyOfRange(parameters, 0, 1);
-		} else {
-			System.out.println("Bad instruction.");
-			return parameters;
+	public int[] getParameters() {
+		int type = this.getType();
+		int distance;
+		
+		switch(type) {
+		case RobotInstructions.MOVE:
+			distance = instruction[1];
+			return new int[] { distance };
+		case RobotInstructions.ROTATE:
+			int heading = extractInt(instruction[1], instruction[2]);
+			return new int[] { heading };
+		case RobotInstructions.KICK:
+			return new int[] { };
+		case RobotInstructions.LAT_MOVE:
+			distance = instruction[1];
+			return new int[] { distance };
+		case RobotInstructions.SET_TRACK_WIDTH:
+			int mm = extractInt(instruction[1], instruction[2]);
+			return new int[] { mm };
+		case RobotInstructions.SET_TRAVEL_SPEED:
+			return new int[] { instruction[1] };
+		case RobotInstructions.SET_ROTATE_SPEED:
+			return new int[] { instruction[1] };
+		default: 
+			System.out.println("Unknown instruction: " + type);
+			return null;
 		}
 	}
 	
+	private static int extractInt(byte high, byte low) {
+    	return  (10 * high) + low;
+    }
 }

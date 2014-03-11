@@ -3,6 +3,7 @@ package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.GameObject;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -15,28 +16,25 @@ import dice.strategy.StrategyAction;
 
 public class ShootAction extends StrategyAction {
 
+	private boolean shouldRotate;
+	
 	public ShootAction(RobotType targetRobot) {
 		super(targetRobot);
 	}
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		/*Vector2 whereToShoot = StratMaths.whereToShoot(getTargetObject(state), state);
-		double relativeRotation = getTargetObject(state).getRotationRelativeTo(whereToShoot);
-		if (state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER ) {
-			if (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH) {
-				return true;
-			}
-		}
-		return false;
-		*/
-		
-		return (WorldState.BallPossession.OUR_ATTACKER == state.getBallPossession());
+		return state.getObjectWithBall() == this.getTargetObject(state);
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		return 2;
+		GameObject robot = getTargetObject(state);
+		Vector2 goalCenter = state.getOppGoal().getGoalCenter();
+		double relativeRotation = robot.getRotationRelativeTo(goalCenter);
+		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_SHOOT_THRESH;
+		
+		return 4;
 	}
 
 	@Override
@@ -44,7 +42,13 @@ public class ShootAction extends StrategyAction {
 		Goal opGoal = state.getOppGoal();
 		Vector2 opGoalCenter = opGoal.getGoalCenter();
 		
-		return RobotInstruction.createShootTo(
-				Math.toDegrees(getTargetObject(state).getRotationRelativeTo(opGoalCenter)));
+		if(this.shouldRotate) {
+			GameObject robot = this.getTargetObject(state);
+			double heading = robot.getRotationRelativeTo(opGoalCenter);
+			
+			return RobotInstruction.createRotate(heading);
+		} else {
+			return RobotInstruction.createKick();
+		}
 	}
 }

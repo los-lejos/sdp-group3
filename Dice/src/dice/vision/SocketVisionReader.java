@@ -38,6 +38,8 @@ public class SocketVisionReader {
 	private WorldState world;
 
 	private SocketThread thread;
+	
+	private boolean isPaused = false;
 
 	public SocketVisionReader(WorldState world, StrategyEvaluator strategy) {
 		this.strategy = strategy;
@@ -46,6 +48,14 @@ public class SocketVisionReader {
 		thread = new SocketThread();
 		thread.setDaemon(true);
 		thread.start();
+	}
+	
+	public void pause() {
+		this.isPaused = true;
+	}
+	
+	public void resume() {
+		this.isPaused = false;
 	}
 
 	public void stop() {
@@ -77,7 +87,11 @@ public class SocketVisionReader {
 
 					while (scanner.hasNextLine() && isRunning) {
 						try {
-							parse(scanner.nextLine());
+							String line = scanner.nextLine();
+							
+							if(!SocketVisionReader.this.isPaused) {
+								parse(line);
+							}
 						} catch (java.util.NoSuchElementException e) {
 							Log.logError("No input from camera!");
 						}

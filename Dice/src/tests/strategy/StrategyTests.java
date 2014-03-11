@@ -28,7 +28,7 @@ public class StrategyTests {
 		defenderComms.init(RobotType.DEFENDER, null);		
 		
 		StrategyEvaluator strat = new StrategyEvaluator();
-		strat.setType(StrategyType.M3_ATTACKER);
+		strat.setType(StrategyType.MATCH);
 		strat.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strat.setCommunicator(RobotType.DEFENDER, defenderComms);
 		strat.onNewState(state);

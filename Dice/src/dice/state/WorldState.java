@@ -17,14 +17,6 @@ public class WorldState {
 		OPP_DEFEND_ZONE
     }
 
-    public enum BallPossession {
-    	NONE,
-    	OUR_DEFENDER,
-    	OUR_ATTACKER,
-    	OPP_DEFENDER,
-    	OPP_ATTACKER
-    }
-
     public enum Side {
         LEFT,
         RIGHT
@@ -68,7 +60,7 @@ public class WorldState {
     private Line left;
     private Line topLeft;
 
-    private BallPossession possession;
+    private GameObject guySlashGirlWithBall;
 
     // we are LEFT if our defender is on the left.
     private Side ourSide;
@@ -331,12 +323,12 @@ public class WorldState {
     	return ball;
     }
 
-    public BallPossession getBallPossession() {
-    	return possession;
+    public GameObject getObjectWithBall() {
+    	return this.guySlashGirlWithBall;
     }
 
-    public void setBallPossession(BallPossession newPossession) {
-        this.possession = newPossession;
+    public void setObjectWithBall(GameObject guySlashGirlWithBall) {
+        this.guySlashGirlWithBall = guySlashGirlWithBall;
     }
 
     public Goal getOurGoal() {

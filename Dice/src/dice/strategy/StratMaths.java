@@ -4,7 +4,6 @@ package dice.strategy;
 import dice.state.BoundedLine;
 import dice.state.GameObject;
 import dice.state.Goal;
-import dice.state.Path;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
@@ -17,8 +16,11 @@ import dice.state.WorldState;
 public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
-	public static final double POSITION_FUZZ = 40.0; // arbitrary, make it nicer
-	public static final double ROTATION_FINISHED_THRESH = Math.PI / 10;
+	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
+	
+	public static final double ROTATION_SHOOT_THRESH = Math.PI / 8;
+	private static final double ROTATION_THRESH_MIN = Math.PI / 10;
+	private static final double ROTATION_THRESH_MAX = Math.PI / 25;
 	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
 	public static boolean canReach(Vector2 v, GameObject o) {
@@ -35,23 +37,7 @@ public final class StratMaths {
 		//TODO needs to be properly implemented
 		return state.getOurAttacker().getPos();
 	}
-	
-	public static byte cartestanToPolarR(Vector2 v) {
-		return (byte) Math.sqrt(Math.pow(v.X, 2) + Math.pow(v.Y, 2));
-	}
-	
-	public static long cartesianToPolarTheta(Vector2 v) {
-		return (long) Math.round(Math.toDegrees(Math.atan2(v.Y, v.X)));
-	}
-	
-	public static boolean willCollideWithBall(GameObject robot, WorldState state) {
-		Vector2 robotPos = robot.getPos();
-		GameObject ball = state.getBall();
-		Path ballPath = ball.projectPathFromVelocity(state);
-		//return robotPos.willIntercept(ballPath); TODO
-		return false;
-	}
-	
+
 	/**
 	 * Method which will tell you whether an object is in front
 	 * of another object (straight line...ish)
@@ -86,6 +72,20 @@ public final class StratMaths {
 	public static Vector2 relativePos(GameObject referenceFrame, Vector2 objPos) {
 		Vector2 rfPos = referenceFrame.getPos();
 		return new Vector2(objPos.X-rfPos.X,objPos.Y-rfPos.Y);
+	}
+	
+	public static double getRotationTreshold(Vector2 obj, Vector2 target) {
+		double dist = obj.getEuclidean(target);
+		
+		double threshold = dist * (Math.PI / 1250.0);
+		
+		if(threshold > ROTATION_THRESH_MAX) {
+			threshold = ROTATION_THRESH_MAX;
+		} else if(threshold < ROTATION_THRESH_MIN) {
+			threshold = ROTATION_THRESH_MIN;
+		}
+		
+		return threshold;
 	}
 
 	

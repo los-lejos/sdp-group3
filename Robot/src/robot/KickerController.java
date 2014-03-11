@@ -3,13 +3,15 @@ package robot;
 public abstract class KickerController {
 	
 	private enum KickerState {
-		READY, KICK, GRAB, EXIT
+		READY, KICK, GRAB, OPEN
 	}
 	
 	private KickerState state = KickerState.READY;
+	private KickerState newState = KickerState.READY;
 	private KickerThread kickerThread;
-	
+
 	private boolean hasBall = false;
+	private boolean isRunning = true;
 	
 	public KickerController() {
 		kickerThread = new KickerThread();
@@ -18,7 +20,7 @@ public abstract class KickerController {
 	}
 	
 	public void cleanup() {
-		this.state = KickerState.EXIT;
+		this.isRunning = false;
 	}
 	
 	public boolean getHasBall() {
@@ -30,11 +32,15 @@ public abstract class KickerController {
 	}
 	
 	public void kick() {
-		this.state = KickerState.KICK;
+		this.newState = KickerState.KICK;
 	}
 
 	public void grab() {
-		this.state = KickerState.GRAB;
+		this.newState = KickerState.GRAB;
+	}
+	
+	public void open() {
+		this.newState = KickerState.OPEN;
 	}
 
 	private class KickerThread extends Thread {
@@ -44,15 +50,23 @@ public abstract class KickerController {
 			try {
 				performOpen();
 	
-				while (state != KickerState.EXIT) {
+				while (isRunning) {
 					if (state == KickerState.KICK) {
 						performKick();
 						hasBall = false;
-						state = KickerState.READY;
 					} else if (state == KickerState.GRAB) {
 						performGrab();
 						hasBall = true;
-						state = KickerState.READY;
+					} else if(state == KickerState.OPEN) {
+						performOpen();
+						hasBall = false;
+					}
+					
+					state = KickerState.READY;
+					
+					if(newState != KickerState.READY) {
+						state = newState;
+						newState = KickerState.READY;
 					}
 				}
 
@@ -62,7 +76,7 @@ public abstract class KickerController {
 			}
 		}
 	}
-	
+
 	protected abstract void performGrab() throws InterruptedException;
 	protected abstract void performKick() throws InterruptedException;
 	protected abstract void performOpen() throws InterruptedException;

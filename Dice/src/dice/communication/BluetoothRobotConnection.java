@@ -20,15 +20,11 @@ import lejos.pc.comm.NXTInfo;
 
 public class BluetoothRobotConnection extends Thread {
 
-	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3, -4, -5};
-	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2, -1, -0};
+	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3};
+	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2};
 	
-	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1, -1};
-	
-	private static final byte INSTRUCTION_CALLBACK_MAX = 4;
-	private RobotCommunicationCallback[] instructionCallbacks;
-	private byte currentInstructionCallback = -1;
-	
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1};
+
 	private RobotEventListener eventListener;
 	
 	private boolean connected = false;
@@ -52,32 +48,15 @@ public class BluetoothRobotConnection extends Thread {
 		}
 		
 		nxtConn = new NXTConnector();
-		
-		instructionCallbacks = new RobotCommunicationCallback[INSTRUCTION_CALLBACK_MAX];
 	}
 	
 	public void send(RobotInstruction instruction) throws IOException, BluetoothCommunicationException {
         if (!connected) {
         	throw new BluetoothCommunicationException("Can't send message. Not connected to " + nxtInfo.name);
         }
-        
-        synchronized(instructionCallbacks) {
-	        currentInstructionCallback++;
-	        if(currentInstructionCallback >= INSTRUCTION_CALLBACK_MAX) {
-	        	currentInstructionCallback = 0;
-	        }
-	        
-	        // If current slot is filled, time it out and replace
-	        if(instructionCallbacks[currentInstructionCallback] != null) {
-	        	instructionCallbacks[currentInstructionCallback].onTimeout();
-	        }
 
-        	instruction.getInstruction()[0] = currentInstructionCallback;
-        	instructionCallbacks[currentInstructionCallback] = instruction.getCallback();
-        	
-        	// Send to the robot
-        	this.send(instruction.getInstruction());
-        }
+    	// Send to the robot
+    	this.send(instruction.getInstruction());
 	}
 	
 	private void send(byte[] msg) throws IOException {
@@ -123,24 +102,13 @@ public class BluetoothRobotConnection extends Thread {
 				Log.logError(this.nxtInfo.name + " disconnecting");
 				this.terminate();
 			}
-		} else {
-			synchronized(instructionCallbacks) {	
-				byte instructionId = res[0];
-				
-				if(instructionId == RobotInstructions.CAUGHT_BALL) {
-					eventListener.onBallCaught();
-				} else if(instructionId == RobotInstructions.RELEASED_BALL) {
-					eventListener.onBallReleased();
-				} else {
-					RobotCommunicationCallback callback = instructionCallbacks[instructionId];
-					if(callback != null) {
-						callback.onDone();
-						instructionCallbacks[instructionId] = null;
-					}
-					else {
-						throw new BluetoothCommunicationException("No callback for instruction ID " + instructionId);
-					}
-				}
+		} else {	
+			byte instructionId = res[0];
+			
+			if(instructionId == RobotInstructions.CAUGHT_BALL) {
+				eventListener.onBallCaught();
+			} else if(instructionId == RobotInstructions.RELEASED_BALL) {
+				eventListener.onBallReleased();
 			}
 		}
 	}

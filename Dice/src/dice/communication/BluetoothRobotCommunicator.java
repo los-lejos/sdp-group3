@@ -18,8 +18,11 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 		this.robotType = robot;
 		
 		if(conn != null) {
-			Log.logError("Communicator already initialized");
-			return;
+			try {
+				conn.closeConnection();
+			} catch (IOException e) {
+				Log.logError("Error while closing connection");
+			}
 		}
 
 		conn = new BluetoothRobotConnection(robot, eventListener);
@@ -53,18 +56,14 @@ public class BluetoothRobotCommunicator implements RobotCommunicator {
 	public void sendInstruction(RobotInstruction instruction) {
 		if(conn == null) {
 			Log.logError("Must call init before sending instruction");
-			instruction.getCallback().onError();
 			return;
 		}
 		
 		try {
-			Log.logInfo("Sending instruction to " + this.robotType.toString());
 			conn.send(instruction);
 		} catch (IOException e) {
-			instruction.getCallback().onError();
 			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		} catch (BluetoothCommunicationException e) {
-			instruction.getCallback().onError();
 			Log.logError("Error sending instruction to " + this.robotType.toString() + ": " + e.getMessage());
 		}
 	}

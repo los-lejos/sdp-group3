@@ -3,6 +3,7 @@ S'blue'
 p2
 (lp3
 (lp4
+<<<<<<< HEAD
 I73
 aI60
 aI49
@@ -10,17 +11,33 @@ aa(lp5
 I107
 aI186
 aI152
+=======
+I93
+aI76
+aI0
+aa(lp5
+I128
+aI255
+aI255
+>>>>>>> f28274339150a812a2711055afe78aaa36bef31b
 aasS'ball'
 p6
 (lp7
 (lp8
+<<<<<<< HEAD
 I172
 aI114
 aI122
+=======
+I154
+aI178
+aI95
+>>>>>>> f28274339150a812a2711055afe78aaa36bef31b
 aa(lp9
 I2
 aI255
 aI255
+<<<<<<< HEAD
 aasS'yellow'
 p10
 (lp11
@@ -30,17 +47,57 @@ aI138
 aI161
 aa(lp13
 I18
+=======
+aI255
+aasS'yellow2'
+p10
+(lp11
+(lp12
+I179
+aI120
+aI160
+aa(lp13
+I32
+>>>>>>> f28274339150a812a2711055afe78aaa36bef31b
 aI255
 aI255
-aasS'dot'
+aasS'yellow'
 p14
 (lp15
 (lp16
+I14
+aI129
+aI138
+aa(lp17
+I37
+aI248
+aI255
+aasS'blue2'
+p18
+(lp19
+(lp20
+I93
+aI83
+aI100
+aa(lp21
+I116
+aI255
+aI255
+aasS'dot'
+p22
+(lp23
+(lp24
 I0
 aI0
 aI0
+<<<<<<< HEAD
 aa(lp17
 I127
 aI122
+=======
+aa(lp25
+I100
+aI255
+>>>>>>> f28274339150a812a2711055afe78aaa36bef31b
 aI73
 aas.

@@ -2,9 +2,9 @@ package dice.strategy.action.attacker;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
-import dice.state.Vector2;
+import dice.state.GameObject;
 import dice.state.WorldState;
-import dice.strategy.StratMaths;
+import dice.state.WorldState.PitchZone;
 import dice.strategy.StrategyAction;
 
 
@@ -19,31 +19,22 @@ public class RecievePassAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if (getTargetObject(state).getPos() != null) {
-			return state.getBall().getCurrentZone() == WorldState.PitchZone.OUR_DEFEND_ZONE;
-		} else {
-			return false;
-		}
+		return state.getObjectWithBall() == state.getOurDefender() ||
+		state.getBall().getCurrentZone() == PitchZone.OUR_DEFEND_ZONE;
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		return 2;
+		return 5;
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		// if target is already in a good position then rotate to the ball otherwise move to a better position
-		if (getTargetObject(state).getPos().equals(StratMaths.whereToRecievePass(state))) {
-			return RobotInstruction.createMoveTo(
-					(long) Math.toDegrees(getTargetObject(state).getRotationRelativeTo(state.getBall())),0);
-		} else {
-			Vector2 whereToRecieve = StratMaths.whereToRecievePass(state);
-			
-			return RobotInstruction.createMoveTo(
-					Math.toDegrees((getTargetObject(state).getRotationRelativeTo(whereToRecieve))),
-					getTargetObject(state).getEuclidean(whereToRecieve));
-		}
+		GameObject attacker = state.getOurAttacker();
+		GameObject defender = state.getOurDefender();
+		
+		double heading = attacker.getRotationRelativeTo(defender);
+		
+		return RobotInstruction.createRotate(heading);
 	}
-
 }

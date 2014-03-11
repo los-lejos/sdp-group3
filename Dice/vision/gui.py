@@ -22,6 +22,8 @@ class Gui:
     _layer_sets = { 'default': ['raw', 'yellow0', 'yellow1', 'yellow2', 'yellow3', 'blue0', 'blue1', 'blue2', 'blue3', 'ball'],
                     'yellow': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
                     'blue': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
+                    'yellow2': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
+                    'blue2': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
                     'ball': ['threshR', 'ball'],
                     'dot': ['threshD'] }
 
@@ -79,7 +81,7 @@ class Gui:
         final_image = base_layer.applyLayers()
         self._display.writeFrame(final_image, fit=False)
 
-    def __updateFps(self):
+    def __update_fps(self):
 
         this_frame_time = time.time()
         this_frame = this_frame_time - self._last_frame_time
@@ -131,7 +133,7 @@ class Gui:
             c = cv.WaitKey(2)
             self._event_handler.process_key(chr(c % 0x100))
 
-        self.__updateFps()
+        self.__update_fps()
         self.__draw()
 
     def get_event_handler(self):
@@ -178,7 +180,6 @@ class Gui:
             """Adds a function callback for a key.
             """
             assert callable(callback), '"callback" must be callable'
-            
             self._listeners[key] = callback
 
         def set_click_listener(self, callback):
@@ -188,7 +189,6 @@ class Gui:
             Setting a new callback will override the last one (or pass None to clear)
             """
             assert callback is None or callable(callback), '"callback" must be callable'
-            
             self._click_listener = callback
 
 class ThresholdGui:
@@ -214,12 +214,16 @@ class ThresholdGui:
         """
         def yellow(): self.change_entity('yellow')
         def blue(): self.change_entity('blue')
+        def yellow2(): self.change_entity('yellow2')
+        def blue2(): self.change_entity('blue2')
         def ball(): self.change_entity('ball')
         def dot(): self.change_entity('dot')
 
         key_handler = self._gui.get_event_handler()
         key_handler.add_listener('y', yellow)
         key_handler.add_listener('b', blue)
+        key_handler.add_listener('u', yellow2)
+        key_handler.add_listener('n', blue2)
         key_handler.add_listener('r', ball)
         key_handler.add_listener('d', dot)
         key_handler.add_listener('t', self.toggle_gui)

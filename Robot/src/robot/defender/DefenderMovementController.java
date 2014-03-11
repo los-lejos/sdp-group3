@@ -1,56 +1,40 @@
 package robot.defender;
 
-import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
-import robot.Robot;
-import robot.StrafeThread;
+import robot.MovementController;
 
-/*
- * @author Owen Gillespie
- * @author Pete Stefanov
- */
-
-public class DefenceRobot extends Robot {
+public class DefenderMovementController extends MovementController {
 	
-	private static final int FRONT_SENSOR_CUTOFF = 12;
+	private static final NXTRegulatedMotor leftMotor = Motor.B;
+	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	
 	private static final int tireDiameterMm = 48;
 	private static final int trackWidthMm = 127;
-	private static final LightSensor leftLightSensor = new LightSensor(SensorPort.S3);
-	private static final LightSensor rightLightSensor = new LightSensor(SensorPort.S4);
-	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
-	private static final NXTRegulatedMotor leftMotor = Motor.B;
-	private static final NXTRegulatedMotor rightMotor = Motor.A;
 
 	private final DifferentialPilot pilot;
+	private final StrafeThread strafeThread;
 	
 	private double maxTravelSpeed;
 	private double maxRotateSpeed;
-	private final StrafeThread strafeThread;
 
 	private double travelSpeed;
 	private double rotateSpeed;
-    
-	public DefenceRobot() {
-    	super(leftLightSensor, rightLightSensor, ballSensor, FRONT_SENSOR_CUTOFF, new DefenceKickerController());
-    	
-    	// Set up differential pilot.
-    	pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
+
+	public DefenderMovementController() {
+		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
     	maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
-		travelSpeed = maxTravelSpeed * 0.5;
-		rotateSpeed = maxRotateSpeed * 0.4;
+		travelSpeed = maxTravelSpeed * 0.7;
+		rotateSpeed = maxRotateSpeed * 0.3;
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 
 		strafeThread = new StrafeThread();
 		strafeThread.start();
-    }
-	
+	}
+
 	@Override
 	public void stop() {
 		stopLat();
@@ -63,28 +47,27 @@ public class DefenceRobot extends Robot {
 	}
 
 	@Override
-	public void rotate(int heading) {
-		this.stopLat();
+	protected void performRotate(int heading) {
 		pilot.rotate(heading, true);
 	}
 
 	@Override
-	public void move(int distance) {
-		this.stopLat();
+	protected void performMove(int distance) {
 		pilot.travel(distance, true);
 	}
 	
 	@Override
-	public void moveLat(int distance) {
+	protected void performMoveLat(int distance) {
 		strafeThread.move(distance);
 	}
 	
-	public void stopLat() {
+	private void stopLat() {
 		strafeThread.stop();
 	}
 
 	@Override
 	public void cleanup() {
+		super.cleanup();
 		strafeThread.cleanup();
 	}
 

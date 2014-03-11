@@ -1,5 +1,9 @@
 package robot.defender;
 
+import lejos.nxt.LightSensor;
+import lejos.nxt.SensorPort;
+import robot.Robot;
+
 
 /*
  * @author Joris Urbaitis
@@ -8,7 +12,15 @@ package robot.defender;
 public class DefenderMain {
 	
 	public static void main(String[] args) {
-		DefenceRobot robot = new DefenceRobot();
+		LightSensor leftLightSensor = new LightSensor(SensorPort.S3);
+		LightSensor rightLightSensor = new LightSensor(SensorPort.S4);
+
+		Robot robot = new Robot(
+				leftLightSensor, rightLightSensor,
+    			new DefenceKickerController(),
+    			new DefenderMovementController(),
+    			new DefenderBallSensorController());
+		
 		robot.run();
 	}
 }

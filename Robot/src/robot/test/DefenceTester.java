@@ -1,19 +1,12 @@
 package robot.test;
 
 import lejos.nxt.Button;
-import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
-import lejos.nxt.SensorPort;
-import lejos.nxt.UltrasonicSensor;
-import robot.defender.DefenceRobot;
 
 public class DefenceTester {
 
 	public static void main(String[] args) throws Exception {
-		UltrasonicSensor ballSense = new UltrasonicSensor(SensorPort.S2);
-		DefenceRobot ballE = new DefenceRobot();
-	
 /*		
 		while (Button.readButtons() == 0) {
 			ballE.moveLat(50);

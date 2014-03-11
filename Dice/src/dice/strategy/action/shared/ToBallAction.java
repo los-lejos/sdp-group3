@@ -15,6 +15,8 @@ import dice.strategy.StratMaths;
  */
 
 public class ToBallAction extends StrategyAction {
+	
+	private boolean shouldRotate;
 
 	public ToBallAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -22,41 +24,34 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		if (state.getBallPossession() != WorldState.BallPossession.OUR_ATTACKER ||
-			state.getBallPossession() != WorldState.BallPossession.OUR_DEFENDER) {
-			
-			if (getTargetObject(state).getCurrentZone() == state.getBall().getCurrentZone()) {
-				double relativeRotation = getTargetObject(state).getRotationRelativeTo(state.getBall());
-				
-				return (Math.abs(relativeRotation) < StratMaths.ROTATION_FINISHED_THRESH);
-			}
-			
-		}
-			
-		return false;
+		GameObject robot = this.getTargetObject(state);
+		GameObject ball = state.getBall();
 		
+		boolean weHaveTheBall = state.getObjectWithBall() == robot;
+		boolean ballIsInSameZone = ball.getCurrentZone() == robot.getCurrentZone();
+		
+		return ball.getPos() != null &&  ballIsInSameZone && !weHaveTheBall;
 	}
 
 	@Override
 	protected int calculateUtility(WorldState state) {
 		return 2;
-//		if ((state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER) ||
-//				(state.getBallPossession() == WorldState.BallPossession.OUR_ATTACKER)) {
-//			return 0;
-//		} else {
-//			return 1;
-//		}
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		
-		Vector2 ballPos = state.getBall().getPos();
+		GameObject ball = state.getBall();
+		Vector2 ballPos = ball.getPos();
 		GameObject robot = getTargetObject(state);
+		Vector2 robotPos = robot.getPos();
+		
+		double relativeRotation = robot.getRotationRelativeTo(ball);
+		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
 
-		System.out.println("Rotation relative to ball " + robot.getRotationRelativeTo(ballPos));
-        return  RobotInstruction.createMoveTo(
-				Math.toDegrees(robot.getRotationRelativeTo(ballPos)),
-				robot.getEuclidean(ballPos));
+		if(this.shouldRotate) {
+			return RobotInstruction.createRotate(relativeRotation);
+		} else {
+			return RobotInstruction.createMove(robotPos.getEuclidean(ballPos));
+		}
 	}
 }

@@ -17,8 +17,10 @@ import dice.strategy.action.attacker.RepositionAction;
 
 public class RobotStrategyState {
 	// Currently assigned action
-	private IssuedAction issuedAction;
 	private StrategyAction strategyAction;
+	
+	// Currently assigned instruction
+	private RobotInstruction currentInstruction;
 	
 	// List of actions the robot can perform
 	private List<StrategyAction> actions = new ArrayList<StrategyAction>();
@@ -74,25 +76,27 @@ public class RobotStrategyState {
 	}
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {
-		this.issuedAction = new IssuedAction();
+		// If we are assigning a new action, print info
+		if(this.robotType == RobotType.ATTACKER && (this.strategyAction == null || action.getClass() != this.strategyAction.getClass())) {
+			Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
+		}
+		
 		this.strategyAction = action;
 		
 		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
 			RepositionAction reposAction = (RepositionAction) action;
 			reposAction.resetRepositionAttempts();
 		}
-		
-		Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());
-		
+
 		// Send instruction if we are connected
-		if(robotComms.isConnected()) {
-			RobotInstruction instruction = action.getInstruction(state);
-			instruction.setCallback(issuedAction.getCallback());
+		// and if the new instruction is different from the currently
+		// assigned one
+		RobotInstruction instruction = action.getInstruction(state);
+		boolean newInstruction = this.currentInstruction == null || !this.currentInstruction.equals(instruction);
+		
+		if(robotComms.isConnected() && newInstruction) {
+			this.currentInstruction = instruction;
 			robotComms.sendInstruction(instruction);
 		}
-	}
-	
-	public boolean needsNewAction(WorldState state) {
-		return issuedAction == null || issuedAction.isCompleted() || !strategyAction.isPossible(state);
 	}
 }

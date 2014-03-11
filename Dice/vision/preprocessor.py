@@ -50,7 +50,7 @@ class Preprocessor:
     def preprocess(self, frame, scale):
         
         if self.has_pitch_size:
-            frame = frame.crop(*self._crop_rect).scale(scale)
+            frame = frame.crop(*self._crop_rect).scale(scale).dilate(1)
         return frame
 
     def set_next_pitch_corner(self, point):
