@@ -5,7 +5,7 @@ p2
 (lp4
 I93
 aI76
-aI0
+aI105
 aa(lp5
 I128
 aI255
@@ -16,7 +16,7 @@ p6
 (lp8
 I154
 aI178
-aI95
+aI100
 aa(lp9
 I0
 aI255
@@ -38,7 +38,7 @@ p14
 (lp16
 I14
 aI129
-aI138
+aI127
 aa(lp17
 I37
 aI248
@@ -49,7 +49,7 @@ p18
 (lp20
 I93
 aI102
-aI87
+aI70
 aa(lp21
 I116
 aI255
@@ -58,11 +58,11 @@ aasS'dot'
 p22
 (lp23
 (lp24
-I0
-aI0
+I106
+aI10
 aI0
 aa(lp25
-I179
+I101
 aI255
-aI77
+aI70
 aas.
