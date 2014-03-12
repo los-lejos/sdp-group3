@@ -35,21 +35,23 @@ public class ToBallAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
-		double relativeRotation = getTargetObject(state).getRotationRelativeTo(state.getBall());
-		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_FINISHED_THRESH;
-
 		return 2;
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		Vector2 ballPos = state.getBall().getPos();
+		GameObject ball = state.getBall();
+		Vector2 ballPos = ball.getPos();
 		GameObject robot = getTargetObject(state);
+		Vector2 robotPos = robot.getPos();
+		
+		double relativeRotation = robot.getRotationRelativeTo(ball);
+		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
 
 		if(this.shouldRotate) {
-			return RobotInstruction.createRotate(robot.getRotationRelativeTo(ballPos));
+			return RobotInstruction.createRotate(relativeRotation);
 		} else {
-			return RobotInstruction.createMove(robot.getEuclidean(ballPos));
+			return RobotInstruction.createMove(robotPos.getEuclidean(ballPos));
 		}
 	}
 }

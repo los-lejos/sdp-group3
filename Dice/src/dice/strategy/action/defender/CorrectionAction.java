@@ -26,8 +26,8 @@ public class CorrectionAction extends StrategyAction {
 		
 		double heading = this.getAngleRelativeToHorizontal(state);
 		double deltaX = zoneMiddle.X - target.getPos().X;
-		
-		if(Math.abs(heading) > StratMaths.ROTATION_FINISHED_THRESH) {
+
+		if(Math.abs(heading) > StratMaths.getRotationTreshold(target.getPos(), zoneMiddle)) {
 			shouldRotate = true;
 			this.dist = heading;
 			

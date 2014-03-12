@@ -29,9 +29,10 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	protected int calculateUtility(WorldState state) {
+		GameObject robot = getTargetObject(state);
 		Vector2 goalCenter = state.getOppGoal().getGoalCenter();
-		double relativeRotation = getTargetObject(state).getRotationRelativeTo(goalCenter);
-		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_FINISHED_THRESH;
+		double relativeRotation = robot.getRotationRelativeTo(goalCenter);
+		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_SHOOT_THRESH;
 		
 		return 4;
 	}

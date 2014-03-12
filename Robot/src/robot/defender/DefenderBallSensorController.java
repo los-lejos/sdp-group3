@@ -6,8 +6,8 @@ import robot.BallSensorController;
 
 public class DefenderBallSensorController extends BallSensorController {
 	
-	private static final int BALL_SENSOR_NEARBY_CUTOFF = 9;
-	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 27;
+	private static final int BALL_SENSOR_NEARBY_CUTOFF = 9; // 9
+	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 20; // 20
 
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
 	
@@ -27,8 +27,7 @@ public class DefenderBallSensorController extends BallSensorController {
 			return true;
 		}
 
-		return true;
-		//return this.getRecentReadingMin() >= BALL_SENSOR_IN_KICKER_CUTOFF;
+		return this.getRecentReadingMin() <= BALL_SENSOR_NEARBY_CUTOFF;
 	}
 
 }

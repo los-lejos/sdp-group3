@@ -73,7 +73,6 @@ public class GameObject {
     public GameObject() {
     	positions = new LimitedList<Vector2>(MAX_POSITIONS);
     	rotations = new LimitedList<Rotation>(MAX_ROTATIONS);
-    	System.out.println("Initializing object.");
 
     	this.rotations.add(new Rotation(0.0));
     }
@@ -90,7 +89,7 @@ public class GameObject {
     	if (validateRotation(rotation)) {
     		this.rotations.add(new Rotation(rotation));
     	} else {
-    		System.out.println("Invalid rotation value: " + rotation);
+    		Log.logInfo("Invalid rotation value: " + rotation);
     	}
     }
     
@@ -278,17 +277,7 @@ public class GameObject {
 
     // get the euclidean distance to the object
     public double getEuclidean(GameObject obj) {
-        return getEuclidean(obj.getPos());
-    }
-
-    // get the euclidean distance from the object
-    public double getEuclidean(Vector2 position) {
-    	if (position != null && getPos() != null) {
-	        return Math.sqrt(Math.pow(position.X - getPos().X, 2) +
-	                         Math.pow(position.Y - getPos().Y, 2));
-    	} else {
-    		return 0.0;
-    	}
+        return this.getPos().getEuclidean(obj.getPos());
     }
 
     // relative to the top of the screen

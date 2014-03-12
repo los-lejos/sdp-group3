@@ -37,5 +37,4 @@ public class RecievePassAction extends StrategyAction {
 		
 		return RobotInstruction.createRotate(heading);
 	}
-
 }

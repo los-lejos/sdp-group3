@@ -39,7 +39,7 @@ public class BlockAction extends StrategyAction {
 
 		Vector2 vertical = new Vector2(robotPos.X, robotPos.Y - 1);
 		double heading = robot.getRotationRelativeTo(vertical);
-		boolean shouldRotate = Math.abs(heading) > StratMaths.ROTATION_FINISHED_THRESH;
+		boolean shouldRotate = Math.abs(heading) > StratMaths.getRotationTreshold(robotPos, vertical);
 		
 		if(shouldRotate) {
 			return RobotInstruction.createRotate(heading);

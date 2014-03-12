@@ -1,7 +1,6 @@
 package robot;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
@@ -77,7 +76,7 @@ public class Robot {
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
-				System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
+				//System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
 				
 				currentInstruction = newInstruction;
 				
@@ -102,13 +101,11 @@ public class Robot {
 			
 			// If we tried to catch the ball but didn't, restore kicker
 			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
-				System.out.println("Didn't catch");
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker, try to grab
 			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
-				System.out.println("Trying to catch");
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				
