@@ -73,7 +73,6 @@ public class GameObject {
     public GameObject() {
     	positions = new LimitedList<Vector2>(MAX_POSITIONS);
     	rotations = new LimitedList<Rotation>(MAX_ROTATIONS);
-    	System.out.println("Initializing object.");
 
     	this.rotations.add(new Rotation(0.0));
     }
@@ -90,7 +89,7 @@ public class GameObject {
     	if (validateRotation(rotation)) {
     		this.rotations.add(new Rotation(rotation));
     	} else {
-    		System.out.println("Invalid rotation value: " + rotation);
+    		Log.logInfo("Invalid rotation value: " + rotation);
     	}
     }
     

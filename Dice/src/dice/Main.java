@@ -40,6 +40,7 @@ public class Main {
 		@Override
 		public void onBallCaught() {
 			synchronized(worldState) {
+				Log.logInfo("Attacker: Ball has been caught aw yeah.");
 				worldState.setObjectWithBall(worldState.getOurAttacker());
 			}
 		}
@@ -56,7 +57,7 @@ public class Main {
 		@Override
 		public void onBallCaught() {
 			synchronized(worldState) {
-				System.out.println("Ball has been caught aw yeah.");
+				Log.logInfo("Defender: Ball has been caught aw yeah.");
 				worldState.setObjectWithBall(worldState.getOurDefender());
 			}
 		}
@@ -100,7 +101,6 @@ public class Main {
 	}
 	
 	public void run() {
-		Log.logInfo("Ready");
 		String[] cmd = null;
 		
 		do {

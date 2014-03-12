@@ -196,7 +196,7 @@ public class WorldState {
         Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
         rightGoal = new Goal(goalRightTop, goalRightBottom);
         
-        System.out.println("Calibrated pitch.");
+        Log.logInfo("Calibrated pitch.");
     }
 
     // 0-3 left to right on vision
