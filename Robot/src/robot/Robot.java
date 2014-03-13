@@ -23,6 +23,7 @@ import shared.RobotInstructions;
 public class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
+	private static final int KICKER_RESET_DELAY = 5000; // 5 seconds
 
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -36,6 +37,9 @@ public class Robot {
     private final BallSensorController ballSensor;
     
     private boolean isRunning = true;
+    
+    private long prevKickerResetTime = System.currentTimeMillis();
+    private long currTime;
     
     public Robot(
     		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
@@ -101,6 +105,7 @@ public class Robot {
 			
 			// If we tried to catch the ball but didn't, restore kicker
 			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
+				prevKickerResetTime = System.currentTimeMillis();
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
@@ -112,6 +117,13 @@ public class Robot {
 				// Reset so that we gather some measurements to make sure we have the ball
 				this.ballSensor.resetMeasurements();
 			}
+			
+			// Periodically reset kicker to open
+			if (this.kickerResetElapsed() && !this.kicker.getHasBall()) {
+				System.out.println("Kicker resetting.");
+				this.kicker.open();
+			}
+			
 		}
 
 		try {
@@ -126,6 +138,17 @@ public class Robot {
 		this.movementController.cleanup();
 		
 		System.out.println("Exiting");
+	}
+
+	private boolean kickerResetElapsed() {
+		currTime = System.currentTimeMillis();
+		
+		if (currTime - prevKickerResetTime > KICKER_RESET_DELAY) {
+			prevKickerResetTime = System.currentTimeMillis();
+			return true;
+		}
+		
+		return false;
 	}
 
 	private void handleInstruction(IssuedInstruction instruction) {
