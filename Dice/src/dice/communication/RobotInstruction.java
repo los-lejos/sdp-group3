@@ -52,6 +52,10 @@ public class RobotInstruction {
 		return new RobotInstruction(RobotInstructions.KICK, (byte)0, (byte)0);
 	}
 	
+	public static RobotInstruction createSetSpeed(byte speedPercentage) {
+		return new RobotInstruction(RobotInstructions.SET_TRAVEL_SPEED, speedPercentage, (byte)0);
+	}
+	
 	public RobotInstruction(byte instructionType, byte param1, byte param2) {
 		this.instruction = new byte[RobotInstructions.LENGTH];
 		this.instruction[0] = instructionType;
