@@ -32,7 +32,8 @@ class Threshold:
                             'yellow2': [[11, 32, 198], [42, 255, 255]],
                             'blue2': [[84, 80, 17], [139, 122, 255]],
                             'ball': [[0, 0, 79], [15, 255, 255]],
-                            'dot': [[0, 0, 0], [0, 0, 0]] }]
+                            'dot': [[0, 0, 0], [0, 0, 0]],
+                            'experimental': [[0,0,0], [0,0,0]] }]
 
     def __init__(self, pitch_num, reset_thresholds):
 

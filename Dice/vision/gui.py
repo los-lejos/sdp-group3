@@ -24,6 +24,7 @@ class Gui:
                     'blue': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
                     'yellow2': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
                     'blue2': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
+                    'experimental': ['experimental'],
                     'ball': ['threshR', 'ball'],
                     'dot': ['threshD'] }
 
@@ -40,7 +41,8 @@ class Gui:
                 'blue1': None,
                 'blue2': None,
                 'blue3': None,
-                'ball' : None }
+                'ball': None,
+                'experimental': None }
 
     _persistent_layers = { 'mouse': None }
 
@@ -218,6 +220,7 @@ class ThresholdGui:
         def blue2(): self.change_entity('blue2')
         def ball(): self.change_entity('ball')
         def dot(): self.change_entity('dot')
+        def experimental(): self.change_entity('experimental')
 
         key_handler = self._gui.get_event_handler()
         key_handler.add_listener('y', yellow)
@@ -226,6 +229,7 @@ class ThresholdGui:
         key_handler.add_listener('n', blue2)
         key_handler.add_listener('r', ball)
         key_handler.add_listener('d', dot)
+        key_handler.add_listener('e', experimental)
         key_handler.add_listener('t', self.toggle_gui)
 
     def __create_trackbars(self):

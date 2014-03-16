@@ -34,7 +34,6 @@ class Vision:
 
     def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresh,
                  scale, colour_order, render_tlayers, file_input=None):
-
         self.running = True
         self.connected = False
         self.scale = scale

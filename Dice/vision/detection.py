@@ -86,12 +86,14 @@ class Detection:
 
         thresholds[BALL] = self._threshold.ball(hsv).smooth(grayscale=True)
         entities[BALL] = self.__find_entity(thresholds[BALL], BALL, hsv)
+        experimental_frame = self._get_experimental(hsv)
         if self._render_tlayers:
             thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
             self._gui.update_layer('threshY', yellow)
             self._gui.update_layer('threshB', blue)
             self._gui.update_layer('threshR', thresholds[BALL])
             self._gui.update_layer('threshD', thresholds[DOT])
+            self._gui.update_layer('experimental', experimental_frame)
 
         for i in range(0, 4):
             if self._colour_order[i] == 'b':
@@ -103,6 +105,35 @@ class Detection:
 
         return entities
 
+    def _get_experimental(self, img_hsv):
+        thresholds = self._threshold._threshold_values['experimental']
+        blurred_img = img_hsv.gaussianBlur(window=(3,3))
+        imgBin2 = blurred_img.binarize(thresh=tuple(thresholds[1]))
+        imgBin1 = blurred_img.binarize(thresh=tuple(thresholds[0]))
+        imgBin = (imgBin2-imgBin1)
+        #img_hsv = imgBin
+        blobs = imgBin.findBlobs(minsize=30)
+        #if not blobs is None:
+        #    blobs.draw(color=Color.PUCE, width=2)
+        count = 1
+        textLayer = DrawingLayer(img_hsv.size())
+        #textLayer.setLayerAlpha(75)
+        try:
+            squares = blobs.filter([b.isSquare(0.4, 0.25) for b in blobs])
+            if squares:
+                for coordinates in squares.coordinates():
+                    textLayer.text(str(count), coordinates, color=Color.RED)
+                    count += 1
+                #squares.draw(color=Color.RED, width=2)
+                for square in squares:
+                    square.drawMinRect(color=Color.LIME, width=2)
+            img_hsv.addDrawingLayer(textLayer)
+            img_hsv.addDrawingLayer(imgBin.dl())
+            return img_hsv.applyLayers()
+        except:
+            return img_hsv.toHSV()
+#78.74.33
+#81.33.96
     def __find_entity(self, threshold_img, which, image):
 
         size = None
