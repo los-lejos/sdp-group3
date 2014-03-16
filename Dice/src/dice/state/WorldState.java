@@ -41,13 +41,18 @@ public class WorldState {
     // |    |    |    |    | | 320
     // o----f----s----t----e v
     // <--------580-------->
-    private static final double origin = 0;
-    private static final double width = 580;
+    private static final double ORIGIN = 0;
+    private static final double WIDTH = 580;
     
-    private static final double firstDivision = width / 4 + origin;
-    private static final double secondDivision = width / 4 * 2 + origin;
-    private static final double thirdDivision = width / 4 * 3 + origin;
-    private static final double end = width + origin;
+    // calibration of the divisions
+    private static final double FIRST_ADJUSTMENT = -20;
+    private static final double SECOND_ADJUSTMENT = 0;
+    private static final double THIRD_ADJUSTMENT = 20;
+
+    private static final double FIRST_DIVISION = WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
+    private static final double SECOND_DIVISION = WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
+    private static final double THIRD_DIVISION = WIDTH / 4 * 3 + ORIGIN + THIRD_ADJUSTMENT;
+    private static final double END = WIDTH + ORIGIN;
     
 
     // lines which represent the outer edge
@@ -133,13 +138,17 @@ public class WorldState {
     	
         double objectX = position.X;
 
-        if (objectX >= origin && objectX <= firstDivision) {
+        if (objectX >= ORIGIN && objectX <= FIRST_DIVISION) {
+        	System.out.println("Zone 0");
             object.setCurrentZone(zoneFromNumber(0));
-        } else if (objectX <= secondDivision) {
+        } else if (objectX <= SECOND_DIVISION) {
+        	System.out.println("Zone 1");
         	object.setCurrentZone(zoneFromNumber(1));
-        } else if (objectX <= thirdDivision) {
+        } else if (objectX <= THIRD_DIVISION) {
+        	System.out.println("Zone 2");
         	object.setCurrentZone(zoneFromNumber(2));
-        } else if (objectX <= end) {
+        } else if (objectX <= END) {
+        	System.out.println("Zone 3");
         	object.setCurrentZone(zoneFromNumber(3));
         } else {
             Log.logError("Cannot update object zone - unexpected x coordinate: " + objectX);
@@ -199,7 +208,8 @@ public class WorldState {
         Log.logInfo("Calibrated pitch.");
     }
 
-    // 0-3 left to right on vision
+    // 0-3 left to right on vision. This is done because the order is reversed
+    // depending on which side we are on
     private PitchZone zoneFromNumber(int number)
             throws InvalidParameterException {
         PitchZone result;
@@ -248,22 +258,22 @@ public class WorldState {
 
     // pitch cell centers
     public Vector2 getCellCenter(PitchZone zone) {
-        double y = width / 2.0;
+        double y = WIDTH / 2.0;
         double x;
 
         if (ourSide == Side.LEFT) {
             switch (zone) {
                 case OUR_DEFEND_ZONE:
-                    x = origin + firstDivision / 2.0;
+                    x = ORIGIN + FIRST_DIVISION / 2.0;
                     break;
                 case OPP_ATTACK_ZONE:
-                    x = firstDivision + secondDivision / 2.0;
+                    x = FIRST_DIVISION + SECOND_DIVISION / 2.0;
                     break;
                 case OUR_ATTACK_ZONE:
-                    x = secondDivision + thirdDivision / 2.0;
+                    x = SECOND_DIVISION + THIRD_DIVISION / 2.0;
                     break;
                 case OPP_DEFEND_ZONE:
-                    x = thirdDivision + end / 2.0;
+                    x = THIRD_DIVISION + END / 2.0;
                     break;
                 default:
                     x = -1;
@@ -271,16 +281,16 @@ public class WorldState {
         } else {
             switch (zone) {
                 case OPP_DEFEND_ZONE:
-                    x = origin + firstDivision / 2.0;
+                    x = ORIGIN + FIRST_DIVISION / 2.0;
                     break;
                 case OUR_ATTACK_ZONE:
-                    x = firstDivision + secondDivision / 2.0;
+                    x = FIRST_DIVISION + SECOND_DIVISION / 2.0;
                     break;
                 case OPP_ATTACK_ZONE:
-                    x = secondDivision + thirdDivision / 2.0;
+                    x = SECOND_DIVISION + THIRD_DIVISION / 2.0;
                     break;
                 case OUR_DEFEND_ZONE:
-                    x = thirdDivision + end / 2.0;
+                    x = THIRD_DIVISION + END / 2.0;
                     break;
                 default:
                     x = -1;
