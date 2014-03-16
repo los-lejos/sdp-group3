@@ -39,7 +39,6 @@ public class Robot {
     private boolean isRunning = true;
     
     private long prevKickerResetTime = System.currentTimeMillis();
-    private long currTime;
     
     public Robot(
     		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
@@ -117,13 +116,12 @@ public class Robot {
 				// Reset so that we gather some measurements to make sure we have the ball
 				this.ballSensor.resetMeasurements();
 			}
-			
 			// Periodically reset kicker to open
-			if (this.kickerResetElapsed() && !this.kicker.getHasBall()) {
+			else if (this.kickerResetElapsed() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
 				System.out.println("Kicker resetting.");
+				prevKickerResetTime = System.currentTimeMillis();
 				this.kicker.open();
 			}
-			
 		}
 
 		try {
@@ -141,10 +139,9 @@ public class Robot {
 	}
 
 	private boolean kickerResetElapsed() {
-		currTime = System.currentTimeMillis();
+		long currTime = System.currentTimeMillis();
 		
 		if (currTime - prevKickerResetTime > KICKER_RESET_DELAY) {
-			prevKickerResetTime = System.currentTimeMillis();
 			return true;
 		}
 		

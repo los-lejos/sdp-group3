@@ -46,21 +46,11 @@ public class AttackerMovementController extends MovementController {
 	@Override
 	public void performRotate(int heading) {
 		pilot.rotate(heading, true);
-//		if(heading < 0) {
-//			pilot.rotateRight();
-//		} else {
-//			pilot.rotateLeft();
-//		}
 	}
 
 	@Override
 	public void performMove(int distance) {
 		pilot.travel(distance, true);
-//		if(distance > 0) {
-//			pilot.forward();
-//		} else {
-//			pilot.backward();
-//		}
 	}
 	
 	@Override
