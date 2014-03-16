@@ -36,16 +36,17 @@ class Detection:
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
 
-    def __init__(self, gui, threshold, colour_order, scale, pitch_num, render_tlayers = True):
+    def __init__(self, gui, threshold, processor, colour_order, scale, pitch_num, render_tlayers = True):
     
         self._render_tlayers = render_tlayers
         self._threshold = threshold
+        self._processor = processor
+        self._pitch_w = WIDTH
+        self._pitch_h = HEIGHT
         self._gui = gui
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
-        self._pitch_w = WIDTH
-        self._pitch_h = HEIGHT
         self._logger = Logger('detection_errors.log')
         # Create mask for better dot detection
         circlelayer = DrawingLayer((DOT_RADIUS*2, DOT_RADIUS*2))
@@ -54,24 +55,26 @@ class Detection:
         self._dot_mask.addDrawingLayer(circlelayer)
         self._dot_mask.applyLayers()
         self._dot_mask = self._dot_mask.invert()
+        self._hsv_frame = None
+        self._bgr_frame = None
 
-    def detect_objects(self, frame, pitch_size):
-
-        self._pitch_w, self._pitch_h = pitch_size
-        hsv = frame.toHSV()
+    def detect_objects(self):
+        self._pitch_w, self._pitch_h = self._processor.pitch_size
+        self._hsv_frame = self._processor.get_hsv_frame()
+        self._bgr_frame = self._processor.get_bgr_frame()
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
         thresholds = [None, None, None, None, None, None]
         if self._render_tlayers:
-            yellow = frame.copy()
-            blue = frame.copy()
+            yellow = self._bgr_frame.copy()
+            blue = self._bgr_frame.copy()
 
         for i in range(0, 4):
             x = int(self._scale*self.areas[i][0]*self._pitch_w)
             y = 0
             w = int(self._scale*self.areas[i][1]*self._pitch_w) - x
-            h = frame.height
-            cropped_img = hsv.crop(x, y, w, h)
+            h = self._bgr_frame.height
+            cropped_img = self._hsv_frame.crop(x, y, w, h)
 
             if self._colour_order[i] == 'b':
                 thresholds[i] = self._threshold.blueT(cropped_img, i).smooth(grayscale=True)
@@ -84,11 +87,11 @@ class Detection:
 
             entities[i] =  self.__find_entity(thresholds[i], i, cropped_img)
 
-        thresholds[BALL] = self._threshold.ball(hsv).smooth(grayscale=True)
-        entities[BALL] = self.__find_entity(thresholds[BALL], BALL, hsv)
-        experimental_frame = self._get_experimental(hsv)
+        thresholds[BALL] = self._threshold.ball(self._hsv_frame).smooth(grayscale=True)
+        entities[BALL] = self.__find_entity(thresholds[BALL], BALL, self._hsv_frame)
+        experimental_frame = self._get_experimental()
         if self._render_tlayers:
-            thresholds[DOT] = self._threshold.dotT(hsv).smooth(grayscale=True)
+            thresholds[DOT] = self._threshold.dotT(self._hsv_frame).smooth(grayscale=True)
             self._gui.update_layer('threshY', yellow)
             self._gui.update_layer('threshB', blue)
             self._gui.update_layer('threshR', thresholds[BALL])
@@ -105,14 +108,10 @@ class Detection:
 
         return entities
 
-    def _get_experimental(self, img_hsv):
-        thresholds = self._threshold._threshold_values['experimental']
-        blurred_img = img_hsv.gaussianBlur(window=(3,3))
-        imgBin2 = blurred_img.binarize(thresh=tuple(thresholds[1]))
-        imgBin1 = blurred_img.binarize(thresh=tuple(thresholds[0]))
-        imgBin = (imgBin2-imgBin1)
-        img_hsv = imgBin
-        blobs = imgBin.findBlobs(minsize=1000)
+    def _get_experimental(self):
+        frame = self._processor.get_grayscale_frame()
+        binary_frame = frame.binarize(100)
+        blobs = binary_frame.findBlobs(minsize=1000)
         #if not blobs is None:
         #    blobs.draw(color=Color.PUCE, width=2)
         try:
@@ -121,12 +120,11 @@ class Detection:
                 #squares.draw(color=Color.RED, width=2)
                 for square in squares:
                     square.drawMinRect(color=Color.LIME, width=2)
-            img_hsv.addDrawingLayer(imgBin.dl())
-            return img_hsv.applyLayers()
+            #frame.addDrawingLayer(binary_frame.dl())
+            return frame.applyLayers()
         except:
-            return img_hsv.toHSV()
-#80.74.33
-#81.33.96
+            return frame
+
     def __find_entity(self, threshold_img, which, image):
 
         size = None

@@ -14,16 +14,19 @@ import os
 import cv
 import math
 import sys
-from SimpleCV import Image
+import numpy as np
+from SimpleCV import Image, ColorSpace
 from operator import sub
 import util
 
 __author__ = "Ingvaras Merkys"
 
-class Preprocessor:
+class Processor:
 
     def __init__(self, pitch_num, reset_pitch_size, scale):
 
+        self._bgr_frame = None
+        self._gray_frame = None
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
         self._crop_rect = None
         self._corner_point = None
@@ -48,11 +51,35 @@ class Preprocessor:
         util.dump_to_file((self._crop_rect, self._pitch_points), self._path_pitch_size)
 
     def preprocess(self, frame, scale):
-        
         if self.has_pitch_size:
-            frame = frame.crop(*self._crop_rect).scale(scale)
-#.dilate(1)
-        return frame
+            self._bgr_frame = frame.crop(*self._crop_rect).scale(scale)
+            self._hsv_frame = self._bgr_frame.toHSV()
+            self._gray_frame = self.generate_grayscale()
+
+    def generate_grayscale(self):
+        gray_frame = self._bgr_frame.grayscale()
+        alpha = 2.3 # [1.0-3.0]
+        beta = 0    # [0-100]
+        frame_arr = np.clip(alpha * gray_frame.getNumpy()[:,:,0] + beta, 0, 255)
+        return Image(frame_arr, colorSpace = ColorSpace.GRAY)
+
+    def get_grayscale_frame(self):
+        if self._gray_frame is None:
+            return None
+        assert self._gray_frame.getColorSpace() == ColorSpace.GRAY, "Image must be grayscale!"
+        return self._gray_frame
+
+    def get_bgr_frame(self):
+        if self._bgr_frame is None:
+            return None
+        assert self._bgr_frame.getColorSpace() == ColorSpace.BGR, "Image must be BGR!"
+        return self._bgr_frame
+
+    def get_hsv_frame(self):
+        if self._hsv_frame is None:
+            return None
+        assert self._hsv_frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
+        return self._hsv_frame
 
     def set_next_pitch_corner(self, point):
 
