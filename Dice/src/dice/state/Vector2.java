@@ -36,6 +36,14 @@ public class Vector2 {
     	this.Y = position.Y;
     }
     
+    public double dot(Vector2 other) {
+    	return this.X * other.X + this.Y * other.Y;
+    }
+    
+    public double getLength() {
+    	return Math.sqrt(Math.pow(this.X, 2) + Math.pow(this.Y, 2));
+    }
+    
     // get the euclidean distance from the object
     public double getEuclidean(Vector2 position) {
     	if(position == null) return 0;
