@@ -139,16 +139,12 @@ public class WorldState {
         double objectX = position.X;
 
         if (objectX >= ORIGIN && objectX <= FIRST_DIVISION) {
-        	System.out.println("Zone 0");
             object.setCurrentZone(zoneFromNumber(0));
         } else if (objectX <= SECOND_DIVISION) {
-        	System.out.println("Zone 1");
         	object.setCurrentZone(zoneFromNumber(1));
         } else if (objectX <= THIRD_DIVISION) {
-        	System.out.println("Zone 2");
         	object.setCurrentZone(zoneFromNumber(2));
         } else if (objectX <= END) {
-        	System.out.println("Zone 3");
         	object.setCurrentZone(zoneFromNumber(3));
         } else {
             Log.logError("Cannot update object zone - unexpected x coordinate: " + objectX);
