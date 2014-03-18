@@ -62,7 +62,7 @@ class Vision:
         else:
             self.gui = Gui()
         self.threshold = Threshold(pitch_num, reset_thresh)
-        self.threshold_gui = ThresholdGui(self.threshold, self.gui, pitch_num = pitch_num)
+        self.threshold_gui = ThresholdGui(self.threshold, self.processor, self.gui, pitch_num = pitch_num)
         self.detection = Detection(self.gui, self.threshold, self.processor, colour_order, scale, pitch_num,
                                    render_tlayers=render_tlayers)
         self.event_handler = self.gui.get_event_handler()

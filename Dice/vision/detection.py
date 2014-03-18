@@ -109,18 +109,21 @@ class Detection:
         return entities
 
     def _get_experimental(self):
-        frame = self._processor.get_grayscale_frame()
-        binary_frame = frame.binarize(100)
+        binary_frame = self._processor.get_grayscale_frame()
+        if self._processor._gray_bin == 0:
+            frame = self._processor.get_grayscale_frame()
+        else:
+            frame = binary_frame
         blobs = binary_frame.findBlobs(minsize=1000)
-        #if not blobs is None:
-        #    blobs.draw(color=Color.PUCE, width=2)
+        if not blobs is None:
+            blobs.draw(color=Color.PUCE, width=2)
         try:
             squares = blobs.filter([b.isSquare(0.4, 0.25) for b in blobs])
             if squares:
-                #squares.draw(color=Color.RED, width=2)
+                squares.draw(color=Color.RED, width=2)
                 for square in squares:
                     square.drawMinRect(color=Color.LIME, width=2)
-            #frame.addDrawingLayer(binary_frame.dl())
+            frame.addDrawingLayer(binary_frame.dl())
             return frame.applyLayers()
         except:
             return frame
