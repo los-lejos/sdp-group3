@@ -109,7 +109,7 @@ class Detection:
         return entities
 
     def _get_experimental(self):
-        binary_frame = self._processor.get_grayscale_frame()
+        binary_frame = self._processor.get_binary_frame()
         if self._processor._gray_bin == 0:
             frame = self._processor.get_grayscale_frame()
         else:
