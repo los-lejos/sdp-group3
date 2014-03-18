@@ -12,18 +12,26 @@ Preprocesses the frame (cropping and scaling).
 
 import os
 import cv
+import cv2
 import math
 import sys
-from SimpleCV import Image
+import numpy as np
+from SimpleCV import Image, ColorSpace
 from operator import sub
 import util
 
 __author__ = "Ingvaras Merkys"
 
-class Preprocessor:
+class Processor:
 
     def __init__(self, pitch_num, reset_pitch_size, scale):
 
+        self._bgr_frame = None
+        self._gray_frame = None
+        self._gray_bin = 0
+        self._contrast = 100
+        self._brightness = 1000
+        self._gray_thresh = (0, 255)
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
         self._crop_rect = None
         self._corner_point = None
@@ -48,10 +56,63 @@ class Preprocessor:
         util.dump_to_file((self._crop_rect, self._pitch_points), self._path_pitch_size)
 
     def preprocess(self, frame, scale):
-        
         if self.has_pitch_size:
-            frame = frame.crop(*self._crop_rect).scale(scale).dilate(1)
-        return frame
+            self._bgr_frame = frame.crop(*self._crop_rect).scale(scale)
+            self._hsv_frame = self._bgr_frame.toHSV()
+            self._gray_frame = self._norm_green_frame(self._bgr_frame)
+            self._gray_thresh_frame = self._threshold_gray(self._gray_frame)
+
+    def toggle_gray_bin(self, value):
+        self._gray_bin = value
+
+    def _norm_green_frame(self, frame):
+        """RGB normalizes green channel and applies brightness/contrast operations,
+        slightly more efficient than calculating full normalized RGB"""
+        frame_arr = frame.getNumpy().astype(np.float32, copy=False)
+        b = frame_arr[:,:,0]
+        g = frame_arr[:,:,1]
+        r = frame_arr[:,:,2]
+        rgb_sum = b+g+r
+        gray_frame = (g*255.0/rgb_sum)
+        alpha = self._contrast / 100.0     # [0.0-5.0]
+        beta = self._brightness - 1000     # [-500 - 500]
+        frame_arr = np.clip(alpha * gray_frame + beta, 0, 255)
+        return Image(frame_arr, colorSpace = ColorSpace.GRAY)
+
+    def _threshold_gray(self, frame):
+        thresh_min, thresh_max = self._gray_thresh
+        img_bin = frame.threshold(thresh_max)
+        return img_bin.morphClose().dilate(1)
+
+    def get_grayscale_frame(self):
+        if self._gray_frame is None:
+            return None
+        assert self._gray_frame.getColorSpace() == ColorSpace.GRAY, "Image must be grayscale!"
+        return self._gray_frame
+
+    def get_binary_frame(self):
+        return self._gray_thresh_frame
+
+    def get_bgr_frame(self):
+        if self._bgr_frame is None:
+            return None
+        assert self._bgr_frame.getColorSpace() == ColorSpace.BGR, "Image must be BGR!"
+        return self._bgr_frame
+
+    def get_hsv_frame(self):
+        if self._hsv_frame is None:
+            return None
+        assert self._hsv_frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
+        return self._hsv_frame
+
+    def set_gray_thresholds(self, min_value, max_value):
+        self._gray_thresh = (min_value, max_value)
+
+    def set_contrast(self, value):
+        self._contrast = value
+
+    def set_brightness(self, value):
+        self._brightness = value
 
     def set_next_pitch_corner(self, point):
 

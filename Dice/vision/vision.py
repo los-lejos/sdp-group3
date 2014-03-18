@@ -16,7 +16,7 @@ import time
 import socket
 from optparse import OptionParser
 from SimpleCV import Camera, VirtualCamera
-from preprocessor import Preprocessor
+from image_processing import Processor
 from gui import Gui, ThresholdGui
 from threshold import Threshold
 from detection import Detection, Entity
@@ -34,7 +34,6 @@ class Vision:
 
     def __init__(self, pitch_num, stdout, reset_pitch_size, reset_thresh,
                  scale, colour_order, render_tlayers, file_input=None):
-
         self.running = True
         self.connected = False
         self.scale = scale
@@ -57,14 +56,14 @@ class Vision:
             self._logger.log(error_msg)
             print error_msg
 
-        self.preprocessor = Preprocessor(pitch_num, reset_pitch_size, scale)
-        if self.preprocessor.has_pitch_size:
-            self.gui = Gui(self.preprocessor.pitch_size)
+        self.processor = Processor(pitch_num, reset_pitch_size, scale)
+        if self.processor.has_pitch_size:
+            self.gui = Gui(self.processor.pitch_size)
         else:
             self.gui = Gui()
         self.threshold = Threshold(pitch_num, reset_thresh)
-        self.threshold_gui = ThresholdGui(self.threshold, self.gui, pitch_num = pitch_num)
-        self.detection = Detection(self.gui, self.threshold, colour_order, scale, pitch_num,
+        self.threshold_gui = ThresholdGui(self.threshold, self.processor, self.gui, pitch_num = pitch_num)
+        self.detection = Detection(self.gui, self.threshold, self.processor, colour_order, scale, pitch_num,
                                    render_tlayers=render_tlayers)
         self.event_handler = self.gui.get_event_handler()
         self.event_handler.add_listener('q', self.quit)
@@ -75,7 +74,7 @@ class Vision:
                     self.connect()
                 else:
                     self.connected = True
-                if self.preprocessor.has_pitch_size:
+                if self.processor.has_pitch_size:
                     self.output_pitch_size()
                     self.gui.set_show_mouse(False)
                 else:
@@ -104,20 +103,23 @@ class Vision:
         else:
             frame = self.cam.getImageUndistort()
 
-        frame = self.preprocessor.preprocess(frame, self.scale)
-        self.gui.update_layer('raw', frame)
+        self.processor.preprocess(frame, self.scale)
+        if self.processor.has_pitch_size:
+            self.gui.update_layer('raw', self.processor.get_bgr_frame())
+        else:
+            self.gui.update_layer('raw', frame)
 
-        if self.preprocessor.has_pitch_size:
-            entities = self.detection.detect_objects(frame, self.preprocessor.pitch_size)
+        if self.processor.has_pitch_size:
+            entities = self.detection.detect_objects()
             self.output_entities(entities)
 
         self.gui.process_update()
 
     def set_next_pitch_corner(self, where):
 
-        self.preprocessor.set_next_pitch_corner(where)
+        self.processor.set_next_pitch_corner(where)
 
-        if self.preprocessor.has_pitch_size:
+        if self.processor.has_pitch_size:
             self.output_pitch_size()
             self.gui.set_show_mouse(False)
             self.gui.update_layer('corner', None)
@@ -125,12 +127,12 @@ class Vision:
             self.gui.draw_crosshair(where, 'corner')
 
     def output_pitch_size(self):
-        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.preprocessor.pitch_points_string))
+        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.processor.pitch_points_string))
         
 
     def output_entities(self, entities):
 
-        if not self.connected or not self.preprocessor.has_pitch_size:
+        if not self.connected or not self.processor.has_pitch_size:
             return
 
         self.send('{0} '.format(ENTITY_BIT))
