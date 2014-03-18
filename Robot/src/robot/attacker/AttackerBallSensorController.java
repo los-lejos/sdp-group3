@@ -5,8 +5,8 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 
 public class AttackerBallSensorController extends BallSensorController {
-	private static final int BALL_SENSOR_NEARBY_CUTOFF = 13;
-	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 10;
+	private static final int BALL_SENSOR_NEARBY_CUTOFF = 15;
+	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 9;
 	
 	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
 	
