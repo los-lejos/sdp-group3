@@ -62,6 +62,8 @@ class Detection:
         self._pitch_w, self._pitch_h = self._processor.pitch_size
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
+        experimental_frame, square_coords = self._get_experimental()
+        square_coords = sorted(square_coords, key=lambda x: x[0])
         # robots left to right, entities[4] is ball
         entities = [None, None, None, None, None]
         thresholds = [None, None, None, None, None, None]
@@ -89,7 +91,7 @@ class Detection:
 
         thresholds[BALL] = self._threshold.ball(self._hsv_frame).smooth(grayscale=True)
         entities[BALL] = self.__find_entity(thresholds[BALL], BALL, self._hsv_frame)
-        experimental_frame = self._get_experimental()
+
         if self._render_tlayers:
             thresholds[DOT] = self._threshold.dotT(self._hsv_frame).smooth(grayscale=True)
             self._gui.update_layer('threshY', yellow)
@@ -110,23 +112,25 @@ class Detection:
 
     def _get_experimental(self):
         binary_frame = self._processor.get_binary_frame()
+        square_coords = []
         if self._processor._gray_bin == 0:
             frame = self._processor.get_grayscale_frame()
         else:
             frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=1000)
+        blobs = binary_frame.findBlobs(minsize=1000, appx_level=5)
         if not blobs is None:
             blobs.draw(color=Color.PUCE, width=2)
         try:
-            squares = blobs.filter([b.isSquare(0.4, 0.25) for b in blobs])
+            squares = blobs.filter([b.isSquare(0.4, 0.1) for b in blobs])
             if squares:
                 squares.draw(color=Color.RED, width=2)
                 for square in squares:
                     square.drawMinRect(color=Color.LIME, width=2)
+                    square_coords.append((square.minRectX(), square.minRectY()))
             frame.addDrawingLayer(binary_frame.dl())
-            return frame.applyLayers()
+            return (frame.applyLayers(), square_coords)
         except:
-            return frame
+            return (frame, square_coords)
 
     def __find_entity(self, threshold_img, which, image):
 
