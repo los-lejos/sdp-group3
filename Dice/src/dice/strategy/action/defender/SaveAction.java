@@ -33,6 +33,13 @@ public class SaveAction extends StrategyAction {
 		GameObject ball = state.getBall();
 		GameObject target = this.getTargetObject(state);
 
-		return RobotInstruction.createLateralMove(ball.getPos().Y - target.getPos().Y);
+		double movementAmount;
+		if (state.getSide() == WorldState.Side.LEFT) {
+			movementAmount = ball.getPos().Y - target.getPos().Y;
+		} else {
+			movementAmount = target.getPos().Y - ball.getPos().Y;
+		}
+		
+		return RobotInstruction.createLateralMove(movementAmount);
 	}
 }
