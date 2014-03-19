@@ -266,6 +266,7 @@ class ThresholdGui:
         if self.current_entity == 'experimental':
             self._processor.set_gray_thresholds(all_values[0][1], all_values[0][2])
             self._processor.toggle_gray_bin(cv.GetTrackbarPos('GRAY-BINARY', self.window))
+            self.threshold.update_values(self.current_entity, all_values)
         else:
             self.threshold.update_values(self.current_entity, all_values)
 
