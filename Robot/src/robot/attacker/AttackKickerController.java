@@ -8,10 +8,10 @@ public class AttackKickerController extends KickerController {
 
 	private final NXTMotor motor;
 
-	private final int DELAY_OPEN = 130;
-	private final int DELAY_CLOSE = 180;
-	private final int DELAY_KICK = 180;
-	private final int DELAY_KICK_CLOSE = 35;
+	private final int DELAY_OPEN = 110;
+	private final int DELAY_CLOSE = 200;
+	private final int DELAY_KICK = 140;
+	private final int DELAY_KICK_CLOSE = 40;
 	
 	private final int DEFAULT_POWER = 100;
 	private final int GRAB_POWER = 50;
@@ -52,6 +52,7 @@ public class AttackKickerController extends KickerController {
 		Thread.sleep(DELAY_KICK_CLOSE);
 
 		motor.stop();
+		Thread.sleep(600);
 	}
 	
 	@Override
