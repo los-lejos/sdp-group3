@@ -112,6 +112,9 @@ class Detection:
         entity.set_dot(points[dot_i])
         center = entity.get_frame_coords()
         angle = math.atan2(points[dot_i][1] - center[1], points[dot_i][0] - center[0]) + math.pi
+        a = math.cos(angle)
+        b = math.sin(angle)
+        angle = math.atan2(b, a)
         entity.set_angle(angle)
         return entity
 
