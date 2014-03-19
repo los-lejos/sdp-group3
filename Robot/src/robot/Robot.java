@@ -23,7 +23,7 @@ import shared.RobotInstructions;
 public class Robot {
 	
 	private static final int LIGHT_SENSOR_CUTOFF = 40;
-	private static final int KICKER_RESET_DELAY = 5000; // 5 seconds
+	private static final int KICKER_RESET_DELAY = 10000; // 10 seconds
 
 	private final LightSensor LEFT_LIGHT_SENSOR;
 	private final LightSensor RIGHT_LIGHT_SENSOR;
@@ -118,7 +118,6 @@ public class Robot {
 			}
 			// Periodically reset kicker to open
 			else if (this.kickerResetElapsed() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
-				System.out.println("Kicker resetting.");
 				prevKickerResetTime = System.currentTimeMillis();
 				this.kicker.open();
 			}

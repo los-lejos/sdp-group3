@@ -75,17 +75,19 @@ public final class StratMaths {
 	}
 	
 	public static double getRotationTreshold(Vector2 obj, Vector2 target) {
-		double dist = obj.getEuclidean(target);
+		//double dist = obj.getEuclidean(target);
 		
-		double threshold = dist * (Math.PI / 1000.0);
+		//double threshold = dist * (Math.PI / 1000.0);
 		
-		if(threshold > ROTATION_THRESH_MAX) {
-			threshold = ROTATION_THRESH_MAX;
-		} else if(threshold < ROTATION_THRESH_MIN) {
-			threshold = ROTATION_THRESH_MIN;
-		}
+		//if(threshold > ROTATION_THRESH_MAX) {
+		//	threshold = ROTATION_THRESH_MAX;
+		//} else if(threshold < ROTATION_THRESH_MIN) {
+		//	threshold = ROTATION_THRESH_MIN;
+		//}
 		
-		return threshold;
+		//return threshold;
+		
+		return ROTATION_THRESH_MIN;
 	}
 
 	
