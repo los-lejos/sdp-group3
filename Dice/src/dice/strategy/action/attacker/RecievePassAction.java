@@ -40,8 +40,7 @@ public class RecievePassAction extends StrategyAction {
 		}
 
 		return state.getObjectWithBall() == state.getOurDefender() ||
-			ball.getCurrentZone() == PitchZone.OUR_DEFEND_ZONE ||
-			ballHeadingTowardsRobot;
+			ball.getCurrentZone() == PitchZone.OUR_DEFEND_ZONE;
 	}
 
 	@Override

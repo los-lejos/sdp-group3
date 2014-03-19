@@ -43,6 +43,7 @@ public class WorldState {
     // <--------580-------->
     private static final double ORIGIN = 0;
     private static final double WIDTH = 580;
+    private static final double HEIGHT = 320;
     
     // calibration of the divisions
     private static final double FIRST_ADJUSTMENT = -20;
@@ -254,7 +255,7 @@ public class WorldState {
 
     // pitch cell centers
     public Vector2 getCellCenter(PitchZone zone) {
-        double y = WIDTH / 2.0;
+        double y = HEIGHT / 2.0;
         double x;
 
         if (ourSide == Side.LEFT) {

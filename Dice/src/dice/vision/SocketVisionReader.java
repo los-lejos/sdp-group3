@@ -196,7 +196,7 @@ public class SocketVisionReader {
 	private static double visionAngleToDiceAngle(double angle) {
 		// In vision, the angle is relative to +X
 		// In dice, it's relative to +Y
-		
+
 		double result = (angle + Math.PI / 2);
 		if (result > Math.PI) {
 			result = -1 * (Math.PI * 2 - result);

@@ -1,5 +1,6 @@
 package dice.strategy.action.shared;
 
+import dice.Log;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
@@ -10,6 +11,8 @@ import dice.strategy.StrategyAction;
 
 public class AdjustSpeedAction extends StrategyAction {
 	
+	private long lastExecution = 0;
+	
 	private byte currentSpeedPercentage = 100;
 
 	public AdjustSpeedAction(RobotType targetRobot) {
@@ -18,12 +21,16 @@ public class AdjustSpeedAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
+		if(System.currentTimeMillis() - lastExecution < 3000) {
+			return false;
+		}
+
 		GameObject robot = getTargetObject(state);
 		Vector2 robotPos = robot.getPos();
 		Line top = state.getTopLine();
 		Line bottom = state.getBottomLine();
 		
-		if(robotPos == null || top == null || bottom == null) { return false; }
+		if(robotPos == null || top == null || bottom == null) { Log.logInfo("no data for speed"); return false; }
 		
 		double topYDist = Math.abs(robotPos.Y - top.getYValue(robotPos.X));
 		double bottomYDist = Math.abs(robotPos.Y - bottom.getYValue(robotPos.X));
@@ -51,6 +58,7 @@ public class AdjustSpeedAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		lastExecution = System.currentTimeMillis();
 		return RobotInstruction.createSetSpeed(this.currentSpeedPercentage);
 	}
 }

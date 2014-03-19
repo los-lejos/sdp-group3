@@ -38,15 +38,27 @@ public class BlockAction extends StrategyAction {
 		Vector2 robotPos = robot.getPos();
 		Vector2 zoneCenter = state.getCellCenter(robot.getCurrentZone());
 
-		// Try to navigate towards the center of the zone while blocking the ball
-		Vector2 vertical = new Vector2(zoneCenter.X, robotPos.Y - 1);
+		// Try to navigate towards the center of the zone while blocking the ball, avoiding
+		// facing the wall so that we don't get stuck trying to catch the ball
+		//Vector2 vertical = zoneCenter;
+		Vector2 vertical;
+		if(robotPos.Y < zoneCenter.Y) {
+			vertical = new Vector2(robotPos.X, robotPos.Y + 1);
+		} else {
+			vertical = new Vector2(robotPos.X, robotPos.Y - 1);
+		}
+		
 		double heading = robot.getRotationRelativeTo(vertical);
 		boolean shouldRotate = Math.abs(heading) > StratMaths.getRotationTreshold(robotPos, vertical);
-		
+
 		if(shouldRotate) {
 			return RobotInstruction.createRotate(heading);
 		} else {
 			double distToBallY = robotPos.Y - ball.getPos().Y;
+			if(robotPos.Y < zoneCenter.Y) {
+				distToBallY = -distToBallY;
+			}
+			
 			return RobotInstruction.createMove(distToBallY);
 		}
 	}
