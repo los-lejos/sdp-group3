@@ -25,7 +25,6 @@ WIDTH = 580
 HEIGHT = 320
 RADIUS = 23.0
 DOT_RADIUS = 8
-DOT_OFFSET = 12
 
 class Detection:
 
@@ -96,6 +95,7 @@ class Detection:
         if entity.get_blob() is None:
             return entity
         corner_points = entity.get_blob().minRect()
+        DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3)
         points = []
         points.append(self.get_middle_point(corner_points[0], corner_points[1]))
         points.append(self.get_middle_point(corner_points[1], corner_points[3]))
