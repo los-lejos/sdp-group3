@@ -260,16 +260,16 @@ public class WorldState {
         if (ourSide == Side.LEFT) {
             switch (zone) {
                 case OUR_DEFEND_ZONE:
-                    x = ORIGIN + FIRST_DIVISION / 2.0;
+                    x = (ORIGIN + FIRST_DIVISION) / 2.0;
                     break;
                 case OPP_ATTACK_ZONE:
-                    x = FIRST_DIVISION + SECOND_DIVISION / 2.0;
+                    x = (FIRST_DIVISION + SECOND_DIVISION) / 2.0;
                     break;
                 case OUR_ATTACK_ZONE:
-                    x = SECOND_DIVISION + THIRD_DIVISION / 2.0;
+                    x = (SECOND_DIVISION + THIRD_DIVISION) / 2.0;
                     break;
                 case OPP_DEFEND_ZONE:
-                    x = THIRD_DIVISION + END / 2.0;
+                    x = (THIRD_DIVISION + END) / 2.0;
                     break;
                 default:
                     x = -1;
@@ -277,16 +277,16 @@ public class WorldState {
         } else {
             switch (zone) {
                 case OPP_DEFEND_ZONE:
-                    x = ORIGIN + FIRST_DIVISION / 2.0;
+                    x = (ORIGIN + FIRST_DIVISION) / 2.0;
                     break;
                 case OUR_ATTACK_ZONE:
-                    x = FIRST_DIVISION + SECOND_DIVISION / 2.0;
+                    x = (FIRST_DIVISION + SECOND_DIVISION) / 2.0;
                     break;
                 case OPP_ATTACK_ZONE:
-                    x = SECOND_DIVISION + THIRD_DIVISION / 2.0;
+                    x = (SECOND_DIVISION + THIRD_DIVISION) / 2.0;
                     break;
                 case OUR_DEFEND_ZONE:
-                    x = THIRD_DIVISION + END / 2.0;
+                    x = (THIRD_DIVISION + END) / 2.0;
                     break;
                 default:
                     x = -1;
