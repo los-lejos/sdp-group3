@@ -55,7 +55,7 @@ public class SaveAction extends StrategyAction {
 		
 		// Don't move past the post while blocking since you want to be in front
 		// of the goal at all times
-		if(distFromPost < movementAmount) {
+		if(Math.abs(distFromPost) < Math.abs(movementAmount)) {
 			movementAmount = distFromPost;
 		}
 
