@@ -15,8 +15,6 @@ import dice.strategy.StratMaths;
  */
 
 public class ToBallAction extends StrategyAction {
-	
-	private boolean shouldRotate;
 
 	public ToBallAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -44,14 +42,22 @@ public class ToBallAction extends StrategyAction {
 		Vector2 ballPos = ball.getPos();
 		GameObject robot = getTargetObject(state);
 		Vector2 robotPos = robot.getPos();
-		
-		double relativeRotation = robot.getRotationRelativeTo(ball);
-		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
 
-		if(this.shouldRotate) {
+		double relativeRotation = robot.getRotationRelativeTo(ball);
+		boolean shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
+
+		// If ball is close and we want to rotate, back up
+		double dist = robotPos.getEuclidean(ballPos);
+		if(dist < StratMaths.BALL_DISTANCE_THRESH && shouldRotate) {
+			return RobotInstruction.createMove(-StratMaths.BALL_DISTANCE_THRESH / 2.0);
+		}
+		// Rotate towards ball
+		else if(shouldRotate) {
 			return RobotInstruction.createRotate(relativeRotation);
-		} else {
-			return RobotInstruction.createMove(robotPos.getEuclidean(ballPos));
+		}
+		// Move forward towards ball
+		else {
+			return RobotInstruction.createMove(dist);
 		}
 	}
 }

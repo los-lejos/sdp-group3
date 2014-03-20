@@ -19,8 +19,14 @@ public final class StratMaths {
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 8;
-	private static final double ROTATION_THRESH_MIN = Math.PI / 20;
-	private static final double ROTATION_THRESH_MAX = Math.PI / 10;
+	
+	public static final double BALL_DISTANCE_THRESH = 60;
+	private static final double ROTATION_THRESH_MIN = Math.PI / 40;
+	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
+	
+	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
+	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
+	
 	public static final double SHOOT_AIM_ADJUSTMENT = 3;
 	
 	public static boolean canReach(Vector2 v, GameObject o) {
@@ -75,22 +81,19 @@ public final class StratMaths {
 	}
 	
 	public static double getRotationTreshold(Vector2 obj, Vector2 target) {
-		//double dist = obj.getEuclidean(target);
+		double dist = obj.getEuclidean(target);
 		
-		//double threshold = dist * (Math.PI / 1000.0);
+		double threshold = dist * ROTATION_THRESH_PER_DIST;
+
+		if(threshold > ROTATION_THRESH_MAX) {
+			threshold = ROTATION_THRESH_MAX;
+		} else if(threshold < ROTATION_THRESH_MIN) {
+			threshold = ROTATION_THRESH_MIN;
+		}
 		
-		//if(threshold > ROTATION_THRESH_MAX) {
-		//	threshold = ROTATION_THRESH_MAX;
-		//} else if(threshold < ROTATION_THRESH_MIN) {
-		//	threshold = ROTATION_THRESH_MIN;
-		//}
-		
-		//return threshold;
-		
-		return ROTATION_THRESH_MIN;
+		return threshold;
 	}
 
-	
 	/*
 	 * if we are left of the goal shoot at the left post, if we are to the right of the goal then
 	 * shoot at the right of the goal. otherwise shoot at the goal center
