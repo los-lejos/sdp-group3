@@ -11,7 +11,6 @@ public class AttackKickerController extends KickerController {
 	private final int DELAY_OPEN = 120;
 	private final int DELAY_CLOSE = 200;
 	private final int DELAY_KICK = 140;
-	private final int DELAY_KICK_CLOSE = 20;
 	
 	private final int DEFAULT_POWER = 100;
 	private final int GRAB_POWER = 50;
@@ -48,8 +47,8 @@ public class AttackKickerController extends KickerController {
 		Thread.sleep(600);
 
 		// Return to default position
-		motor.forward();
-		Thread.sleep(DELAY_KICK_CLOSE);
+		this.performGrab();
+		this.performOpen();
 
 		motor.stop();
 		Thread.sleep(600);
