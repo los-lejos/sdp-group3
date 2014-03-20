@@ -7,50 +7,25 @@ import lejos.nxt.NXTMotor;
 public class DefenceTester {
 
 	public static void main(String[] args) throws Exception {
-/*		
-		while (Button.readButtons() == 0) {
-			ballE.moveLat(50);
-			Thread.sleep(1500);
-			ballE.moveLat(-50);
-			Thread.sleep(1500);
-		}
-		
-		ballE.stopLat();
-		
-		
-		ballE.move(500);
-		System.out.println("Forward - Done");
-		
-		ballE.moveLat(80);
-		Thread.sleep(5000);
-		ballE.stopLat();
-		System.out.println("Left - Done");
-		
-		ballE.move(-500);
-		System.out.println("Backward - Done");
-		
-		ballE.moveLat(-80);
-		Thread.sleep(5000);
-		ballE.stopLat();
-		System.out.println("Right - Done");
-		System.out.println("Done :) ");
-*/
 		NXTMotor lateralMotor = new NXTMotor(MotorPort.C);
-		lateralMotor.setPower(100);
-		lateralMotor.forward();
-
-		System.out.println("Doing something");
+		boolean dir = false;
 		
-//		while (Button.readButtons() == 0) {
-//			System.out.println(ballSense.getDistance());
-//			if (ballSense.getDistance() <= 10){
-//				ballE.getKicker().grab();
-//				
-//				ballE.getKicker().kick();
-//			}
-//		}
-		
-		Button.waitForAnyPress();
+		while(Button.ESCAPE.isUp()) {
+			if(Button.ENTER.isDown()) {
+				System.out.println("Move");
+				lateralMotor.setPower(100);
+				if(dir) {
+					lateralMotor.forward();
+				} else {
+					lateralMotor.backward();
+				}
+				
+				dir = !dir;
+				
+				Thread.sleep(1000);
+				lateralMotor.stop();
+			}
+		}
 	}
 
 }
