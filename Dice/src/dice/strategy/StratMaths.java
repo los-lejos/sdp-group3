@@ -23,8 +23,8 @@ public final class StratMaths {
 	private static final int MIN_SPEED = 30;
 	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
 	
-	public static final double ROTATION_SHOOT_THRESH = Math.PI / 8;
-	private static final double ROTATION_THRESH_MIN = Math.PI / 40;
+	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
+	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
 	
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
