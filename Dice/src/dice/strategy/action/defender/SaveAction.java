@@ -1,8 +1,12 @@
 package dice.strategy.action.defender;
 
+import dice.Log;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
+import dice.state.BoundedLine;
 import dice.state.GameObject;
+import dice.state.Line;
+import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StrategyAction;
 
@@ -28,31 +32,38 @@ public class SaveAction extends StrategyAction {
 		
 		GameObject ball = state.getBall();
 		GameObject target = this.getTargetObject(state);
+		Vector2 ballVel = state.getBall().getVelocity();
+		
+		this.movementAmount = Double.MAX_VALUE;
+		
+		// Try to move to the projected point of the ball
+		BoundedLine goalLine = (BoundedLine)state.getOurGoal().getLine();
+		Line ballTraj = ball.getLineFromVelocity();
 
-		double distFromPost;
-		if (state.getSide() == WorldState.Side.LEFT) {
-			movementAmount = ball.getPos().Y - target.getPos().Y;
-			
-			if(movementAmount > 0) {
-				distFromPost = state.getOurGoal().getTopPost().Y - target.getPos().Y;
-			} else {
-				distFromPost = state.getOurGoal().getBottomPost().Y - target.getPos().Y;
-			}
-		} else {
-			movementAmount = target.getPos().Y - ball.getPos().Y;
-			
-			if(movementAmount < 0) {
-				distFromPost = target.getPos().Y - state.getOurGoal().getTopPost().Y;
-			} else {
-				distFromPost = target.getPos().Y - state.getOurGoal().getBottomPost().Y;
+		if(ballVel != null && ballTraj != null && ballVel.getLength() > 4) {
+			Vector2 intersection = ballTraj.intersect(goalLine);
+			if(intersection != null && goalLine.withinBounds(intersection)) {
+				double yAtRobot = ballTraj.getYValue(target.getPos().X);
+				Log.logInfo("Intersect: " + yAtRobot);
+				if (state.getSide() == WorldState.Side.LEFT) {
+					movementAmount = yAtRobot - target.getPos().Y;
+				} else {
+					movementAmount = target.getPos().Y - yAtRobot;
+				}
 			}
 		}
 		
+		if(this.movementAmount == Double.MAX_VALUE) {
+			if (state.getSide() == WorldState.Side.LEFT) {
+				movementAmount = ball.getPos().Y - target.getPos().Y;
+			} else {
+				movementAmount = target.getPos().Y - ball.getPos().Y;
+			}
+		}
+
 		// Don't move past the post while blocking since you want to be in front
 		// of the goal at all times
-		if(Math.abs(distFromPost) < Math.abs(movementAmount)) {
-			movementAmount = distFromPost;
-		}
+		movementAmount = clampMovementDist(movementAmount, state);
 
 		// Don't want to issue lateral movement commands if we're not going to be moving a decent amount
 		return Math.abs(movementAmount) > 8;
@@ -66,5 +77,32 @@ public class SaveAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.createLateralMove(movementAmount);
+	}
+	
+	private double clampMovementDist(double movementAmount, WorldState state) {
+		GameObject target = this.getTargetObject(state);
+		double distFromPost;
+		
+		if (state.getSide() == WorldState.Side.LEFT) {
+			if(movementAmount > 0) {
+				distFromPost = state.getOurGoal().getTopPost().Y - target.getPos().Y;
+			} else {
+				distFromPost = state.getOurGoal().getBottomPost().Y - target.getPos().Y;
+			}
+		} else {
+			if(movementAmount < 0) {
+				distFromPost = target.getPos().Y - state.getOurGoal().getTopPost().Y;
+			} else {
+				distFromPost = target.getPos().Y - state.getOurGoal().getBottomPost().Y;
+			}
+		}
+		
+		// Don't move past the post while blocking since you want to be in front
+		// of the goal at all times
+		if(Math.abs(distFromPost) < Math.abs(movementAmount)) {
+			movementAmount = distFromPost;
+		}
+		
+		return movementAmount;
 	}
 }

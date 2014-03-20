@@ -3,11 +3,17 @@ package dice.state;
 public class Goal {
 	private Vector2 topPost;
 	private Vector2 bottomPost;
+	private Line line;
 
 	public Goal(Vector2 top, Vector2 bottom) {
 		topPost = top;
 		bottomPost = bottom;
+		line = new BoundedLine(topPost, bottomPost);
     }
+	
+	public Line getLine() {
+		return line;
+	}
 
     public double getHeight() {
     	return bottomPost.Y - topPost.Y;

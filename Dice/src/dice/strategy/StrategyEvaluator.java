@@ -1,6 +1,5 @@
 package dice.strategy;
 
-import dice.Log;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
@@ -11,7 +10,6 @@ import dice.strategy.action.defender.CorrectionAction;
 import dice.strategy.action.defender.PassAction;
 import dice.strategy.action.defender.SaveAction;
 import dice.strategy.action.shared.ToBallAction;
-import dice.strategy.action.shared.ToZoneCenterAction;
 
 /**
  * Keep track of what both robots are doing
