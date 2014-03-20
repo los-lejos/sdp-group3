@@ -63,10 +63,10 @@ public class RotationCalibration {
 		double angleToTurn = 180;
 		byte byte1 = (byte) (i / 10);
 		byte byte2 = (byte) (i % 10);
-		RobotInstruction instrSet = new RobotInstruction(RobotInstructions.SET_TRACK_WIDTH, byte1, byte2);
+		RobotInstruction instrSet = new RobotInstruction(RobotInstructions.SET_TRACK_WIDTH, byte1, byte2, (byte)0);
 		this.attackerComms.sendInstruction(instrSet);
 		Thread.sleep(1500);                   
-		RobotInstruction instrRot = RobotInstruction.createRotate(angleToTurn);
+		RobotInstruction instrRot = RobotInstruction.createRotate(angleToTurn, (byte)100);
 		this.attackerComms.sendInstruction(instrRot);;
 		Thread.sleep(1500);
 	}

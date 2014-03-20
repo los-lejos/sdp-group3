@@ -55,6 +55,6 @@ public class RecievePassAction extends StrategyAction {
 		
 		double heading = attacker.getRotationRelativeTo(defender);
 		
-		return RobotInstruction.createRotate(heading);
+		return RobotInstruction.createRotate(heading, 80);
 	}
 }

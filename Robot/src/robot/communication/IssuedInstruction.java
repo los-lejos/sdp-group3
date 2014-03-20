@@ -21,14 +21,17 @@ public class IssuedInstruction {
 	public int[] getParameters() {
 		int type = this.getType();
 		int distance;
+		int speed;
 		
 		switch(type) {
 		case RobotInstructions.MOVE:
 			distance = instruction[1];
-			return new int[] { distance };
+			speed = instruction[2];
+			return new int[] { distance, speed };
 		case RobotInstructions.ROTATE:
 			int heading = extractInt(instruction[1], instruction[2]);
-			return new int[] { heading };
+			speed = instruction[3];
+			return new int[] { heading, speed };
 		case RobotInstructions.KICK:
 			return new int[] { };
 		case RobotInstructions.LAT_MOVE:

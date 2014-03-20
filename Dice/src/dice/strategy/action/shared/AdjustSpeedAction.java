@@ -43,7 +43,7 @@ public class AdjustSpeedAction extends StrategyAction {
 		}
 		
 		byte speedPercentage = 100;
-		if(minDist < 30) {
+		if(minDist < 60) {
 			speedPercentage = 30;
 		}
 		
@@ -58,6 +58,7 @@ public class AdjustSpeedAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
+		System.out.println("Adjusting speed to " + this.currentSpeedPercentage);
 		lastExecution = System.currentTimeMillis();
 		return RobotInstruction.createSetSpeed(this.currentSpeedPercentage);
 	}

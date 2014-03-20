@@ -52,14 +52,14 @@ public class BlockAction extends StrategyAction {
 		boolean shouldRotate = Math.abs(heading) > StratMaths.getRotationTreshold(robotPos, vertical);
 
 		if(shouldRotate) {
-			return RobotInstruction.createRotate(heading);
+			return RobotInstruction.createRotate(heading, 100);
 		} else {
 			double distToBallY = robotPos.Y - ball.getPos().Y;
 			if(robotPos.Y < zoneCenter.Y) {
 				distToBallY = -distToBallY;
 			}
 			
-			return RobotInstruction.createMove(distToBallY);
+			return RobotInstruction.createMove(distToBallY, 100);
 		}
 	}
 

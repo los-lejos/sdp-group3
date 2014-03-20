@@ -33,10 +33,10 @@ public class ToZoneCenterAction extends StrategyAction {
 		double angle = robot.getRotationRelativeTo(zoneCenter);
 		
 		if(Math.abs(angle) > StratMaths.getRotationTreshold(robot.getPos(), zoneCenter)) {
-			return RobotInstruction.createRotate(angle);
+			return RobotInstruction.createRotate(angle, 100);
 		} else {
 			double dist = robot.getPos().getEuclidean(zoneCenter);
-			return RobotInstruction.createMove(dist);
+			return RobotInstruction.createMove(dist, 100);
 		}
 	}
 }

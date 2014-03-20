@@ -58,9 +58,9 @@ public class CorrectionAction extends StrategyAction {
 	
 	public RobotInstruction getInstruction(WorldState state) {
 		if(this.shouldRotate) {
-			return RobotInstruction.createRotate(this.dist);
+			return RobotInstruction.createRotate(this.dist, 100);
 		} else {
-			return RobotInstruction.createMove(this.dist);
+			return RobotInstruction.createMove(this.dist, 100);
 		}
 	}
 	

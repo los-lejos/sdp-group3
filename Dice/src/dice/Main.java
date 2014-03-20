@@ -163,7 +163,7 @@ public class Main {
 	}
 	
 	private void execSend(String[] cmd) {
-		if(cmd.length < 5) {
+		if(cmd.length < 6) {
 			Log.logInfo("Not enough parameters specified");
 			return;
 		}
@@ -174,8 +174,10 @@ public class Main {
 			byte instructionType = Byte.parseByte(cmd[2]);
 			byte param1 = Byte.parseByte(cmd[3]);
 			byte param2 = Byte.parseByte(cmd[4]);
+			byte param3 = Byte.parseByte(cmd[5]);
 
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2);
+
+			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3);
 			if(type == RobotType.ATTACKER) {
 				this.attackerComms.sendInstruction(instruction);
 			} else {

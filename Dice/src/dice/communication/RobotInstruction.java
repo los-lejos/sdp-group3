@@ -32,35 +32,48 @@ public class RobotInstruction {
 		return byteBytes;
 	}
 	
-	public static RobotInstruction createMove(double distance) {
-		byte robotDistance = strategyToRobotDistance(distance);
-		return new RobotInstruction(RobotInstructions.MOVE, robotDistance, (byte)0);
+	private static byte boundSpeed(int speedPercent) {
+		if(speedPercent > 100) {
+			speedPercent = 100;
+		} else if(speedPercent < 1) {
+			speedPercent = 1;
+		}
+		
+		return (byte)speedPercent;
 	}
 	
-	public static RobotInstruction createRotate(double angle) {
+	public static RobotInstruction createMove(double distance, int speedPercent) {
+		byte robotDistance = strategyToRobotDistance(distance);
+		byte speed = boundSpeed(speedPercent);
+		return new RobotInstruction(RobotInstructions.MOVE, robotDistance, speed, (byte)0);
+	}
+	
+	public static RobotInstruction createRotate(double angle, int speedPercent) {
 		angle = Math.toDegrees(angle);
 		byte[] angleBytes = angleToBytes(angle);
-		return new RobotInstruction(RobotInstructions.ROTATE, angleBytes[0], angleBytes[1]);
+		byte speed = boundSpeed(speedPercent);
+		return new RobotInstruction(RobotInstructions.ROTATE, angleBytes[0], angleBytes[1], speed);
 	}
 	
 	public static RobotInstruction createLateralMove(double distance) {
 		byte robotDistance = strategyToRobotDistance(distance);
-		return new RobotInstruction(RobotInstructions.LAT_MOVE, robotDistance, (byte) 0);
+		return new RobotInstruction(RobotInstructions.LAT_MOVE, robotDistance, (byte) 0, (byte)0);
 	}
 	
 	public static RobotInstruction createKick() {
-		return new RobotInstruction(RobotInstructions.KICK, (byte)0, (byte)0);
+		return new RobotInstruction(RobotInstructions.KICK, (byte)0, (byte)0, (byte)0);
 	}
 	
 	public static RobotInstruction createSetSpeed(byte speedPercentage) {
-		return new RobotInstruction(RobotInstructions.SET_TRAVEL_SPEED, speedPercentage, (byte)0);
+		return new RobotInstruction(RobotInstructions.SET_TRAVEL_SPEED, speedPercentage, (byte)0, (byte)0);
 	}
 	
-	public RobotInstruction(byte instructionType, byte param1, byte param2) {
+	public RobotInstruction(byte instructionType, byte param1, byte param2, byte param3) {
 		this.instruction = new byte[RobotInstructions.LENGTH];
 		this.instruction[0] = instructionType;
 		this.instruction[1] = param1;
 		this.instruction[2] = param2;
+		this.instruction[3] = param3;
 	}
 
 	public byte[] getInstruction() {

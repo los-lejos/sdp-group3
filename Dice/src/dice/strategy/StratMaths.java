@@ -17,10 +17,13 @@ public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
+
+	public static final double BALL_DISTANCE_THRESH = 60;
+	private static final double MAX_SPEED_DIST = 200;
+	private static final int MIN_SPEED = 30;
+	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 8;
-	
-	public static final double BALL_DISTANCE_THRESH = 60;
 	private static final double ROTATION_THRESH_MIN = Math.PI / 40;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
 	
@@ -92,6 +95,19 @@ public final class StratMaths {
 		}
 		
 		return threshold;
+	}
+	
+	public static int speedForDist(double dist) {
+		if(dist >= MAX_SPEED_DIST) {
+			return 100;
+		}
+		
+		if(dist <= BALL_DISTANCE_THRESH) {
+			return MIN_SPEED;
+		}
+		
+		double slowingDist = dist - BALL_DISTANCE_THRESH;
+		return (int) (100 - slowingDist * SPEED_PER_DIST);
 	}
 
 	/*

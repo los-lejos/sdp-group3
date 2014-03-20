@@ -153,16 +153,20 @@ public class Robot {
 		
 		if(instructionParams == null) { return; }
 		
-		int heading, distance;
+		int heading, distance, speed;
 
 		try {
 			switch(instructionType) {
 			case RobotInstructions.MOVE:
 				distance = instructionParams[0];
+				speed = instructionParams[1];
+				this.movementController.setTravelSpeed(speed);
 				this.movementController.move(distance);
 				break;
 			case RobotInstructions.ROTATE:
 				heading = instructionParams[0];
+				speed = instructionParams[1];
+				this.movementController.setRotateSpeed(speed);
 				this.movementController.rotate(heading);
 				break;
 			case RobotInstructions.KICK:

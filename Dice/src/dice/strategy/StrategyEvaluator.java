@@ -9,7 +9,6 @@ import dice.strategy.action.attacker.ShootAction;
 import dice.strategy.action.defender.CorrectionAction;
 import dice.strategy.action.defender.PassAction;
 import dice.strategy.action.defender.SaveAction;
-import dice.strategy.action.shared.AdjustSpeedAction;
 import dice.strategy.action.shared.ToBallAction;
 import dice.strategy.action.shared.ToZoneCenterAction;
 
@@ -58,7 +57,6 @@ public class StrategyEvaluator {
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 			attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
-			attacker.addAction(new AdjustSpeedAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		}
@@ -73,7 +71,6 @@ public class StrategyEvaluator {
 			defender.addAction(new CorrectionAction(RobotType.DEFENDER));
 			defender.addAction(new PassAction(RobotType.DEFENDER));
 			defender.addAction(new ToZoneCenterAction(RobotType.DEFENDER));
-			attacker.addAction(new AdjustSpeedAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		}

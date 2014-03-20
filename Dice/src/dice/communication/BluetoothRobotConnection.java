@@ -20,10 +20,10 @@ import lejos.pc.comm.NXTInfo;
 
 public class BluetoothRobotConnection extends Thread {
 
-	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3};
-	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2};
+	private static final byte[] HANDSHAKE_MESSAGE = {-1, -2, -3, -4};
+	private static final byte[] HANDSHAKE_RESPONSE = {-4, -3, -2, -1};
 	
-	private static final byte[] EXIT_MESSAGE = {-1, -1, -1};
+	private static final byte[] EXIT_MESSAGE = {-1, -1, -1, -1};
 
 	private RobotEventListener eventListener;
 	

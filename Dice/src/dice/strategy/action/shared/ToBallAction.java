@@ -49,15 +49,16 @@ public class ToBallAction extends StrategyAction {
 		// If ball is close and we want to rotate, back up
 		double dist = robotPos.getEuclidean(ballPos);
 		if(dist < StratMaths.BALL_DISTANCE_THRESH && shouldRotate) {
-			return RobotInstruction.createMove(-StratMaths.BALL_DISTANCE_THRESH / 2.0);
+			return RobotInstruction.createMove(-StratMaths.BALL_DISTANCE_THRESH / 2.0, 100);
 		}
 		// Rotate towards ball
 		else if(shouldRotate) {
-			return RobotInstruction.createRotate(relativeRotation);
+			return RobotInstruction.createRotate(relativeRotation, 40);
 		}
 		// Move forward towards ball
 		else {
-			return RobotInstruction.createMove(dist);
+			int speed = StratMaths.speedForDist(dist);
+			return RobotInstruction.createMove(dist, speed);
 		}
 	}
 }
