@@ -49,5 +49,12 @@ public class BoundedLine extends Line {
     public Vector2 getEndPoint() {
     	return endPoint;
     }
+    
+    // this function should only be called on a vertical line
+    public double getXValueFromVertical() {
+    	assert startPoint.X == endPoint.X;
+    	
+    	return startPoint.X;
+    }
 
 }

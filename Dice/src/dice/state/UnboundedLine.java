@@ -20,5 +20,12 @@ public class UnboundedLine extends Line {
     public double getYIntersect() {
         return point.Y - gradient * point.X;
     }
+    
+    // this should only be called on a vertical line
+    public double getXValueFromVertical() {
+    	assert Double.isInfinite(gradient);
+    	
+    	return point.X;
+    }
 
 }
