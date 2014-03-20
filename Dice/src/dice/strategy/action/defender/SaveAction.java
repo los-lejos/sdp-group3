@@ -12,6 +12,8 @@ import dice.strategy.StrategyAction;
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
 public class SaveAction extends StrategyAction {
+	
+	double movementAmount = 0;
 
 	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
@@ -20,20 +22,13 @@ public class SaveAction extends StrategyAction {
 	@Override
 	public boolean isPossible(WorldState state) {
 		// This is only possible if the ball has been seen
-		return state.getBall().getPos() != null;
-	}
-
-	@Override
-	protected int calculateUtility(WorldState state) {
-		return 0;
-	}
-
-	@Override
-	public RobotInstruction getInstruction(WorldState state) {
+		if(state.getBall().getPos() == null) {
+			return false;
+		}
+		
 		GameObject ball = state.getBall();
 		GameObject target = this.getTargetObject(state);
 
-		double movementAmount;
 		double distFromPost;
 		if (state.getSide() == WorldState.Side.LEFT) {
 			movementAmount = ball.getPos().Y - target.getPos().Y;
@@ -59,6 +54,17 @@ public class SaveAction extends StrategyAction {
 			movementAmount = distFromPost;
 		}
 
+		// Don't want to issue lateral movement commands if we're not going to be moving a decent amount
+		return Math.abs(movementAmount) > 8;
+	}
+
+	@Override
+	protected int calculateUtility(WorldState state) {
+		return 0;
+	}
+
+	@Override
+	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.createLateralMove(movementAmount);
 	}
 }
