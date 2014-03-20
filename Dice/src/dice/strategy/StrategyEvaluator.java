@@ -1,5 +1,6 @@
 package dice.strategy;
 
+import dice.Log;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
@@ -56,7 +57,6 @@ public class StrategyEvaluator {
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
-			attacker.addAction(new ToZoneCenterAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		}
@@ -70,7 +70,6 @@ public class StrategyEvaluator {
 			defender.addAction(new SaveAction(RobotType.DEFENDER));
 			defender.addAction(new CorrectionAction(RobotType.DEFENDER));
 			defender.addAction(new PassAction(RobotType.DEFENDER));
-			defender.addAction(new ToZoneCenterAction(RobotType.DEFENDER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		}
