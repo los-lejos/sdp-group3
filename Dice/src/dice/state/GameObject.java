@@ -204,17 +204,47 @@ public class GameObject {
         if (positions.size() > 2) {
 	        Path result = new Path();
 	
+	        // add the current position to the path
 	        result.addPoint(getPos());
 	        
+	        // draw a line from the last position to the current positions
 	        Line line = new BoundedLine(getPos(), positions.get(positions.size() - 2));
 	
+	        // get the gradient of that line
 	        double gradient = line.getGradient();
+	        
+	        // draw a new line that is an extension of that previous line
 	        Line newLine = new UnboundedLine(getPos(), gradient);
-	        Vector2 intersectionPoint = newLine.intersect(world.getTopLine());
-	        if (intersectionPoint == null)
-	            intersectionPoint = newLine.intersect(world.getBottomLine());
-	        result.addPoint(intersectionPoint);
-	
+	        
+	        // check whether the ball will bounce off the top or bottom
+	        if (getVelocity().Y != 0) {
+		        Vector2 intersectionPoint;
+		        boolean bouncedOffTop;
+		        // if the object is moving towards either wall
+		        if (getVelocity().Y > 0) {
+			        intersectionPoint = newLine.intersect(world.getTopLine());
+			        bouncedOffTop = true;
+		        } else {
+		            intersectionPoint = newLine.intersect(world.getBottomLine());
+		            bouncedOffTop = false;
+		        }
+		        
+		        // project the bounced line
+		        result.addPoint(intersectionPoint);
+		        newLine = new UnboundedLine(intersectionPoint, gradient *= -1);
+		        
+		        // and get the intersection of the other side
+		        if (bouncedOffTop) {
+		        	intersectionPoint = newLine.intersect(world.getTopLine());
+		        } else {
+		        	intersectionPoint = newLine.intersect(world.getBottomLine());
+		        }
+		        
+		        // add the point after the bounce
+		        result.addPoint(intersectionPoint);
+
+	        }
+
 	        return result;
         } else {
         	System.err.println("Not enough points in object history: " + positions.size());
