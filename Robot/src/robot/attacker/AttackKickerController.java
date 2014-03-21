@@ -8,9 +8,9 @@ public class AttackKickerController extends KickerController {
 
 	private final NXTMotor motor;
 
-	private final int DELAY_OPEN = 120;
-	private final int DELAY_CLOSE = 200;
-	private final int DELAY_KICK = 140;
+	private final int DELAY_OPEN = 240;
+	private final int DELAY_CLOSE = 400;
+	private final int DELAY_KICK = 400;
 	
 	private final int DEFAULT_POWER = 100;
 	private final int GRAB_POWER = 50;

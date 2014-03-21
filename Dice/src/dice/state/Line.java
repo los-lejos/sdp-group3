@@ -19,9 +19,7 @@ public abstract class Line {
         	
         	// handle vertical lines
         	if (Double.isInfinite(this.getGradient())) {
-        		System.out.println("Is infinite.");
         		double x = this.getXValueFromVertical();
-        		System.out.println(x);
         		double y = otherLine.getYValue(x);
         		return new Vector2(x,y);
         	} else if (Double.isInfinite(otherLine.getGradient())) {

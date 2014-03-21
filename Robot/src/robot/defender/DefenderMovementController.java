@@ -37,8 +37,12 @@ public class DefenderMovementController extends MovementController {
 
 	@Override
 	public void stop() {
-		stopLat();
 		pilot.stop();
+	}
+	
+	@Override
+	public void stopLateral() {
+		strafeThread.stop();
 	}
 
 	@Override
@@ -59,10 +63,6 @@ public class DefenderMovementController extends MovementController {
 	@Override
 	protected void performMoveLat(int distance) {
 		strafeThread.move(distance);
-	}
-	
-	private void stopLat() {
-		strafeThread.stop();
 	}
 
 	@Override

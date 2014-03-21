@@ -42,6 +42,10 @@ public class BoundedLine extends Line {
         return false;
     }
     
+    //public boolean withinYBounds(Vector2 point) {
+    	
+    //}
+    
     public Vector2 getStartPoint() {
     	return startPoint;
     }

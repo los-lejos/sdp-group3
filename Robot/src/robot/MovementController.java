@@ -23,6 +23,7 @@ public abstract class MovementController {
     // Abstract public interface methods
     public abstract boolean isMoving();
     public abstract void stop();
+    public abstract void stopLateral();
     
     public abstract void setTrackWidth(int width);
     public abstract void setTravelSpeed(int speedPercentage);
@@ -87,7 +88,13 @@ public abstract class MovementController {
 		public void run() {		
 			while(currentState != State.EXIT) {
 				if(newState != State.READY) {
+					// Always stop regular movement
 					stop();
+					
+					// Only stop lateral if we want to move laterally in a different direction
+					if(newState == State.MOVE_LAT) {
+						stopLateral();
+					}
 
 					currentState = newState;
 					newState = State.READY;

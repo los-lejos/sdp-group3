@@ -1,6 +1,5 @@
 package dice.strategy.action.defender;
 
-import dice.Log;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.BoundedLine;
@@ -38,13 +37,12 @@ public class SaveAction extends StrategyAction {
 		
 		// Try to move to the projected point of the ball
 		BoundedLine goalLine = (BoundedLine)state.getOurGoal().getLine();
-		Line ballTraj = ball.getLineFromVelocity();
+		Line ballTraj = ball.getTrajectory();
 
 		if(ballVel != null && ballTraj != null && ballVel.getLength() > 4) {
 			Vector2 intersection = ballTraj.intersect(goalLine);
 			if(intersection != null && goalLine.withinBounds(intersection)) {
 				double yAtRobot = ballTraj.getYValue(target.getPos().X);
-				Log.logInfo("Intersect: " + yAtRobot);
 				if (state.getSide() == WorldState.Side.LEFT) {
 					movementAmount = yAtRobot - target.getPos().Y;
 				} else {
@@ -79,18 +77,18 @@ public class SaveAction extends StrategyAction {
 		return RobotInstruction.createLateralMove(movementAmount);
 	}
 	
-	private double clampMovementDist(double movementAmount, WorldState state) {
+	private double clampMovementDist(double dist, WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		double distFromPost;
 		
 		if (state.getSide() == WorldState.Side.LEFT) {
-			if(movementAmount > 0) {
+			if(dist > 0) {
 				distFromPost = state.getOurGoal().getTopPost().Y - target.getPos().Y;
 			} else {
 				distFromPost = state.getOurGoal().getBottomPost().Y - target.getPos().Y;
 			}
 		} else {
-			if(movementAmount < 0) {
+			if(dist < 0) {
 				distFromPost = target.getPos().Y - state.getOurGoal().getTopPost().Y;
 			} else {
 				distFromPost = target.getPos().Y - state.getOurGoal().getBottomPost().Y;
@@ -99,10 +97,10 @@ public class SaveAction extends StrategyAction {
 		
 		// Don't move past the post while blocking since you want to be in front
 		// of the goal at all times
-		if(Math.abs(distFromPost) < Math.abs(movementAmount)) {
-			movementAmount = distFromPost;
+		if(Math.abs(distFromPost) < Math.abs(dist)) {
+			dist = distFromPost;
 		}
 		
-		return movementAmount;
+		return dist;
 	}
 }

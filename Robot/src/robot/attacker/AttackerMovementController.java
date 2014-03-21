@@ -37,6 +37,10 @@ public class AttackerMovementController extends MovementController {
 	public void stop() {
 		pilot.stop();
 	}
+	
+	@Override
+	public void stopLateral() {
+	}
 
 	@Override
 	public boolean isMoving() {

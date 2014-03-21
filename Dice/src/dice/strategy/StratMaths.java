@@ -18,6 +18,7 @@ public final class StratMaths {
 	// tolerance if we want to find out if something's 'in the area of' a position
 	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
 
+	public static final double BALL_SPEED_THRESH = 8;
 	public static final double BALL_DISTANCE_THRESH = 60;
 	private static final double MAX_SPEED_DIST = 200;
 	private static final int MIN_SPEED = 30;

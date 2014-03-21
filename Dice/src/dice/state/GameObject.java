@@ -1,12 +1,11 @@
 package dice.state;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.ListIterator;
-import java.lang.Math;
 
 import dice.Log;
 import dice.state.WorldState.PitchZone;
@@ -44,7 +43,8 @@ public class GameObject {
 	}
 	
 	private class LimitedList<E> extends LinkedList<E> {
-	    private final int limit;
+		private static final long serialVersionUID = 1L;
+		private final int limit;
 	    public LimitedList(int limit) {
 	        this.limit = limit;
 	    }
@@ -58,7 +58,7 @@ public class GameObject {
 	
     private static double POSITION_VALIDATION_THRESH = 3;
     private static int MAX_ROTATIONS = 30;
-    private static int MAX_POSITIONS = 100;
+    private static int MAX_POSITIONS = 20;
     private static int ROTATION_VALIDATION_COUNT = 1;
     private static int ROTATION_VALIDATION_MIN_COUNT = 15;
     private static double ROTATION_VALIDATION_THRESH = Math.PI / 3;
@@ -251,7 +251,7 @@ public class GameObject {
         	return null;
         }
     }
-
+    
     // returns null if the object hasn't travelled for more than
     // two frames
     public Vector2 getVelocity() {
@@ -319,20 +319,23 @@ public class GameObject {
     	}
     }
     
-    // simply projects a straight line f
-    public Line getLineFromVelocity() {
-    	if (getPos() != null && getVelocity() != null) {
-	    	double dx = getPos().X + getVelocity().X;
-	    	double dy = getPos().Y + getVelocity().Y;
-	    	
-	    	// create the next predicted position
-	    	Vector2 newPos = new Vector2(dy, dx);
-	    	
-	    	BoundedLine speedVector = new BoundedLine(getPos(), newPos);
-	    	return new UnboundedLine(getPos(), speedVector.getGradient());
-    	} else {
-    		return null;
+    public Line getTrajectory() {
+    	double sumX = 0, sumY = 0;
+    	double sumX2 = 0, sumXY = 0;
+    	
+    	for(Vector2 pos : this.positions) {
+    		sumX += pos.X;
+    		sumY += pos.Y;
+    		sumX2 += pos.X * pos.X;
+    		sumXY += pos.X * pos.Y;
     	}
+    	
+    	double meanY = sumY / (double)MAX_POSITIONS;
+    	double meanX = sumX / (double)MAX_POSITIONS;
+    	
+    	double slope = (sumXY - sumX * meanY) / (sumX2 - sumX * meanX);
+    	//double intercept = meanY - slope * meanX;
+    	return new UnboundedLine(this.getPos(), slope);
     }
     
     // get the speed as a scalar

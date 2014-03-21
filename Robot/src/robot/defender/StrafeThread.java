@@ -36,7 +36,7 @@ public class StrafeThread extends Thread {
 	
 	public void move(int distance) {
 		// Calculations based on power being 100
-		this.movementDelay = Math.abs(distance)*13; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
+		this.movementDelay = Math.abs(distance)*14; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
 		
 		if(this.movementDelay > MAX_DELAY) {
 			this.movementDelay = MAX_DELAY;
@@ -61,7 +61,7 @@ public class StrafeThread extends Thread {
 				this.isMoving = false;
 				state = StrafeState.READY;
 			} else if (state == StrafeState.STOP) {
-				//stopMotor();
+				stopMotor();
 				state = StrafeState.READY;
 			}
 			
