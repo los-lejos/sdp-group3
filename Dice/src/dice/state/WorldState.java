@@ -65,6 +65,9 @@ public class WorldState {
     private Line bottomLeft;
     private Line left;
     private Line topLeft;
+    
+    // True if we have calibrated pitch measurements with the vision
+    private boolean pitchCalibrated = false;
 
     private GameObject guySlashGirlWithBall;
 
@@ -81,21 +84,23 @@ public class WorldState {
 		GameObject opponentAttacker = new GameObject();
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
-		
 
 		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
-
-		
-		// REMOVE THIS LATER AFTER TESTING!!!!!!!!
-		result.setObjectWithBall(opponentAttacker);
-
-		
-		
         Vector2 start = new Vector2(0,0);
         Vector2 end = new Vector2(1000,0);
         result.setTop(new BoundedLine(start,end));
 
         return result;
+    }
+    
+    public boolean hasData() {
+    	return
+    		this.getOurAttacker().hasData() &&
+    		this.getOurDefender().hasData() &&
+    		this.getOpponentAttacker().hasData() &&
+    		this.getOpponentDefender().hasData() &&
+    		this.getBall().hasData() &&
+    		this.pitchCalibrated;
     }
 
     public static double convertYValue(double y) {
@@ -209,6 +214,7 @@ public class WorldState {
         Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
         rightGoal = new Goal(goalRightTop, goalRightBottom);
         
+        this.pitchCalibrated = true;
         Log.logInfo("Calibrated pitch.");
     }
 

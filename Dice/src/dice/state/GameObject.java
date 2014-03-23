@@ -175,6 +175,10 @@ public class GameObject {
         else
         	return null;
     }
+    
+    public boolean hasData() {
+    	return this.positions.size() > 0 && this.rotations.size() > 0 && this.currentZone != null;
+    }
 
     // project a path based on the rotation of the object
     // of course, this won't work for the ball. To project

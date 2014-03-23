@@ -157,8 +157,11 @@ public class SocketVisionReader {
                 	this.world.updateState(firstPos, d1, secondPos, d2, thirdPos, d3, fourthPos, d4, ballPos);
                 }
 
-                
-                this.strategy.onNewState(this.world);
+                if(this.world.hasData()) {
+                	this.strategy.onNewState(this.world);
+                } else {
+                	Log.logInfo("Data unavailable - cancelling strategy evaluation");
+                }
 			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
                 List<Vector2> points = new ArrayList<Vector2>();
 

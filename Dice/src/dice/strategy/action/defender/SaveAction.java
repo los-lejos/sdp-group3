@@ -5,7 +5,6 @@ import dice.communication.RobotType;
 import dice.state.BoundedLine;
 import dice.state.GameObject;
 import dice.state.Line;
-import dice.state.Path;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StratMaths;
@@ -31,39 +30,32 @@ public class SaveAction extends StrategyAction {
 		final Vector2 ballVel = ball.getVelocity();
 		final Vector2 ballPos = ball.getPos();
 		final Vector2 targetPos = target.getPos();
-		
-		// This is only possible if the ball has been seen
-		if (ballPos == null || targetPos == null) {
-			return false;
-		}
 
 		this.movementAmount = Double.MAX_VALUE;
 
 		// if the opponent attacker has the ball, do line projection using
 		// the orientation of that robot
-		if (state.getObjectWithBall().equals(state.getOpponentAttacker())) {
+		if (state.getObjectWithBall() == state.getOpponentAttacker()) {
 			// project a line from the rotation of the robot
 			GameObject opponentAttacker = state.getOpponentAttacker();
 			Line line = opponentAttacker.projectLine();
-
-			if (opponentAttacker != null && target != null && line != null) {
-				// Move towards wherever the opponent attacker is looking
-				double yAtRobot = line.getYValue(targetPos.X);
-				movementAmount = getMovementAmount(targetPos.Y, yAtRobot,
-						state.getSide());
-			}
-		} else {
-			// Try to move to the projected point of the ball, if it is moving
+			
+			// Move towards wherever the opponent attacker is looking
+			double yAtRobot = line.getYValue(targetPos.X);
+			System.out.println(yAtRobot);
+			movementAmount = getMovementAmount(targetPos.Y, yAtRobot,
+					state.getSide());
+		}
+		// Try to move to the projected point of the ball, if it is moving
+		else if (ballVel.getLength() > StratMaths.BALL_SPEED_THRESH) {
 			BoundedLine goalLine = (BoundedLine) state.getOurGoal().getLine();
 			Line ballTraj = ball.getTrajectory();
-
-			if (ballVel != null && ballTraj != null && ballVel.getLength() > StratMaths.BALL_SPEED_THRESH) {
-				Vector2 intersection = ballTraj.intersect(goalLine);
-				if (intersection != null && goalLine.withinBounds(intersection)) {
-					double yAtRobot = ballTraj.getYValue(targetPos.X);
-					movementAmount = getMovementAmount(targetPos.Y,
-							yAtRobot, state.getSide());
-				}
+			Vector2 intersection = ballTraj.intersect(goalLine);
+			
+			if (intersection != null && goalLine.withinBounds(intersection)) {
+				double yAtRobot = ballTraj.getYValue(targetPos.X);
+				movementAmount = getMovementAmount(targetPos.Y,
+						yAtRobot, state.getSide());
 			}
 		}
 

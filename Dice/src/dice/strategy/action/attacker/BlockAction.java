@@ -23,7 +23,7 @@ public class BlockAction extends StrategyAction {
 	@Override
 	public boolean isPossible(WorldState state) {
 		boolean ballInDifferentZone = state.getBall().getCurrentZone() != this.getTargetObject(state).getCurrentZone();
-		return state.getBall().getPos() != null && ballInDifferentZone;
+		return ballInDifferentZone;
 	}
 
 	@Override

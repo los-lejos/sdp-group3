@@ -1,6 +1,5 @@
 package dice.strategy.action.shared;
 
-import dice.Log;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
@@ -29,9 +28,7 @@ public class AdjustSpeedAction extends StrategyAction {
 		Vector2 robotPos = robot.getPos();
 		Line top = state.getTopLine();
 		Line bottom = state.getBottomLine();
-		
-		if(robotPos == null || top == null || bottom == null) { Log.logInfo("no data for speed"); return false; }
-		
+
 		double topYDist = Math.abs(robotPos.Y - top.getYValue(robotPos.X));
 		double bottomYDist = Math.abs(robotPos.Y - bottom.getYValue(robotPos.X));
 		

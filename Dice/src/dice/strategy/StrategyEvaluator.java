@@ -90,11 +90,11 @@ public class StrategyEvaluator {
 		
 		// Don't want to check the actions if we don't have data about our attacker
 		// so check if the position is not null
-		if(state.getOurAttacker().getPos() != null && attacker.actionsAvailable()) {
+		if(attacker.actionsAvailable()) {
 			bestAttackerAction = attacker.getBestAction(state);
 		}
 		
-		if(state.getOurDefender().getPos() != null && defender.actionsAvailable()) {
+		if(defender.actionsAvailable()) {
 			bestDefenderAction = defender.getBestAction(state);
 		}
 
