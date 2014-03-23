@@ -12,6 +12,7 @@ import dice.Log;
 import dice.state.BoundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.AngleMaths;
 import dice.strategy.StrategyEvaluator;
 
 /**
@@ -123,14 +124,14 @@ public class SocketVisionReader {
 				double y1 = Double.parseDouble(tokens[2]); // y
                 Vector2 firstPos = new Vector2(x1, y1);
 				double d1 = Double.parseDouble(tokens[3]); // angle
-				d1 = visionAngleToDiceAngle(d1);
+				d1 = AngleMaths.visionToWorldState(d1);
 
                 // left attacker
 				double x2 = Double.parseDouble(tokens[4]); // x
 				double y2 = Double.parseDouble(tokens[5]); // y
                 Vector2 secondPos = new Vector2(x2, y2);
 				double d2 = Double.parseDouble(tokens[6]); // angle
-				d2 = visionAngleToDiceAngle(d2);
+				d2 = AngleMaths.visionToWorldState(d2);
 
 
 				// right attacker
@@ -138,14 +139,14 @@ public class SocketVisionReader {
 				double y3 = Double.parseDouble(tokens[8]); // y
                 Vector2 thirdPos = new Vector2(x3, y3);
 				double d3 = Double.parseDouble(tokens[9]); // angle
-				d3 = visionAngleToDiceAngle(d3);
+				d3 = AngleMaths.visionToWorldState(d3);
 
                 // rightmost defender
 				double x4 = Double.parseDouble(tokens[10]); // x
 				double y4 = Double.parseDouble(tokens[11]); // y
                 Vector2 fourthPos = new Vector2(x4, y4);
 				double d4 = Double.parseDouble(tokens[12]); // angle
-				d4 = visionAngleToDiceAngle(d4);
+				d4 = AngleMaths.visionToWorldState(d4);
 
 				// ball
 				double xBall = Double.parseDouble(tokens[13]); // x
@@ -193,15 +194,4 @@ public class SocketVisionReader {
 		}
 	}
 	
-	private static double visionAngleToDiceAngle(double angle) {
-		// In vision, the angle is relative to +X
-		// In dice, it's relative to +Y
-
-		double result = (angle + Math.PI / 2);
-		if (result > Math.PI) {
-			result = -1 * (Math.PI * 2 - result);
-		}
-		
-		return result;
-	}
 }

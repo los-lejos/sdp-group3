@@ -81,9 +81,16 @@ public class WorldState {
 		GameObject opponentAttacker = new GameObject();
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
+		
 
 		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
 
+		
+		// REMOVE THIS LATER AFTER TESTING!!!!!!!!
+		result.setObjectWithBall(opponentAttacker);
+
+		
+		
         Vector2 start = new Vector2(0,0);
         Vector2 end = new Vector2(1000,0);
         result.setTop(new BoundedLine(start,end));

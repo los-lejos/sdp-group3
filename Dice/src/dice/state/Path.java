@@ -25,10 +25,7 @@ public class Path {
         points.add(point);
     }
 
-    // returns null if X coordinate is not reached
-    // in path
-    public Vector2 getCoordinateAtX(double x)
-                            throws InvalidPathException {
+    public Vector2 getCoordinateAtX(double x) {
         Vector2 result = null;
 
         if (points.size() > 1) {
@@ -55,8 +52,6 @@ public class Path {
                     return new Vector2(x, y);
                 }
             }
-        } else {
-            throw new InvalidPathException("Not enough points in path.");
         }
 
         return result;

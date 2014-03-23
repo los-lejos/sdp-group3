@@ -185,7 +185,7 @@ public class GameObject {
 	
 	        result.addPoint(getPos());
 	
-	        double gradient = Math.atan(getRotation() - Math.PI / 2.0);
+	        double gradient = Math.tan(getRotation() - Math.PI / 2.0);
 	        Line newLine = new UnboundedLine(getPos(), gradient);
 	        Vector2 intersectionPoint = newLine.intersect(world.getTopLine());
 	        if (intersectionPoint == null)
@@ -197,9 +197,25 @@ public class GameObject {
         	return null;
         }
     }
+    
+    // a simplified projection function
+    public Line projectLine() {
+    	if (getPos() != null) {
+    		// convert rotation suitable for calculating gradient
+    		double rotation = AngleMaths.yToX(getRotation());
+    		
+	        double gradient = Math.tan(rotation);
+	    	return new UnboundedLine(getPos(), gradient);
+    	} else {
+    		return null;
+    	}
+    }
 
-    // project a path based on the velocity of the object
-    // (used for the ball, since the ball has no "rotation")
+    /** project a path based on the velocity of the object
+     * (used for the ball, since the ball has no "rotation")
+     * @param world: The world in which the object resides. This is
+     * used to get the world edges to calculate reflections
+     */
     public Path projectPathFromVelocity(WorldState world) {
         if (positions.size() > 2) {
 	        Path result = new Path();
@@ -216,7 +232,9 @@ public class GameObject {
 	        // draw a new line that is an extension of that previous line
 	        Line newLine = new UnboundedLine(getPos(), gradient);
 	        
-	        // check whether the ball will bounce off the top or bottom
+	        // check whether the ball will bounce off the top or bottom.
+	        // We need to do this because an unbounded line extends infinitely
+	        // in either direction. We want the "relevant" part of that line
 	        if (getVelocity().Y != 0) {
 		        Vector2 intersectionPoint;
 		        boolean bouncedOffTop;
