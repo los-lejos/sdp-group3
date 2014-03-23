@@ -35,9 +35,19 @@ public class StrafeThread extends Thread {
 	}
 	
 	public void move(int distance) {
-		// Calculations based on power being 100
-		this.movementDelay = Math.abs(distance)*14; // the speed of the robot (having considered its current weight) is 48cm/sec at 100% power
-		
+		// Calculations based on power being 100,
+		// can find a function that fits this, but this is simpler to adjust
+		int absDist = Math.abs(distance);
+		if(absDist <= 5) {
+			this.movementDelay = (long) (absDist*28);
+		} else if(absDist <= 15) {
+			this.movementDelay = (long) (absDist*21);
+		} else if(absDist <= 20) {
+			this.movementDelay = (long) (absDist*18);
+		} else {
+			this.movementDelay = (long) (absDist*16.5);
+		}
+
 		if(this.movementDelay > MAX_DELAY) {
 			this.movementDelay = MAX_DELAY;
 		}
