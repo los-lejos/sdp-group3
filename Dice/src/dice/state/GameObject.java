@@ -63,6 +63,8 @@ public class GameObject {
     private static int ROTATION_VALIDATION_MIN_COUNT = 15;
     private static double ROTATION_VALIDATION_THRESH = Math.PI / 3;
     private static long ROTATION_TIMEOUT = 3000; // in ms
+    
+
 
     private LimitedList<Vector2> positions;
     private LimitedList<Rotation> rotations; // the rotation of the object relative
@@ -175,6 +177,7 @@ public class GameObject {
         else
         	return null;
     }
+    
     
     public boolean hasData() {
     	return this.positions.size() > 0 && this.rotations.size() > 0 && this.currentZone != null;
@@ -300,10 +303,10 @@ public class GameObject {
         return getRotationRelativeTo(obj.getPos());
     }
 
-    /** get the rotation relative to another position in radians
+    /** get the rotation relative to another position
      * 
-     * @param otherPos
-     * @return 
+     * @param The object we are checking the rotation against
+     * @return the rotation in radians
      */
     public double getRotationRelativeTo(Vector2 otherPos) {
         Vector2 myPos = this.getPos();
@@ -397,4 +400,5 @@ public class GameObject {
     	    	
     	return result;
     }
+    
 }
