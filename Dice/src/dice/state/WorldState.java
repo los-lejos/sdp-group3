@@ -319,54 +319,57 @@ public class WorldState {
     /** Used to decide who owns the ball, if anyone.
      * @return The game object who owns the ball or null; if nobody does
      */
-    public void  updateBallOwnership() {
-    	GameObject result = null;
+    public void updateBallOwnership() {
+    	// only do this if the ball is visible. This way, the owner cannot
+    	// be changed unless the ball is visible
+    	if (!ball.isVisible())
+    		return;
     	
-    	// only do this if the ball has been seen
-    	if (ball.hasData()) {
-	    	PitchZone ballZone = ball.getCurrentZone();
-	    	
-	    	// get the object who owns the zone the ball is in
-	    	GameObject nearestObject = null;
-	    	if(ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) {
-	    		nearestObject = getOpponentAttacker(); 
-	    	} else if (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) {
-	    		nearestObject = getOpponentDefender();
-	    	} else if (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE) {
-	    		nearestObject = getOurAttacker();
-	    	} else if (ballZone == WorldState.PitchZone.OUR_DEFEND_ZONE) {
-	    		nearestObject = getOurDefender();
-	    	}
-	    	
-	    	// as long as the ball is in _a_ zone, check if the ball
-	    	// is in front of the object
-	    	if (nearestObject.hasData()) {
-	    		// get a point just in front of the object
-	    		Vector2 objectPos = nearestObject.getPos();
-	    		Vector2 ballPos = ball.getPos();
-	    		double objectRotation = nearestObject.getRotation();
-	    		
-	    		double xOffset = Math.sin(objectRotation) * OWNERSHIP_DISTANCE;
-	    		double yOffset = Math.cos(objectRotation) * OWNERSHIP_DISTANCE;
-	    		double ownershipXPos = objectPos.X + xOffset;
-	    		double ownershipYPos = objectPos.Y + yOffset;
-	    		
-	    		// calculate the distance from the ball to the centre
-	    		// of the ownership point (check that it is in the
-	    		// ownership area)
-	    		double xDiffSquared = Math.pow(ballPos.X - ownershipXPos, 2);
-	    		double yDiffSquared = Math.pow(ballPos.Y - ownershipYPos,2);
-	    		double distance = Math.sqrt(xDiffSquared + yDiffSquared);
-	    		
-	    		// if the ball is within the ownership area, then
-	    		// the object of the current zone is the owner
-	    		if (distance <= OWNERSHIP_THRESH) {
-	    			result = nearestObject;
-	    		}
-	    	}
+		GameObject result = null;
+		
+    	PitchZone ballZone = ball.getCurrentZone();
+    	
+    	// get the object who owns the zone the ball is in
+    	GameObject nearestObject = null;
+    	if(ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) {
+    		nearestObject = getOpponentAttacker(); 
+    	} else if (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) {
+    		nearestObject = getOpponentDefender();
+    	} else if (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE) {
+    		nearestObject = getOurAttacker();
+    	} else if (ballZone == WorldState.PitchZone.OUR_DEFEND_ZONE) {
+    		nearestObject = getOurDefender();
+    	}
+    	
+    	// as long as the ball is in _a_ zone, check if the ball
+    	// is in front of the object
+    	if (nearestObject != null && nearestObject.hasData()) {
+    		// get a point just in front of the object
+    		Vector2 objectPos = nearestObject.getPos();
+    		Vector2 ballPos = ball.getPos();
+    		double objectRotation = nearestObject.getRotation();
+    		
+    		double xOffset = Math.sin(objectRotation) * OWNERSHIP_DISTANCE;
+    		double yOffset = Math.cos(objectRotation) * OWNERSHIP_DISTANCE;
+    		double ownershipXPos = objectPos.X + xOffset;
+    		double ownershipYPos = objectPos.Y + yOffset;
+    		
+    		// calculate the distance from the ball to the centre
+    		// of the ownership point (check that it is in the
+    		// ownership area)
+    		double xDiffSquared = Math.pow(ballPos.X - ownershipXPos, 2);
+    		double yDiffSquared = Math.pow(ballPos.Y - ownershipYPos,2);
+    		double distance = Math.sqrt(xDiffSquared + yDiffSquared);
+    		
+    		// if the ball is within the ownership area, then
+    		// the object of the current zone is the owner
+    		if (distance <= OWNERSHIP_THRESH) {
+    			result = nearestObject;
+    		}
     	}
     	
     	setObjectWithBall(result);
+    	
     }
     
     

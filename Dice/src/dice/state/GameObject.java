@@ -65,18 +65,21 @@ public class GameObject {
     private static long ROTATION_TIMEOUT = 3000; // in ms
     
 
-
     private LimitedList<Vector2> positions;
     private LimitedList<Rotation> rotations; // the rotation of the object relative
                           // to 'up' (on the camera)
 
     private PitchZone currentZone;
+    
+    private boolean isVisible;
 
     public GameObject() {
     	positions = new LimitedList<Vector2>(MAX_POSITIONS);
     	rotations = new LimitedList<Rotation>(MAX_ROTATIONS);
 
-    	this.rotations.add(new Rotation(0.0));
+    	rotations.add(new Rotation(0.0));
+    	
+    	isVisible = false;
     }
     
     public PitchZone getCurrentZone() {
@@ -108,16 +111,27 @@ public class GameObject {
     	}
     }
 
+    /** Has the side effect of setting the visibility of the object
+     * (the object is rendered invisible if its last position was
+     * invalid).
+     */
     public void setPos(double xPos, double yPos, double t) {
     	Vector2 position = new Vector2(xPos, yPos);
-        
-        if (validatePos(position))
-            positions.add(position);
+    	
+    	setPos(position);
     }
 
+    /** Has the side effect of setting the visibility of the object
+     * (the object is rendered invisible if its last position was
+     * invalid).
+     */
     public void setPos(Vector2 position) {
-        if (validatePos(position))
+        if (validatePos(position)) {
             positions.add(position);
+        	isVisible = true;
+        } else {
+        	isVisible = false;
+        }
     }
 
     // decides if a new position for the object is viable given its
@@ -399,6 +413,10 @@ public class GameObject {
     	}
     	    	
     	return result;
+    }
+    
+    public boolean isVisible() {
+    	return isVisible;
     }
     
 }
