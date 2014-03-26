@@ -2,19 +2,19 @@ package robot;
 
 import java.util.Arrays;
 
-import lejos.nxt.UltrasonicSensor;
+import lejos.nxt.ColorSensor;
 
 public abstract class BallSensorController {
 		
 	private static final int BALL_SENSOR_READING_MAX = 20;
 	
-	private final UltrasonicSensor ballSensor;
+	private final ColorSensor ballSensor;
 
 	private int[] readings = new int[BALL_SENSOR_READING_MAX];
 	private int readingIndex = 0;
 	private int numberOfReadings = 0;
 	
-	public BallSensorController(UltrasonicSensor ballSensor) {
+	public BallSensorController(ColorSensor ballSensor) {
 		this.ballSensor = ballSensor;
 	}
 	
@@ -22,7 +22,7 @@ public abstract class BallSensorController {
 	public abstract boolean isBallNearby();
 	
 	public void takeReading() {
-		readings[readingIndex] = ballSensor.getDistance();
+		readings[readingIndex] = ballSensor.getColor().getRed();
 		readingIndex++;
 		
 		if(readingIndex >= BALL_SENSOR_READING_MAX) {
@@ -61,5 +61,13 @@ public abstract class BallSensorController {
 		Arrays.sort(sortedReadings);
 		
 		return sortedReadings[0];
+	}
+	
+	protected int getRecentReadingMax() {
+		// Could be a lot more clever with this, but if it doesn't impact perf this is simple
+		int[] sortedReadings = Arrays.copyOf(this.readings, BALL_SENSOR_READING_MAX);
+		Arrays.sort(sortedReadings);
+		
+		return sortedReadings[sortedReadings.length - 1];
 	}
 }

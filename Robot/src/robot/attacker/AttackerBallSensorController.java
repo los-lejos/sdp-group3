@@ -1,14 +1,14 @@
 package robot.attacker;
 
-import robot.BallSensorController;
+import lejos.nxt.ColorSensor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.UltrasonicSensor;
+import robot.BallSensorController;
 
 public class AttackerBallSensorController extends BallSensorController {
 	private static final int BALL_SENSOR_NEARBY_CUTOFF = 15;
 	private static final int BALL_SENSOR_IN_KICKER_CUTOFF = 9;
 	
-	private static final UltrasonicSensor ballSensor = new UltrasonicSensor(SensorPort.S2);
+	private static final ColorSensor ballSensor = new ColorSensor(SensorPort.S2);
 	
 	public AttackerBallSensorController() {
 		super(ballSensor);
@@ -29,6 +29,7 @@ public class AttackerBallSensorController extends BallSensorController {
 	@Override
 	public boolean isBallNearby() {
 		// Use immediate value of the sensor, since we don't want to miss the ball by accident
-		return ballSensor.getDistance() <= BALL_SENSOR_NEARBY_CUTOFF;
+		//return ballSensor.getDistance() <= BALL_SENSOR_NEARBY_CUTOFF;
+		return false;
 	}
 }
