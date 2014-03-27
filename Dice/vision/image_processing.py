@@ -82,7 +82,7 @@ class Processor:
     def _threshold_gray(self, frame):
         thresh_min, thresh_max = self._gray_thresh
         img_bin = frame.threshold(thresh_max)
-        return img_bin.morphClose().dilate(1)
+        return img_bin.morphClose().dilate(2)
 
     def get_grayscale_frame(self):
         if self._gray_frame is None:
