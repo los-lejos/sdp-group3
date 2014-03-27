@@ -12,7 +12,7 @@ public class DefenderBallSensorController extends BallSensorController {
 	private static final ColorSensor ballSensor = new ColorSensor(SensorPort.S2);
 	
 	public DefenderBallSensorController() {
-		super(null);
+		super(ballSensor);
 	}
 	
 	@Override
