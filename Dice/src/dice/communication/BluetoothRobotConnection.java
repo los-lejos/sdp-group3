@@ -35,13 +35,13 @@ public class BluetoothRobotConnection extends Thread {
 	
 	private InputStream in;
 	private OutputStream out;
-	
+
 	public BluetoothRobotConnection(RobotType robot, RobotEventListener eventListener) {
 		this.setDaemon(true);
 		
 		this.eventListener = eventListener;
 		
-		if(robot == RobotType.ATTACKER) {
+		if(robot == RobotType.DEFENDER) {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
 		} else {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Ball-E", "0016530A5C22");
@@ -58,7 +58,7 @@ public class BluetoothRobotConnection extends Thread {
     	// Send to the robot
     	this.send(instruction.getInstruction());
 	}
-	
+
 	private void send(byte[] msg) throws IOException {
 		out.write(msg);
 		out.flush();

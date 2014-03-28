@@ -130,6 +130,7 @@ public class Robot {
 			e.printStackTrace();
 		}
 		
+		this.movementController.cleanup();
 		this.kicker.cleanup();
 		
 		System.out.println("Exiting");

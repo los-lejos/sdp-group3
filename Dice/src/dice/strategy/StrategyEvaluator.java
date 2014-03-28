@@ -27,6 +27,9 @@ import dice.strategy.action.shared.ToBallAction;
 public class StrategyEvaluator {
 
 	private RobotStrategyState attacker, defender;
+	
+	private static final int UPDATE_DELAY = 800;
+	private long lastUpdateTime;
 
 	public StrategyEvaluator() {
 		attacker = new RobotStrategyState(RobotType.ATTACKER);
@@ -37,8 +40,8 @@ public class StrategyEvaluator {
 	}
 
 	private void setAttackerActions() {
-		attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
-		attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		//attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
+		//attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 		attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
 		attacker.addAction(new BlockAction(RobotType.ATTACKER));
@@ -63,6 +66,14 @@ public class StrategyEvaluator {
 	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
+		// Don't update very often. The issue with doing that is that the robot
+		// will get flooded with messages and this will result in erratic movement
+		if(System.currentTimeMillis() - lastUpdateTime < UPDATE_DELAY) {
+			return;
+		}
+		
+		lastUpdateTime = System.currentTimeMillis();
+		
 		StrategyAction bestAttackerAction = null;
 		StrategyAction bestDefenderAction = null;
 		

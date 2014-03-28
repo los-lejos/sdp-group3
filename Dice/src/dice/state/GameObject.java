@@ -194,7 +194,7 @@ public class GameObject {
     
     
     public boolean hasData() {
-    	return this.positions.size() > 0 && this.rotations.size() > 0 && this.currentZone != null;
+    	return this.positions.size() > 1 && this.rotations.size() > 0 && this.currentZone != null;
     }
 
     // project a path based on the rotation of the object

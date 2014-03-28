@@ -21,9 +21,8 @@ public class DefenceTester {
 		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
 		
 		pilot.rotate(180, true);
-		Thread.sleep(150);
-		pilot.travel(50);
-		
+		pilot.rotate(90, true);
+
 		while(pilot.isMoving()) {
 			System.out.println("aa");
 		}
