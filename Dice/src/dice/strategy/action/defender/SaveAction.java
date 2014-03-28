@@ -9,6 +9,7 @@ import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
+import dice.strategy.action.shared.CorrectionAction;
 
 /*
  * @author Sam Stern
@@ -16,11 +17,15 @@ import dice.strategy.StrategyAction;
  * extrapolate position of ball and see if its possible to block ball. if yes, then move to block the ball
  */
 public class SaveAction extends StrategyAction {
+	
+	private CorrectionAction correction;
 
 	double movementAmount = 0;
 
 	public SaveAction(RobotType targetRobot) {
 		super(targetRobot);
+		
+		this.correction = new CorrectionAction(targetRobot);
 	}
 
 	@Override
