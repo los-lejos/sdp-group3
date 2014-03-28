@@ -103,7 +103,7 @@ class Detection:
 
     def _get_point_value(self, point):
         x, y = point
-        return np.sum(self._bgr_frame.getNumpy()[x-2:x+2,y-2:y+2])
+        return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
 
     def _find_squares(self):
         binary_frame = self._processor.get_binary_frame()
