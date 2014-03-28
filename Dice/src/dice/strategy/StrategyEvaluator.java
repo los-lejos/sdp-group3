@@ -6,9 +6,9 @@ import dice.state.WorldState;
 import dice.strategy.action.attacker.BlockAction;
 import dice.strategy.action.attacker.RecievePassAction;
 import dice.strategy.action.attacker.ShootAction;
-import dice.strategy.action.defender.CorrectionAction;
 import dice.strategy.action.defender.PassAction;
 import dice.strategy.action.defender.SaveAction;
+import dice.strategy.action.shared.CorrectionAction;
 import dice.strategy.action.shared.ToBallAction;
 
 /**
@@ -55,6 +55,7 @@ public class StrategyEvaluator {
 			attacker.addAction(new ShootAction(RobotType.ATTACKER));
 			attacker.addAction(new BlockAction(RobotType.ATTACKER));
 			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
+			attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
 		} else if(this.type == StrategyType.SHOOTOUT) {
 			
 		}

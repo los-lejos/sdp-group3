@@ -45,7 +45,7 @@ public class ToBallAction extends StrategyAction {
 		Vector2 robotPos = robot.getPos();
 
 		double relativeRotation = robot.getRotationRelativeTo(ball);
-		boolean shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
+		boolean shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationThreshold(robotPos, ballPos);
 
 		// If ball is close and we want to rotate, back up
 		double dist = robotPos.getEuclidean(ballPos);

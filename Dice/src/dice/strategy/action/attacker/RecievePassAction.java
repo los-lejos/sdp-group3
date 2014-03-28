@@ -34,7 +34,7 @@ public class RecievePassAction extends StrategyAction {
 		boolean ballHeadingTowardsRobot = 
 			ballVel.getLength() > 5 &&
 			dot > 0 &&
-			heading <= StratMaths.getRotationTreshold(attackerPos, ballPos);
+			heading <= StratMaths.getRotationThreshold(attackerPos, ballPos);
 
 		return state.getObjectWithBall() == state.getOurDefender() ||
 				ball.getCurrentZone() == PitchZone.OUR_DEFEND_ZONE ||

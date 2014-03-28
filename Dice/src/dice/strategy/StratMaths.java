@@ -89,7 +89,7 @@ public final class StratMaths {
 		return new Vector2(objPos.X-rfPos.X,objPos.Y-rfPos.Y);
 	}
 	
-	public static double getRotationTreshold(Vector2 obj, Vector2 target) {
+	public static double getRotationThreshold(Vector2 obj, Vector2 target) {
 		double dist = obj.getEuclidean(target);
 		
 		double threshold = dist * ROTATION_THRESH_PER_DIST;
