@@ -21,19 +21,9 @@ class Threshold:
 
     #default_thresholds[0] for the main pitch, and default_thresholds[1] for the other table
 
-    default_thresholds = [{ 'yellow': [[179, 235, 164], [24, 255, 255]],
-                            'blue': [[88, 93, 0], [109, 129, 114]],
-                            'yellow2': [[179, 235, 164], [24, 255, 255]],
-                            'blue2': [[88, 93, 0], [109, 129, 114]],
-                            'ball': [[149, 178, 185], [0, 255, 240]],
-                            'dot': [[0, 0, 0], [0, 0, 0]],
+    default_thresholds = [{ 'ball': [[149, 178, 185], [0, 255, 240]],
                             'experimental': [[0, 0, 0], [0, 0, 0]] },
-                          { 'yellow': [[11, 32, 198], [42, 255, 255]],
-                            'blue': [[84, 80, 17], [139, 122, 255]],
-                            'yellow2': [[11, 32, 198], [42, 255, 255]],
-                            'blue2': [[84, 80, 17], [139, 122, 255]],
-                            'ball': [[0, 0, 79], [15, 255, 255]],
-                            'dot': [[0, 0, 0], [0, 0, 0]],
+                          { 'ball': [[0, 0, 79], [15, 255, 255]],
                             'experimental': [[0, 0, 0], [0, 0, 0]] }]
 
     def __init__(self, pitch_num, reset_thresholds):
