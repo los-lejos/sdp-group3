@@ -183,7 +183,7 @@ class Gui:
 
 class ThresholdGui:
 
-    def __init__(self, threshold_instance, processor, gui, window=None, pitch_num=0):
+    def __init__(self, processor, gui, window=None, pitch_num=0):
 
         self.pitch_num = pitch_num
         if window is None:
@@ -193,7 +193,6 @@ class ThresholdGui:
             self.window = window
 
         self._gui = gui
-        self.threshold = threshold_instance
         self._processor = processor
         self._show_on_gui = False
         self.__create_trackbars()
@@ -212,6 +211,12 @@ class ThresholdGui:
         key_handler.add_listener('t', self.toggle_gui)
 
     def __create_trackbars(self):
+        cv.CreateTrackbar('H min', self.window, 0, 179, self.__on_trackbar_changed)
+        cv.CreateTrackbar('S min', self.window, 0, 255, self.__on_trackbar_changed)
+        cv.CreateTrackbar('V min', self.window, 0, 255, self.__on_trackbar_changed)
+        cv.CreateTrackbar('H max', self.window, 0, 179, self.__on_trackbar_changed)
+        cv.CreateTrackbar('S max', self.window, 0, 255, self.__on_trackbar_changed)
+        cv.CreateTrackbar('V max', self.window, 0, 255, self.__on_trackbar_changed)
         cv.CreateTrackbar('Threshold', self.window, 0, 255, self.__on_trackbar_changed)
         cv.CreateTrackbar('Brightness', self.window, 1000, 2000, self.__on_trackbar_changed)
         cv.CreateTrackbar('Contrast', self.window, 100, 2000, self.__on_trackbar_changed)
@@ -219,25 +224,27 @@ class ThresholdGui:
 
     def __on_trackbar_changed(self, x):
         values = []
+        ball_thresholds = [[cv.GetTrackbarPos(' '.join([j, i]), self.window) for j in ['H', 'S', 'V']] for i in ['min', 'max']]
+        values.append(ball_thresholds)
         values.append(cv.GetTrackbarPos('Threshold', self.window))
         values.append(cv.GetTrackbarPos('Brightness', self.window))
         values.append(cv.GetTrackbarPos('Contrast', self.window))
-        self._processor.update_values(current_entity, values)
+        self._processor.update_values(self._current_entity, values)
 
-        pos_gray_bin = cv.GetTrackbarPos('GRAY-BIN', self.window)
+        pos_gray_bin = cv.GetTrackbarPos('GRAY-BINARY', self.window)
         self._processor.toggle_gray_bin(pos_gray_bin)
 
     def toggle_gui(self):
         self._show_on_gui = not self._show_on_gui
         
         if self._show_on_gui:
-            self._gui.switch_layer_set(self.current_entity)
+            self._gui.switch_layer_set(self._current_entity)
         else:
             self._gui.switch_layer_set('default')
 
     def change_entity(self, name):
-        self.current_entity = name
-        self.set_trackbar_values(self.threshold.get_threshold_values()[name])
+        self._current_entity = name
+        self.set_trackbar_values(self._processor.get_values())
 
         # Make sure trackbars update immediately
         cv.WaitKey(2)
@@ -246,7 +253,8 @@ class ThresholdGui:
             self._gui.switch_layer_set(name)
 
     def set_trackbar_values(self, values):
-        for i, which in enumerate(['min', 'max']):
-            for j, channel in enumerate(['H', 'S', 'V']):
-                cv.SetTrackbarPos('{0} {1}'.format(channel, which), self.window, values[i][j])
+        [[cv.SetTrackbarPos(' '.join([j, i]), self.window, values[0][y][x]) for x, j in enumerate(['H', 'S', 'V'])] for y, i in enumerate(['min', 'max'])]
+        cv.SetTrackbarPos('Threshold', self.window, values[1])
+        cv.SetTrackbarPos('Brightness', self.window, values[2])
+        cv.SetTrackbarPos('Contrast', self.window, values[3])
 
