@@ -20,7 +20,7 @@ __author__ = "Ingvaras Merkys"
 class Gui:
 
     _layer_sets = { 'default': ['raw', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
-                    'experimental': ['experimental'],
+                    'experimental': ['experimental', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
                     'ball': ['threshR', 'ball'] }
 
     _layers = { 'raw': None,
@@ -78,7 +78,7 @@ class Gui:
         fps = 1.0 / this_frame
         self._lastFrame = this_frame
         self._last_frame_time = this_frame_time
-        layer = self._layers['raw'].dl()
+        layer = self._layers[self._current_layer_set[0]].dl()
         layer.ezViewText('{0:.1f} fps'.format(fps), (10, 10))
 
     def draw_crosshair(self, pos, layer_name = None):
