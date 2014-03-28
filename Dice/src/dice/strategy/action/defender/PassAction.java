@@ -33,7 +33,8 @@ public class PassAction extends StrategyAction {
 
 		if(Math.abs(headingDefender) > StratMaths.ROTATION_SHOOT_THRESH ||
 		   Math.abs(headingAttacker) > StratMaths.ROTATION_SHOOT_THRESH) {
-			return RobotInstruction.createRotate(headingDefender, 80);
+			int rotSpeed = StratMaths.speedForRot(headingDefender);
+			return RobotInstruction.createRotate(headingDefender, rotSpeed);
 		} else {
 			return RobotInstruction.createKick();
 		}

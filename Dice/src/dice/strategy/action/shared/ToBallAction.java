@@ -54,7 +54,8 @@ public class ToBallAction extends StrategyAction {
 		}
 		// Rotate towards ball
 		else if(shouldRotate) {
-			return RobotInstruction.createRotate(relativeRotation, 40);
+			int rotSpeed = StratMaths.speedForRot(relativeRotation);
+			return RobotInstruction.createRotate(relativeRotation, rotSpeed);
 		}
 		// Move forward towards ball
 		else {

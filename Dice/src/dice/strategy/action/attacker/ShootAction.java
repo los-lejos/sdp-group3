@@ -46,7 +46,8 @@ public class ShootAction extends StrategyAction {
 			GameObject robot = this.getTargetObject(state);
 			double heading = robot.getRotationRelativeTo(opGoalCenter);
 			
-			return RobotInstruction.createRotate(heading, 100);
+			int rotSpeed = StratMaths.speedForRot(heading);
+			return RobotInstruction.createRotate(heading, rotSpeed);
 		} else {
 			return RobotInstruction.createKick();
 		}

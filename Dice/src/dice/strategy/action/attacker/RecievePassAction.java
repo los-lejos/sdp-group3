@@ -53,6 +53,7 @@ public class RecievePassAction extends StrategyAction {
 		
 		double heading = attacker.getRotationRelativeTo(defender);
 		
-		return RobotInstruction.createRotate(heading, 80);
+		int rotSpeed = StratMaths.speedForRot(heading);
+		return RobotInstruction.createRotate(heading, rotSpeed);
 	}
 }

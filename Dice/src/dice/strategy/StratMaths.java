@@ -16,13 +16,18 @@ import dice.state.WorldState;
 public final class StratMaths {
 
 	// tolerance if we want to find out if something's 'in the area of' a position
-	public static final double POSITION_FUZZ = 10.0; // arbitrary, make it nicer
+	public static final double POSITION_FUZZ = 20.0; // arbitrary, make it nicer
 
 	public static final double BALL_SPEED_THRESH = 8;
 	public static final double BALL_DISTANCE_THRESH = 60;
 	private static final double MAX_SPEED_DIST = 200;
-	private static final int MIN_SPEED = 30;
+	private static final int MIN_SPEED = 15;
 	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
+	
+	private static final double MAX_SPEED_ROT = Math.toRadians(170);
+	private static final double MIN_SPEED_ROT = Math.toRadians(30);
+	private static final int MIN_ROT_SPEED = 15;
+	private static final double SPEED_PER_ROT = (double)(100 - MIN_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
 	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
@@ -99,6 +104,8 @@ public final class StratMaths {
 	}
 	
 	public static int speedForDist(double dist) {
+		dist = Math.abs(dist);
+		
 		if(dist >= MAX_SPEED_DIST) {
 			return 100;
 		}
@@ -109,6 +116,21 @@ public final class StratMaths {
 		
 		double slowingDist = dist - BALL_DISTANCE_THRESH;
 		return (int) (100 - slowingDist * SPEED_PER_DIST);
+	}
+	
+	public static int speedForRot(double rot) {
+		rot = Math.abs(rot);
+		
+		if(rot >= MAX_SPEED_ROT) {
+			return 100;
+		}
+		
+		if(rot <= MIN_SPEED_ROT) {
+			return MIN_ROT_SPEED;
+		}
+		
+		double slowingRot = rot - MIN_SPEED_ROT;
+		return (int) (100 - slowingRot * SPEED_PER_ROT);
 	}
 
 	/*
