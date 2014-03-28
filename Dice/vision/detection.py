@@ -52,7 +52,7 @@ class Detection:
         self._pitch_w, self._pitch_h = self._processor.pitch_size
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
-        experimental_frame, squares = self._find_squares()
+        squares_frame, squares = self._find_squares()
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
         entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
@@ -68,7 +68,7 @@ class Detection:
         if self._render_tlayers:
             [self._gui.update_layer('robot' + str(i), entities[i]) for i in xrange(4)]
             self._gui.update_layer('threshR', threshold_ball)
-            self._gui.update_layer('experimental', experimental_frame)
+            self._gui.update_layer('squares', squares_frame)
 
         self._gui.update_layer('ball', entities[BALL])
 
@@ -139,12 +139,7 @@ class Detection:
 
     def __find_entity(self, threshold_img, which, image):
 
-        size = None
-        if which == BALL:
-            size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
-        else:
-            self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[which]))
-
+        size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
         entity_blob = self.__find_entity_blob(threshold_img, size)
         entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob,
                         self.areas, self._scale, render_tlayers = self._render_tlayers)

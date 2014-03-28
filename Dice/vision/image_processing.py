@@ -30,10 +30,11 @@ class Processor:
         self._red_channel = None
         self._green_channel = None
         self._gray_bin = 0
-        self._contrast = 100
-        self._brightness = 1000
-        self._gray_thresh = (0, 255)
+        self._contrasts = [100, 100]
+        self._brightnesses = [1000, 1000]
+        self._gray_thresholds = [255, 255]
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
+        self._path_values = os.path.join('data', 'default_values_{0}').format(pitch_num)
         self._crop_rect = None
         self._corner_point = None
         self._pitch_points = []
@@ -55,6 +56,23 @@ class Processor:
 
     def __save_pitch_size(self):
         util.dump_to_file((self._crop_rect, self._pitch_points), self._path_pitch_size)
+ 
+    def update_values(self, entity, values):
+        if entity == 'squares':
+            i = 0
+        elif entity == 'ball':
+            i = 1
+        else:
+            raise Exception('Unknown entity '.format(entity))
+        self._thresholds[i], self._brightnesses[i], self._contrasts[i] = values
+
+    def __get_values(self):
+        values = util.load_from_file(self._path_values)
+        if (self._threshold_values is None) or (self._reset_thresholds):
+            self._threshold_values = dict(self.default_thresholds[self._pitch_num])
+
+    def __save_values(self, values):
+        util.dump_to_file(values, self._path_values)
 
     def preprocess(self, frame, scale):
         if self.has_pitch_size:
@@ -76,17 +94,26 @@ class Processor:
         rgb_sum = b+g+r
         red_arr = (r*255.0/rgb_sum)
         green_arr = (g*255.0/rgb_sum)
-        #blue_frame = (b*255.0/rgb_sum)
-        alpha = self._contrast / 100.0     # [0.0-5.0]
-        beta = self._brightness - 1000     # [-500 - 500]
+        # Squares - green
+        alpha = self._contrasts[0] / 100.0     # [0.0-5.0]
+        beta = self._brightnesses[0] - 1000     # [-500 - 500]
         green_arr = np.clip(alpha * green_arr + beta, 0, 255)
         green_img = Image(green_arr, colorSpace = ColorSpace.GRAY)
+        # Ball - red
+        alpha = self._contrasts[1] / 100.0     # [0.0-5.0]
+        beta = self._brightnesses[1] - 1000     # [-500 - 500]
+        red_arr = np.clip(alpha * red_arr + beta, 0, 255)
         red_img = Image(red_arr, colorSpace = ColorSpace.GRAY)
         return (red_img, green_img, None)
 
-    def _threshold_gray(self, frame):
-        thresh_min, thresh_max = self._gray_thresh
-        img_bin = frame.threshold(thresh_max)
+    def _threshold_gray(self, frame, entity):
+        if entity == 'squares':
+            i = 0
+        elif entity == 'ball':
+            i = 1
+        else:
+            raise Exception('Unknown entity '.format(entity))
+        img_bin = frame.threshold(self._gray_thresholds[i])
         return img_bin.morphClose().dilate(2)
 
     def get_grayscale_frame(self):
@@ -109,15 +136,6 @@ class Processor:
             return None
         assert self._hsv_frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
         return self._hsv_frame
-
-    def set_gray_thresholds(self, min_value, max_value):
-        self._gray_thresh = (min_value, max_value)
-
-    def set_contrast(self, value):
-        self._contrast = value
-
-    def set_brightness(self, value):
-        self._brightness = value
 
     def set_next_pitch_corner(self, point):
 
