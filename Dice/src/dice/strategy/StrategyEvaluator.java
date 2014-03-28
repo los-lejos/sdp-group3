@@ -25,53 +25,30 @@ import dice.strategy.action.shared.ToBallAction;
  */
 
 public class StrategyEvaluator {
-	
-	public enum StrategyType {
-		MATCH,
-		SHOOTOUT,
-		NONE
-	}
-	
+
 	private RobotStrategyState attacker, defender;
-	private StrategyType type;
 
 	public StrategyEvaluator() {
 		attacker = new RobotStrategyState(RobotType.ATTACKER);
 		defender = new RobotStrategyState(RobotType.DEFENDER);
+		
+		setAttackerActions();
+		setDefenderActions();
+	}
+
+	private void setAttackerActions() {
+		attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
+		attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		attacker.addAction(new ToBallAction(RobotType.ATTACKER));
+		attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
+		attacker.addAction(new BlockAction(RobotType.ATTACKER));
 	}
 	
-	public void setType(StrategyType type) {
-		this.type = type;
-		
-		this.resetAttackerActions();
-		this.resetDefenderActions();
-	}
-	
-	private void resetAttackerActions() {
-		attacker.clearActions();
-		
-		if(this.type == StrategyType.MATCH) {
-			attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
-			attacker.addAction(new ShootAction(RobotType.ATTACKER));
-			attacker.addAction(new BlockAction(RobotType.ATTACKER));
-			attacker.addAction(new ToBallAction(RobotType.ATTACKER));
-			attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
-		} else if(this.type == StrategyType.SHOOTOUT) {
-			
-		}
-	}
-	
-	private void resetDefenderActions() {
-		defender.clearActions();
-		
-		if(this.type == StrategyType.MATCH) {
-			defender.addAction(new ToBallAction(RobotType.DEFENDER));
-			defender.addAction(new SaveAction(RobotType.DEFENDER));
-			defender.addAction(new CorrectionAction(RobotType.DEFENDER));
-			defender.addAction(new PassAction(RobotType.DEFENDER));
-		} else if(this.type == StrategyType.SHOOTOUT) {
-			
-		}
+	private void setDefenderActions() {
+		defender.addAction(new PassAction(RobotType.DEFENDER));
+		defender.addAction(new ToBallAction(RobotType.DEFENDER));
+		defender.addAction(new CorrectionAction(RobotType.DEFENDER));
+		defender.addAction(new SaveAction(RobotType.DEFENDER));
 	}
 	
 	public void setCommunicator(RobotType type, RobotCommunicator comms) {

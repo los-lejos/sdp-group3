@@ -42,11 +42,6 @@ public class RecievePassAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		return 5;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject attacker = state.getOurAttacker();
 		GameObject defender = state.getOurDefender();

@@ -20,12 +20,6 @@ public class ToZoneCenterAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		// This is the base action for both robots if nothing else is possible
-		return -1;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject robot = this.getTargetObject(state);
 		Vector2 zoneCenter = state.getCellCenter(robot.getCurrentZone());

@@ -1,7 +1,6 @@
 package dice.strategy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import dice.Log;
@@ -24,9 +23,6 @@ public class RobotStrategyState {
 	
 	// List of actions the robot can perform
 	private List<StrategyAction> actions = new ArrayList<StrategyAction>();
-	
-	// List of actions that are possible in a given moment in time
-	private List<StrategyAction> possibleActions = new ArrayList<StrategyAction>();
 	
 	private RobotCommunicator robotComms;
 	private RobotType robotType;
@@ -56,23 +52,13 @@ public class RobotStrategyState {
 	}
 	
 	public StrategyAction getBestAction(WorldState state) {
-		if(!this.actionsAvailable()) return null;
-
-		possibleActions.clear();
-		
 		for(StrategyAction action : this.actions) {
 			if(action.isPossible(state)) {
-				action.updateUtility(state);
-				possibleActions.add(action);
+				return action;
 			}
 		}
 		
-		if(possibleActions.size() == 0) {
-			return null;
-		}
-		
-		Collections.sort(possibleActions);
-		return possibleActions.get(possibleActions.size() - 1);
+		return null;
 	}
 	
 	public void setCurrentAction(StrategyAction action, WorldState state) {

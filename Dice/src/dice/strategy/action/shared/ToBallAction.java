@@ -33,11 +33,6 @@ public class ToBallAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		return 2;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject ball = state.getBall();
 		Vector2 ballPos = ball.getPos();
