@@ -34,7 +34,6 @@ public class BlockAction extends StrategyAction {
 			
 			// Move towards wherever the opponent attacker is looking
 			double yAtRobot = line.getYValue(targetPos.X);
-			System.out.println(yAtRobot);
 			movementAmount = getMovementAmount(targetPos.Y, yAtRobot,
 					state.getSide());
 		}

@@ -16,6 +16,11 @@ public class DefenderStrategyState extends RobotStrategyState {
 
 	public DefenderStrategyState() {
 		super(RobotType.DEFENDER);
+		
+		this.pass = new PassAction(RobotType.DEFENDER);
+		this.toBall = new ToBallAction(RobotType.DEFENDER);
+		this.correction = new CorrectionAction(RobotType.DEFENDER);
+		this.save = new SaveAction(RobotType.DEFENDER);
 	}
 
 	@Override

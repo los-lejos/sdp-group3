@@ -25,33 +25,13 @@ public class ShootAction extends StrategyAction {
 
 	@Override
 	public boolean isPossible(WorldState state) {
-		return true;
-		//return state.getObjectWithBall() == this.getTargetObject(state);
+		return state.getObjectWithBall() == this.getTargetObject(state);
 	}
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		Vector2 targetPos = target.getPos();
-
-		double heading = StratMaths.getAngleRelativeToHorizontal(target, state.getSide());
-		
-		// Rotate towards goal
-		if(Math.abs(heading) > StratMaths.CORRECTION_ROT_THRESH) {
-			System.out.println("Rotate " + heading);
-			int rotSpeed = StratMaths.speedForRot(heading);
-			return RobotInstruction.createRotate(heading, rotSpeed);
-		}
-		
-		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
-		double deltaX = zoneMiddle.X - target.getPos().X;
-
-		// Check if we should move towards the center of the zone 
-		if(Math.abs(deltaX) > StratMaths.POSITION_FUZZ) {
-			double dist = state.getSide() == Side.LEFT ? deltaX : -deltaX;
-			int moveSpeed = StratMaths.speedForDist(dist);
-			return RobotInstruction.createMove(dist, moveSpeed);
-		}
 		
 		GameObject defender = state.getOpponentDefender();
 		Vector2 defenderPos = defender.getPos();
