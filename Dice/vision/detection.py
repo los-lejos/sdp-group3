@@ -20,7 +20,6 @@ from logger import Logger
 __author__ = "Ingvaras Merkys"
 
 BALL = 4
-DOT = 5
 WIDTH = 580
 HEIGHT = 320
 RADIUS = 23.0
@@ -29,10 +28,7 @@ DOT_RADIUS = 8
 class Detection:
 
     # Format: (area_min, area_expected, area_max)
-    shape_sizes = { 'ball': [40, 160, 175],
-                    'blue': [120, 150, 280],
-                    'dot': [30, 45, 60] }
-    shape_sizes['yellow'] = map(lambda x: int(0.9*x), shape_sizes['blue'])
+    shape_sizes = { 'ball': [40, 160, 175]}
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
@@ -59,33 +55,20 @@ class Detection:
         experimental_frame, squares = self._find_squares()
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
-        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order), Entity(self._pitch_w, self._pitch_h, self._colour_order), Entity(self._pitch_w, self._pitch_h, self._colour_order), Entity(self._pitch_w, self._pitch_h, self._colour_order), Entity(self._pitch_w, self._pitch_h, self._colour_order)]
-        thresholds = [None, None, None, None, None, None]
-        if self._render_tlayers:
-            yellow = self._bgr_frame.copy()
-            blue = self._bgr_frame.copy()
+        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
         for which, square in enumerate(squares):
             if which < 4:
                 entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, square,
                                          self.areas, self._scale, render_tlayers = self._render_tlayers)
                 entities[which] = self._determine_angle(entities[which])
 
-        thresholds[BALL] = self._threshold.ball(self._hsv_frame).smooth(grayscale=True)
-        entities[BALL] = self.__find_entity(thresholds[BALL], BALL, self._hsv_frame)
+        threshold_ball = self._threshold.ball(self._hsv_frame).smooth(grayscale=True)
+        entities[BALL] = self.__find_entity(threshold_ball, BALL, self._hsv_frame)
 
         if self._render_tlayers:
-            thresholds[DOT] = self._threshold.dotT(self._hsv_frame).smooth(grayscale=True)
-            self._gui.update_layer('threshY', yellow)
-            self._gui.update_layer('threshB', blue)
-            self._gui.update_layer('threshR', thresholds[BALL])
-            self._gui.update_layer('threshD', thresholds[DOT])
+            [self._gui.update_layer('robot' + str(i), entities[i]) for i in xrange(4)]
+            self._gui.update_layer('threshR', threshold_ball)
             self._gui.update_layer('experimental', experimental_frame)
-
-        for i in range(0, 4):
-            if self._colour_order[i] == 'b':
-                self._gui.update_layer('blue{0}'.format(i), entities[i])
-            elif self._colour_order[i] == 'y':
-                self._gui.update_layer('yellow{0}'.format(i), entities[i])
 
         self._gui.update_layer('ball', entities[BALL])
 
@@ -159,20 +142,12 @@ class Detection:
         size = None
         if which == BALL:
             size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
-        elif self._colour_order[which] == 'b':
-            size = map(lambda x: int(x*self._scale), self.shape_sizes['blue'])
-        elif self._colour_order[which] == 'y':
-            size = map(lambda x: int(x*self._scale), self.shape_sizes['yellow'])
         else:
             self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[which]))
 
         entity_blob = self.__find_entity_blob(threshold_img, size)
         entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob,
                         self.areas, self._scale, render_tlayers = self._render_tlayers)
-
-        if which >= 0 and which < 4:
-            self.__clarify_coords(entity, image)
-
         return entity
 
     def __find_entity_blob(self, image, size, dot=False):

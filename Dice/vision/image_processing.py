@@ -27,7 +27,8 @@ class Processor:
     def __init__(self, pitch_num, reset_pitch_size, scale):
 
         self._bgr_frame = None
-        self._gray_frame = None
+        self._red_channel = None
+        self._green_channel = None
         self._gray_bin = 0
         self._contrast = 100
         self._brightness = 1000
@@ -59,13 +60,13 @@ class Processor:
         if self.has_pitch_size:
             self._bgr_frame = frame.crop(*self._crop_rect).scale(scale)
             self._hsv_frame = self._bgr_frame.toHSV()
-            self._gray_frame = self._norm_green_frame(self._bgr_frame)
-            self._gray_thresh_frame = self._threshold_gray(self._gray_frame)
+            self._red_channel, self._green_channel, _ = self._rgb_norm_frame_channels(self._bgr_frame)
+            self._gray_thresh_frame = self._threshold_gray(self._green_channel)
 
     def toggle_gray_bin(self, value):
         self._gray_bin = value
 
-    def _norm_green_frame(self, frame):
+    def _rgb_norm_frame_channels(self, frame):
         """RGB normalizes green channel and applies brightness/contrast operations,
         slightly more efficient than calculating full normalized RGB"""
         frame_arr = frame.getNumpy().astype(np.float32, copy=False)
@@ -73,11 +74,15 @@ class Processor:
         g = frame_arr[:,:,1]
         r = frame_arr[:,:,2]
         rgb_sum = b+g+r
-        gray_frame = (g*255.0/rgb_sum)
+        red_arr = (r*255.0/rgb_sum)
+        green_arr = (g*255.0/rgb_sum)
+        #blue_frame = (b*255.0/rgb_sum)
         alpha = self._contrast / 100.0     # [0.0-5.0]
         beta = self._brightness - 1000     # [-500 - 500]
-        frame_arr = np.clip(alpha * gray_frame + beta, 0, 255)
-        return Image(frame_arr, colorSpace = ColorSpace.GRAY)
+        green_arr = np.clip(alpha * green_arr + beta, 0, 255)
+        green_img = Image(green_arr, colorSpace = ColorSpace.GRAY)
+        red_img = Image(red_arr, colorSpace = ColorSpace.GRAY)
+        return (red_img, green_img, None)
 
     def _threshold_gray(self, frame):
         thresh_min, thresh_max = self._gray_thresh
@@ -85,10 +90,10 @@ class Processor:
         return img_bin.morphClose().dilate(2)
 
     def get_grayscale_frame(self):
-        if self._gray_frame is None:
+        if self._green_channel is None:
             return None
-        assert self._gray_frame.getColorSpace() == ColorSpace.GRAY, "Image must be grayscale!"
-        return self._gray_frame
+        assert self._green_channel.getColorSpace() == ColorSpace.GRAY, "Image must be grayscale!"
+        return self._green_channel
 
     def get_binary_frame(self):
         return self._gray_thresh_frame
