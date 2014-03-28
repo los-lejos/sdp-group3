@@ -183,7 +183,7 @@ if __name__ == "__main__":
                       help='Scale down the image in preprocessing stage')
 
     parser.add_option('-c', '--colour-order', dest='colour_order', type='string',
-                      metavar='COLOUR_ORDER', default='yybb',
+                      metavar='COLOUR_ORDER', default='ybyb',
                       help=('The way different colour robots are put from left to right (e. g. '
                             '"--colour-order=yybb" for sequence yellow-yellow-blue-blue)'))
 

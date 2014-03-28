@@ -19,29 +19,17 @@ __author__ = "Ingvaras Merkys"
 
 class Gui:
 
-    _layer_sets = { 'default': ['raw', 'yellow0', 'yellow1', 'yellow2', 'yellow3', 'blue0', 'blue1', 'blue2', 'blue3', 'ball'],
-                    'yellow': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
-                    'blue': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
-                    'yellow2': ['threshY', 'yellow0', 'yellow1', 'yellow2', 'yellow3'],
-                    'blue2': ['threshB', 'blue0', 'blue1', 'blue2', 'blue3'],
+    _layer_sets = { 'default': ['raw', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
                     'experimental': ['experimental'],
-                    'ball': ['threshR', 'ball'],
-                    'dot': ['threshD'] }
+                    'ball': ['threshR', 'ball'] }
 
     _layers = { 'raw': None,
-                'threshY': None,
-                'threshB': None,
                 'threshR': None,
-                'threshD': None,
-                'yellow0': None,
-                'yellow1': None,
-                'yellow2': None,
-                'yellow3': None,
-                'blue0': None,
-                'blue1': None,
-                'blue2': None,
-                'blue3': None,
                 'ball': None,
+                'robot0': None,
+                'robot1': None,
+                'robot2': None,
+                'robot3': None,
                 'experimental': None }
 
     _persistent_layers = { 'mouse': None }
@@ -210,26 +198,16 @@ class ThresholdGui:
         self._show_on_gui = False
         self.__create_trackbars()
         self.__setup_key_events()
-        self.change_entity('yellow')
+        self.change_entity('experimental')
 
     def __setup_key_events(self):
         """Adds key listeners to the main gui for switching between entities
         """
-        def yellow(): self.change_entity('yellow')
-        def blue(): self.change_entity('blue')
-        def yellow2(): self.change_entity('yellow2')
-        def blue2(): self.change_entity('blue2')
         def ball(): self.change_entity('ball')
-        def dot(): self.change_entity('dot')
         def experimental(): self.change_entity('experimental')
 
         key_handler = self._gui.get_event_handler()
-        key_handler.add_listener('y', yellow)
-        key_handler.add_listener('b', blue)
-        key_handler.add_listener('u', yellow2)
-        key_handler.add_listener('n', blue2)
         key_handler.add_listener('r', ball)
-        key_handler.add_listener('d', dot)
         key_handler.add_listener('e', experimental)
         key_handler.add_listener('t', self.toggle_gui)
 
@@ -279,9 +257,6 @@ class ThresholdGui:
             self._gui.switch_layer_set('default')
 
     def change_entity(self, name):
-        """Change which entity to adjust thresholding
-        Can be 'blue', 'yellow', 'ball' or 'dot'
-        """
         self.current_entity = name
         self.set_trackbar_values(self.threshold.get_threshold_values()[name])
 

@@ -53,23 +53,8 @@ class Threshold:
     def __save_defaults(self):
         util.dump_to_file(self._threshold_values, self._path_thresholds.format(self._pitch_num))
 
-    def yellowT(self, frame, num):
-        thing = 'yellow'
-        if num > 1:
-            thing = 'yellow2'
-        return self.threshold(frame, self._threshold_values[thing][0], self._threshold_values[thing][1])
-
-    def blueT(self, frame, num):
-        thing = 'blue'
-        if num > 1:
-            thing = 'blue2'
-        return self.threshold(frame, self._threshold_values[thing][0], self._threshold_values[thing][1])
-
     def ball(self, frame):
         return self.threshold(frame, self._threshold_values['ball'][0], self._threshold_values['ball'][1])
-
-    def dotT(self, frame):
-        return self.threshold(frame, self._threshold_values['dot'][0], self._threshold_values['dot'][1])
     
     def threshold(self, frame, threshmin, threshmax):
         """
