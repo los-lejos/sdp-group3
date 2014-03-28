@@ -22,9 +22,9 @@ public class WorldState {
         RIGHT
     }
 
-    private static int PITCH_HEIGHT = 320;
-    private static int PITCH_WIDTH = 580;
-    private static int GOAL_WIDTH = 200;
+    public static final int PITCH_HEIGHT = 320;
+    public static final int PITCH_WIDTH = 580;
+    private static final int GOAL_WIDTH = 200;
     
     // for ball ownership
     private static double OWNERSHIP_DISTANCE = 20; // in px

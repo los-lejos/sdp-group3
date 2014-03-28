@@ -48,7 +48,7 @@ public class StrafeThread extends Thread {
 		} else if(absDist <= 20) {
 			this.movementDelay = (long) (absDist*18);
 		} else {
-			this.movementDelay = (long) (absDist*16.5);
+			this.movementDelay = (long) (absDist*14);
 		}
 
 		if(this.movementDelay > MAX_DELAY) {

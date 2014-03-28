@@ -7,6 +7,7 @@ import dice.state.Goal;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.Side;
 
 /*
  * @author Sam Stern
@@ -33,6 +34,8 @@ public final class StratMaths {
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
 	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
+	
+	public static final double CORRECTION_ROT_THRESH = ROTATION_THRESH_MIN;
 	
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
@@ -153,5 +156,25 @@ public final class StratMaths {
 		*/
 		
 		return opGoal.getGoalCenter();
+	}
+	
+	/** Gets the angle relative to a point directly infront of the robot.
+	 * 
+	 * @param state - The world state
+	 * @return the angle in radians
+	 */
+	public static double getAngleRelativeToHorizontal(GameObject target, WorldState.Side side) {
+		// get the rotation relative to a point just "infront"
+		// of the defender or attacker
+		Vector2 pos = target.getPos();
+		Vector2 forward = null;
+		
+		if(side == Side.LEFT) {
+			forward = new Vector2(pos.X + 1, pos.Y);
+		} else {
+			forward = new Vector2(pos.X - 1, pos.Y);
+		}
+		
+		return target.getRotationRelativeTo(forward);
 	}
 }
