@@ -75,7 +75,6 @@ public class Robot {
 		}
 		
 		conn.start();
-		this.movementController.init();
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
@@ -132,7 +131,6 @@ public class Robot {
 		}
 		
 		this.kicker.cleanup();
-		this.movementController.cleanup();
 		
 		System.out.println("Exiting");
 	}

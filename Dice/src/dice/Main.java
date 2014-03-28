@@ -12,7 +12,6 @@ import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
 import dice.strategy.StrategyEvaluator;
-import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
 
 /*
@@ -80,7 +79,6 @@ public class Main {
 		this.defenderComms = new BluetoothRobotCommunicator();
 
 		strategy = new StrategyEvaluator();
-		strategy.setType(StrategyType.MATCH);
 		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strategy.setCommunicator(RobotType.DEFENDER, defenderComms);
 		

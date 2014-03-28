@@ -84,11 +84,6 @@ public class SaveAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		return 0;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		return RobotInstruction.createLateralMove(movementAmount);
 	}

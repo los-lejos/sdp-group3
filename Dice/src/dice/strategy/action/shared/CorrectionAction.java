@@ -1,11 +1,10 @@
-package dice.strategy.action.defender;
+package dice.strategy.action.shared;
 
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.WorldState.PitchZone;
 import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
@@ -22,11 +21,11 @@ public class CorrectionAction extends StrategyAction {
 	public boolean isPossible(WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		
-		Vector2 zoneMiddle = state.getCellCenter(PitchZone.OUR_DEFEND_ZONE);
+		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
 		
 		double heading = this.getAngleRelativeToHorizontal(state);
 		double deltaX = zoneMiddle.X - target.getPos().X;
-		double rotationThresh = StratMaths.getRotationTreshold(target.getPos(), zoneMiddle);
+		double rotationThresh = StratMaths.getRotationThreshold(target.getPos(), zoneMiddle);
 
 		if(Math.abs(heading) > rotationThresh) {
 			shouldRotate = true;
@@ -58,9 +57,11 @@ public class CorrectionAction extends StrategyAction {
 	
 	public RobotInstruction getInstruction(WorldState state) {
 		if(this.shouldRotate) {
-			return RobotInstruction.createRotate(this.dist, 100);
+			int rotSpeed = StratMaths.speedForRot(this.dist);
+			return RobotInstruction.createRotate(this.dist, rotSpeed);
 		} else {
-			return RobotInstruction.createMove(this.dist, 100);
+			int moveSpeed = StratMaths.speedForDist(this.dist);
+			return RobotInstruction.createMove(this.dist, moveSpeed);
 		}
 	}
 	

@@ -28,25 +28,19 @@ public class ShootAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		GameObject robot = getTargetObject(state);
-		Vector2 goalCenter = state.getOppGoal().getGoalCenter();
-		double relativeRotation = robot.getRotationRelativeTo(goalCenter);
-		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_SHOOT_THRESH;
-		
-		return 4;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		Goal opGoal = state.getOppGoal();
 		Vector2 opGoalCenter = opGoal.getGoalCenter();
 		
+		GameObject robot = getTargetObject(state);
+		double relativeRotation = robot.getRotationRelativeTo(opGoalCenter);
+		this.shouldRotate = Math.abs(relativeRotation) > StratMaths.ROTATION_SHOOT_THRESH;
+		
 		if(this.shouldRotate) {
-			GameObject robot = this.getTargetObject(state);
 			double heading = robot.getRotationRelativeTo(opGoalCenter);
 			
-			return RobotInstruction.createRotate(heading, 100);
+			int rotSpeed = StratMaths.speedForRot(heading);
+			return RobotInstruction.createRotate(heading, rotSpeed);
 		} else {
 			return RobotInstruction.createKick();
 		}

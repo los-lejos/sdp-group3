@@ -35,21 +35,21 @@ public class RepositionAction extends StrategyAction {
 		}
     }
 
-	@Override
-	protected int calculateUtility(WorldState state) {
-		GameObject us = state.getOurAttacker();
-		Goal goal = state.getOppGoal();
-		GameObject annoyance = state.getOpponentDefender();
-				
-		if (inTheWay(us,annoyance,goal)) {
-			// we can't shoot through things
-			// yet
-			return 2;
-		}
-
-        // TODO: fancy 'not actually pointing at goal' tricks eg bouncing ball off wall
-        return 0;
-	}
+//	@Override
+//	protected int calculateUtility(WorldState state) {
+//		GameObject us = state.getOurAttacker();
+//		Goal goal = state.getOppGoal();
+//		GameObject annoyance = state.getOpponentDefender();
+//				
+//		if (inTheWay(us,annoyance,goal)) {
+//			// we can't shoot through things
+//			// yet
+//			return 2;
+//		}
+//
+//        // TODO: fancy 'not actually pointing at goal' tricks eg bouncing ball off wall
+//        return 0;
+//	}
 	
 	/**
 	 * If we shoot something at a goal from where we are, will the ball hit

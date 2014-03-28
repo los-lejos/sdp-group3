@@ -33,11 +33,6 @@ public class ToBallAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		return 2;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject ball = state.getBall();
 		Vector2 ballPos = ball.getPos();
@@ -45,7 +40,7 @@ public class ToBallAction extends StrategyAction {
 		Vector2 robotPos = robot.getPos();
 
 		double relativeRotation = robot.getRotationRelativeTo(ball);
-		boolean shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationTreshold(robotPos, ballPos);
+		boolean shouldRotate = Math.abs(relativeRotation) > StratMaths.getRotationThreshold(robotPos, ballPos);
 
 		// If ball is close and we want to rotate, back up
 		double dist = robotPos.getEuclidean(ballPos);
@@ -54,7 +49,8 @@ public class ToBallAction extends StrategyAction {
 		}
 		// Rotate towards ball
 		else if(shouldRotate) {
-			return RobotInstruction.createRotate(relativeRotation, 40);
+			int rotSpeed = StratMaths.speedForRot(relativeRotation);
+			return RobotInstruction.createRotate(relativeRotation, rotSpeed);
 		}
 		// Move forward towards ball
 		else {

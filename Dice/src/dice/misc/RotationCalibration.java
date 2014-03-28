@@ -12,7 +12,6 @@ import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.WorldState;
 import dice.strategy.StrategyEvaluator;
-import dice.strategy.StrategyEvaluator.StrategyType;
 import dice.vision.SocketVisionReader;
 
 /*
@@ -46,7 +45,6 @@ public class RotationCalibration {
         worldState.setSide(WorldState.Side.LEFT);
 		this.attackerComms = new BluetoothRobotCommunicator();
 		strategy = new StrategyEvaluator();
-		strategy.setType(StrategyType.NONE);
 		strategy.setCommunicator(RobotType.ATTACKER, attackerComms);
 		this.visionReader = new SocketVisionReader(worldState, strategy);
 		this.attackerRobot = worldState.getOurAttacker();

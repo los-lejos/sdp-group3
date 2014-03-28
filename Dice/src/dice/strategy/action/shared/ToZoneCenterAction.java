@@ -20,23 +20,19 @@ public class ToZoneCenterAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		// This is the base action for both robots if nothing else is possible
-		return -1;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject robot = this.getTargetObject(state);
 		Vector2 zoneCenter = state.getCellCenter(robot.getCurrentZone());
 	
 		double angle = robot.getRotationRelativeTo(zoneCenter);
 		
-		if(Math.abs(angle) > StratMaths.getRotationTreshold(robot.getPos(), zoneCenter)) {
-			return RobotInstruction.createRotate(angle, 100);
+		if(Math.abs(angle) > StratMaths.getRotationThreshold(robot.getPos(), zoneCenter)) {
+			int rotSpeed = StratMaths.speedForRot(angle);
+			return RobotInstruction.createRotate(angle, rotSpeed);
 		} else {
 			double dist = robot.getPos().getEuclidean(zoneCenter);
-			return RobotInstruction.createMove(dist, 100);
+			int moveSpeed = StratMaths.speedForDist(dist);
+			return RobotInstruction.createMove(dist, moveSpeed);
 		}
 	}
 }

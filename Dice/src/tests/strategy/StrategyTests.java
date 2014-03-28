@@ -6,7 +6,6 @@ import dice.state.GameObject;
 import dice.state.WorldState;
 import dice.state.WorldState.Side;
 import dice.strategy.StrategyEvaluator;
-import dice.strategy.StrategyEvaluator.StrategyType;
 
 public class StrategyTests {
 	public static void main(String[] args) {
@@ -28,7 +27,6 @@ public class StrategyTests {
 		defenderComms.init(RobotType.DEFENDER, null);		
 		
 		StrategyEvaluator strat = new StrategyEvaluator();
-		strat.setType(StrategyType.MATCH);
 		strat.setCommunicator(RobotType.ATTACKER, attackerComms);
 		strat.setCommunicator(RobotType.DEFENDER, defenderComms);
 		strat.onNewState(state);

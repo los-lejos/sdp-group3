@@ -19,11 +19,6 @@ public class PassAction extends StrategyAction {
 	}
 
 	@Override
-	protected int calculateUtility(WorldState state) {
-		return 5;
-	}
-
-	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject defender = state.getOurDefender();
 		GameObject attacker = state.getOurAttacker();
@@ -33,7 +28,8 @@ public class PassAction extends StrategyAction {
 
 		if(Math.abs(headingDefender) > StratMaths.ROTATION_SHOOT_THRESH ||
 		   Math.abs(headingAttacker) > StratMaths.ROTATION_SHOOT_THRESH) {
-			return RobotInstruction.createRotate(headingDefender, 80);
+			int rotSpeed = StratMaths.speedForRot(headingDefender);
+			return RobotInstruction.createRotate(headingDefender, rotSpeed);
 		} else {
 			return RobotInstruction.createKick();
 		}

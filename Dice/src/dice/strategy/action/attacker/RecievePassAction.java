@@ -34,16 +34,11 @@ public class RecievePassAction extends StrategyAction {
 		boolean ballHeadingTowardsRobot = 
 			ballVel.getLength() > 5 &&
 			dot > 0 &&
-			heading <= StratMaths.getRotationTreshold(attackerPos, ballPos);
+			heading <= StratMaths.getRotationThreshold(attackerPos, ballPos);
 
 		return state.getObjectWithBall() == state.getOurDefender() ||
 				ball.getCurrentZone() == PitchZone.OUR_DEFEND_ZONE ||
 				ballHeadingTowardsRobot;
-	}
-
-	@Override
-	protected int calculateUtility(WorldState state) {
-		return 5;
 	}
 
 	@Override
@@ -53,6 +48,7 @@ public class RecievePassAction extends StrategyAction {
 		
 		double heading = attacker.getRotationRelativeTo(defender);
 		
-		return RobotInstruction.createRotate(heading, 80);
+		int rotSpeed = StratMaths.speedForRot(heading);
+		return RobotInstruction.createRotate(heading, rotSpeed);
 	}
 }
