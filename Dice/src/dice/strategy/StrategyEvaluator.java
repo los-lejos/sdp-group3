@@ -40,8 +40,8 @@ public class StrategyEvaluator {
 	}
 
 	private void setAttackerActions() {
-		//attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
-		//attacker.addAction(new ShootAction(RobotType.ATTACKER));
+		attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
+		attacker.addAction(new ShootAction(RobotType.ATTACKER));
 		attacker.addAction(new ToBallAction(RobotType.ATTACKER));
 		attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
 		attacker.addAction(new BlockAction(RobotType.ATTACKER));
