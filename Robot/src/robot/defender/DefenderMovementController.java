@@ -67,7 +67,6 @@ public class DefenderMovementController extends MovementController {
 
 	@Override
 	public void cleanup() {
-		super.cleanup();
 		strafeThread.cleanup();
 	}
 

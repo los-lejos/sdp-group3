@@ -88,6 +88,6 @@ public class AttackerMovementController extends MovementController {
 
 	@Override
 	public void cleanup() {
-		super.cleanup();
+		
 	}
 }

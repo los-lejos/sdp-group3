@@ -19,6 +19,7 @@ public class StrafeThread extends Thread {
 	private boolean forwardDirection;
 	private long movementDelay = 0;
 	
+	private boolean interrupted = false;
 	private boolean isMoving = false;
 
 	public StrafeThread() {
@@ -35,6 +36,8 @@ public class StrafeThread extends Thread {
 	}
 	
 	public void move(int distance) {
+		this.interrupted = true;
+		
 		// Calculations based on power being 100,
 		// can find a function that fits this, but this is simpler to adjust
 		int absDist = Math.abs(distance);
@@ -68,16 +71,20 @@ public class StrafeThread extends Thread {
 		while (state != StrafeState.EXIT) {
 			if (state == StrafeState.STRAFE) {
 				moveLat();
-				this.isMoving = false;
 				state = StrafeState.READY;
 			} else if (state == StrafeState.STOP) {
 				stopMotor();
 				state = StrafeState.READY;
 			}
 			
+			interrupted = false;
+			
 			if(newState != StrafeState.READY) {
 				state = newState;
 				newState = StrafeState.READY;
+			} else if(isMoving) {
+				this.isMoving = false;
+				this.stopMotor();
 			}
 		}
 		
@@ -94,12 +101,8 @@ public class StrafeThread extends Thread {
 		}
 		
 		// Wait to move the required distance
-		try {
-			sleep(this.movementDelay);
-		} catch (InterruptedException e) {
-		}
-
-		this.stopMotor();
+		long startTime = System.currentTimeMillis();
+		while(!interrupted && System.currentTimeMillis() - startTime < this.movementDelay);
 	}
 	
 	private void stopMotor() {
