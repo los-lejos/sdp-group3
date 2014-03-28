@@ -14,7 +14,6 @@ import cv
 import time
 import numpy as np
 from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
-from threshold import Threshold
 from logger import Logger
 
 __author__ = "Ingvaras Merkys"
@@ -28,15 +27,13 @@ DOT_RADIUS = 8
 class Detection:
 
     # Format: (area_min, area_expected, area_max)
-    shape_sizes = { 'ball': [40, 160, 175]}
 
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
 
-    def __init__(self, gui, threshold, processor, colour_order, scale, pitch_num, render_tlayers = True):
+    def __init__(self, gui, processor, colour_order, scale, pitch_num, render_tlayers = True):
     
         self._render_tlayers = render_tlayers
-        self._threshold = threshold
         self._processor = processor
         self._pitch_w = WIDTH
         self._pitch_h = HEIGHT
@@ -52,7 +49,7 @@ class Detection:
         self._pitch_w, self._pitch_h = self._processor.pitch_size
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
-        experimental_frame, squares = self._find_squares()
+        squares_frame, squares = self._find_squares()
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
         entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
@@ -61,18 +58,28 @@ class Detection:
                 entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, square,
                                          self.areas, self._scale, render_tlayers = self._render_tlayers)
                 entities[which] = self._determine_angle(entities[which])
-
-        threshold_ball = self._threshold.ball(self._hsv_frame).smooth(grayscale=True)
-        entities[BALL] = self.__find_entity(threshold_ball, BALL, self._hsv_frame)
+        ball_frame, ball_blob = self._find_ball()
+        entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, BALL, ball_blob, self.areas,
+                                self._scale, render_tlayers = self._render_tlayers)
 
         if self._render_tlayers:
             [self._gui.update_layer('robot' + str(i), entities[i]) for i in xrange(4)]
-            self._gui.update_layer('threshR', threshold_ball)
-            self._gui.update_layer('experimental', experimental_frame)
+            self._gui.update_layer('threshR', ball_frame)
+            self._gui.update_layer('squares', squares_frame)
 
         self._gui.update_layer('ball', entities[BALL])
 
         return entities
+
+    def _find_ball(self):
+        binary_frame = self._processor.get_binary_frame('ball')
+        frame = binary_frame
+        blobs = binary_frame.findBlobs(minsize=100, appx_level=5)
+        if not blobs is None:
+            blobs.draw(color=Color.PUCE, width=2)
+            return (frame, blobs[0])
+        else:
+            return (frame, None)
 
     def _determine_angle(self, entity):
         if entity.get_blob() is None:
@@ -106,7 +113,7 @@ class Detection:
         return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
 
     def _find_squares(self):
-        binary_frame = self._processor.get_binary_frame()
+        binary_frame = self._processor.get_binary_frame('squares')
         squares = []
         if self._processor._gray_bin == 0:
             frame = self._processor.get_grayscale_frame()
@@ -139,41 +146,11 @@ class Detection:
 
     def __find_entity(self, threshold_img, which, image):
 
-        size = None
-        if which == BALL:
-            size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
-        else:
-            self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[which]))
-
+        size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
         entity_blob = self.__find_entity_blob(threshold_img, size)
         entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob,
                         self.areas, self._scale, render_tlayers = self._render_tlayers)
         return entity
-
-    def __find_entity_blob(self, image, size, dot=False):
-
-        blobmaker = BlobMaker()
-        blobs = blobmaker.extractFromBinary(image, image, minsize=size[0], maxsize=size[2])
-
-        if blobs is None:
-            return None
-
-        size_matched_blobs = [(self.__match_size(b, size), b) for b in blobs]
-
-        if not dot:
-            size_matched_blobs = filter(lambda (_, b): b.isRectangle(tolerance=0.8), size_matched_blobs)
-            
-        _, entity_blob = reduce(lambda x, y: x if x[0] < y[0] else y,
-                                size_matched_blobs, (sys.maxint, None))
-        return entity_blob
-
-    def __match_size(self, blob, expected_size):
-        area = blob.area()
-        if (expected_size[0] < area < expected_size[2]):
-            # Absolute difference from expected size
-            return abs(area-expected_size[1])
-        # No match
-        return sys.maxint
 
     def point_to_line_dist(self, p, fn):
         x, y = p

@@ -18,7 +18,6 @@ from optparse import OptionParser
 from SimpleCV import Camera, VirtualCamera
 from image_processing import Processor
 from gui import Gui, ThresholdGui
-from threshold import Threshold
 from detection import Detection, Entity
 from logger import Logger
 
@@ -56,14 +55,13 @@ class Vision:
             self._logger.log(error_msg)
             print error_msg
 
-        self.processor = Processor(pitch_num, reset_pitch_size, scale)
+        self.processor = Processor(pitch_num, reset_pitch_size, reset_thresh, scale)
         if self.processor.has_pitch_size:
             self.gui = Gui(self.processor.pitch_size)
         else:
             self.gui = Gui()
-        self.threshold = Threshold(pitch_num, reset_thresh)
-        self.threshold_gui = ThresholdGui(self.threshold, self.processor, self.gui, pitch_num = pitch_num)
-        self.detection = Detection(self.gui, self.threshold, self.processor, colour_order, scale, pitch_num,
+        self.threshold_gui = ThresholdGui(self.processor, self.gui, pitch_num = pitch_num)
+        self.detection = Detection(self.gui, self.processor, colour_order, scale, pitch_num,
                                    render_tlayers=render_tlayers)
         self.event_handler = self.gui.get_event_handler()
         self.event_handler.add_listener('q', self.quit)

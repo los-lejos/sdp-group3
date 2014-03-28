@@ -24,20 +24,23 @@ __author__ = "Ingvaras Merkys"
 
 class Processor:
 
-    def __init__(self, pitch_num, reset_pitch_size, scale):
+    def __init__(self, pitch_num, reset_pitch_size, reset_thresholds, scale):
 
         self._bgr_frame = None
-        self._red_channel = None
         self._green_channel = None
         self._gray_bin = 0
         self._contrast = 100
         self._brightness = 1000
-        self._gray_thresh = (0, 255)
+        self._gray_threshold = 255
+        self._ball_thresholds = [[0, 0, 0], [0, 0, 0]]
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
+        self._path_values = os.path.join('data', 'default_values_{0}').format(pitch_num)
         self._crop_rect = None
         self._corner_point = None
         self._pitch_points = []
         self._pitch = pitch_num
+        self._reset_thresholds = reset_thresholds
+        self.__get_values()
 
         if not reset_pitch_size:
             self.__load_pitch_size()
@@ -56,12 +59,29 @@ class Processor:
     def __save_pitch_size(self):
         util.dump_to_file((self._crop_rect, self._pitch_points), self._path_pitch_size)
 
+    def __get_values(self):
+        values = util.load_from_file(self._path_values)
+        if not(values is None) and not(self._reset_thresholds):
+            self._ball_thresholds, self._gray_threshold, self._brightness, self._contrast = values
+
+    def __save_values(self, values):
+        util.dump_to_file(values, self._path_values)
+
+    def update_values(self, entity, values):
+        self._ball_thresholds, self._gray_threshold, self._brightness, self._contrast = values
+        self.__save_values(values)
+
+    def get_values(self):
+        values = [self._ball_thresholds, self._gray_threshold, self._brightness, self._contrast]
+        return values
+
     def preprocess(self, frame, scale):
         if self.has_pitch_size:
             self._bgr_frame = frame.crop(*self._crop_rect).scale(scale)
             self._hsv_frame = self._bgr_frame.toHSV()
-            self._red_channel, self._green_channel, _ = self._rgb_norm_frame_channels(self._bgr_frame)
-            self._gray_thresh_frame = self._threshold_gray(self._green_channel)
+            self._green_channel = self._rgb_norm_frame_channels(self._bgr_frame)
+            self._green_thresh_frame = self._threshold_gray(self._green_channel)
+            self._red_thresh_frame = self.threshold(self._hsv_frame, self._ball_thresholds)
 
     def toggle_gray_bin(self, value):
         self._gray_bin = value
@@ -74,19 +94,16 @@ class Processor:
         g = frame_arr[:,:,1]
         r = frame_arr[:,:,2]
         rgb_sum = b+g+r
-        red_arr = (r*255.0/rgb_sum)
         green_arr = (g*255.0/rgb_sum)
-        #blue_frame = (b*255.0/rgb_sum)
+        # Squares - green
         alpha = self._contrast / 100.0     # [0.0-5.0]
         beta = self._brightness - 1000     # [-500 - 500]
         green_arr = np.clip(alpha * green_arr + beta, 0, 255)
         green_img = Image(green_arr, colorSpace = ColorSpace.GRAY)
-        red_img = Image(red_arr, colorSpace = ColorSpace.GRAY)
-        return (red_img, green_img, None)
+        return green_img
 
     def _threshold_gray(self, frame):
-        thresh_min, thresh_max = self._gray_thresh
-        img_bin = frame.threshold(thresh_max)
+        img_bin = frame.threshold(self._gray_threshold)
         return img_bin.morphClose().dilate(2)
 
     def get_grayscale_frame(self):
@@ -95,8 +112,13 @@ class Processor:
         assert self._green_channel.getColorSpace() == ColorSpace.GRAY, "Image must be grayscale!"
         return self._green_channel
 
-    def get_binary_frame(self):
-        return self._gray_thresh_frame
+    def get_binary_frame(self, entity):
+        if entity == 'squares':
+            return self._green_thresh_frame
+        elif entity == 'ball':
+            return self._red_thresh_frame
+        else:
+            raise Exception('Unknown entity {0}'.format(entity))
 
     def get_bgr_frame(self):
         if self._bgr_frame is None:
@@ -109,15 +131,6 @@ class Processor:
             return None
         assert self._hsv_frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
         return self._hsv_frame
-
-    def set_gray_thresholds(self, min_value, max_value):
-        self._gray_thresh = (min_value, max_value)
-
-    def set_contrast(self, value):
-        self._contrast = value
-
-    def set_brightness(self, value):
-        self._brightness = value
 
     def set_next_pitch_corner(self, point):
 
@@ -253,3 +266,41 @@ class Processor:
             else:
                 raise Exception('Invalid corner {0}'.format(corner))
         return sorted_points
+
+    def threshold(self, frame, thresholds):
+        threshmin, threshmax = thresholds
+        """
+        Performs thresholding on a frame.
+        The image must be in the HSV colorspace!
+        """
+
+        assert frame.getColorSpace() == ColorSpace.HSV, "Image must be HSV!"
+
+        iplframe = frame.getBitmap()
+
+        crossover = False
+        if threshmin[0] > threshmax[0]:
+            # Handle hue threshold crossing over
+            # angle boundry e. g. when thresholding on red
+
+            hMax = threshmin[0]
+            hMin = threshmax[0]
+
+            crossover = True
+            threshmax2 = [hMin, threshmax[1], threshmax[2]]
+            threshmin = [hMax, threshmin[1], threshmin[2]] 
+            threshmax = [255, threshmax[1], threshmax[2]]
+            threshmin2 = [0, threshmin[1], threshmin[2]]
+
+        iplresult = cv.CreateImage(cv.GetSize(iplframe), frame.depth, 1)
+        cv.InRangeS(iplframe, threshmin, threshmax, iplresult)
+
+        result = Image(iplresult)
+
+        if crossover:
+            iplresult2 = cv.CreateImage(cv.GetSize(iplframe), frame.depth, 1)
+            cv.InRangeS(iplframe, threshmin2, threshmax2, iplresult2)
+
+            result = result + Image(iplresult2)
+
+        return result
