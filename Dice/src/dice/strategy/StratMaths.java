@@ -7,7 +7,6 @@ import dice.state.Goal;
 import dice.state.UnboundedLine;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.WorldState.Side;
 
 /*
  * @author Sam Stern
@@ -22,13 +21,13 @@ public final class StratMaths {
 	public static final double BALL_SPEED_THRESH = 8;
 	public static final double BALL_DISTANCE_THRESH = 60;
 	private static final double MAX_SPEED_DIST = 200;
-	private static final int MIN_SPEED = 15;
+	private static final int MIN_SPEED = 30;
 	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
 	
 	private static final double MAX_SPEED_ROT = Math.toRadians(170);
 	private static final double MIN_SPEED_ROT = Math.toRadians(30);
 	private static final int MAX_ROT_SPEED = 30;
-	private static final int MIN_ROT_SPEED = 10;
+	private static final int MIN_ROT_SPEED = 15;
 	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
@@ -163,13 +162,13 @@ public final class StratMaths {
 	 * @param state - The world state
 	 * @return the angle in radians
 	 */
-	public static double getAngleRelativeToHorizontal(GameObject target, WorldState.Side side) {
+	public static double getAngleRelativeToHorizontal(GameObject target, boolean facingLeft) {
 		// get the rotation relative to a point just "infront"
 		// of the defender or attacker
 		Vector2 pos = target.getPos();
 		Vector2 forward = null;
 		
-		if(side == Side.LEFT) {
+		if(!facingLeft) {
 			forward = new Vector2(pos.X + 1, pos.Y);
 		} else {
 			forward = new Vector2(pos.X - 1, pos.Y);

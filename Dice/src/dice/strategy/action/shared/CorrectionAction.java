@@ -11,6 +11,7 @@ import dice.strategy.StrategyAction;
 
 public class CorrectionAction extends StrategyAction {
 	
+	private boolean faceBackwards = false;
 	private boolean shouldRotate;
 	private double dist;
 	
@@ -18,12 +19,21 @@ public class CorrectionAction extends StrategyAction {
 		super(targetRobot);
 	}
 	
+	public CorrectionAction(RobotType targetRobot, boolean faceBackwards) {
+		super(targetRobot);
+		
+		this.faceBackwards = faceBackwards;
+	}
+	
 	public boolean isPossible(WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		
 		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
+
+		boolean facingLeft = state.getSide() == Side.RIGHT;
+		if(faceBackwards) facingLeft = !facingLeft;
 		
-		double heading = StratMaths.getAngleRelativeToHorizontal(target, state.getSide());
+		double heading = StratMaths.getAngleRelativeToHorizontal(target, facingLeft);
 		double deltaX = zoneMiddle.X - target.getPos().X;
 
 		if(Math.abs(heading) > StratMaths.CORRECTION_ROT_THRESH) {
