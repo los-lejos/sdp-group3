@@ -1,8 +1,5 @@
 package dice.strategy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dice.Log;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
@@ -14,16 +11,13 @@ import dice.strategy.action.attacker.RepositionAction;
  * @author Joris S. Urbaitis
  */
 
-public class RobotStrategyState {
+public abstract class RobotStrategyState {
 	// Currently assigned action
 	private StrategyAction strategyAction;
 	
 	// Currently assigned instruction
 	private RobotInstruction currentInstruction;
-	
-	// List of actions the robot can perform
-	private List<StrategyAction> actions = new ArrayList<StrategyAction>();
-	
+
 	private RobotCommunicator robotComms;
 	private RobotType robotType;
 	
@@ -38,30 +32,17 @@ public class RobotStrategyState {
 	public void setCommunicator(RobotCommunicator robotComms) {
 		this.robotComms = robotComms;
 	}
+
+	protected abstract StrategyAction getBestAction(WorldState state);
 	
-	public void addAction(StrategyAction action) {
-		actions.add(action);
-	}
-	
-	public void clearActions() {
-		this.actions.clear();
-	}
-	
-	public boolean actionsAvailable() {
-		return this.actions.size() > 0;
-	}
-	
-	public StrategyAction getBestAction(WorldState state) {
-		for(StrategyAction action : this.actions) {
-			if(action.isPossible(state)) {
-				return action;
-			}
+	public void updateCurrentAction(WorldState state) {
+		StrategyAction action = this.getBestAction(state);
+		
+		if(action == null) {
+			// Nothing is possible, cancel update
+			return;
 		}
 		
-		return null;
-	}
-	
-	public void setCurrentAction(StrategyAction action, WorldState state) {
 		// If we are assigning a new action, print info
 		if(this.strategyAction == null || action.getClass() != this.strategyAction.getClass()) {
 			Log.logInfo(this.robotType.toString() + " assigned " + action.getClass().getName());

@@ -11,6 +11,7 @@ import dice.strategy.StrategyAction;
 
 public class CorrectionAction extends StrategyAction {
 	
+	private boolean faceBackwards = false;
 	private boolean shouldRotate;
 	private double dist;
 	
@@ -18,16 +19,24 @@ public class CorrectionAction extends StrategyAction {
 		super(targetRobot);
 	}
 	
+	public CorrectionAction(RobotType targetRobot, boolean faceBackwards) {
+		super(targetRobot);
+		
+		this.faceBackwards = faceBackwards;
+	}
+	
 	public boolean isPossible(WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		
 		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
-		
-		double heading = this.getAngleRelativeToHorizontal(state);
-		double deltaX = zoneMiddle.X - target.getPos().X;
-		double rotationThresh = StratMaths.getRotationThreshold(target.getPos(), zoneMiddle);
 
-		if(Math.abs(heading) > rotationThresh) {
+		boolean facingLeft = state.getSide() == Side.RIGHT;
+		if(faceBackwards) facingLeft = !facingLeft;
+		
+		double heading = StratMaths.getAngleRelativeToHorizontal(target, facingLeft);
+		double deltaX = zoneMiddle.X - target.getPos().X;
+
+		if(Math.abs(heading) > StratMaths.CORRECTION_ROT_THRESH) {
 			shouldRotate = true;
 			this.dist = heading;
 			
@@ -65,25 +74,5 @@ public class CorrectionAction extends StrategyAction {
 		}
 	}
 	
-	/** Gets the angle relative to a point directly infront of the robot.
-	 * 
-	 * @param state - The world state
-	 * @return the angle in radians
-	 */
-	private double getAngleRelativeToHorizontal(WorldState state) {
-		GameObject target = this.getTargetObject(state);
-		
-		// get the rotation relative to a point just "infront"
-		// of the defender
-		Vector2 pos = target.getPos();
-		Vector2 forward = null;
-		
-		if(state.getSide() == Side.LEFT) {
-			forward = new Vector2(pos.X + 1, pos.Y);
-		} else {
-			forward = new Vector2(pos.X - 1, pos.Y);
-		}
-		
-		return target.getRotationRelativeTo(forward);
-	}
+	
 }

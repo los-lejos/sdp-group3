@@ -3,13 +3,6 @@ package dice.strategy;
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
 import dice.state.WorldState;
-import dice.strategy.action.attacker.BlockAction;
-import dice.strategy.action.attacker.RecievePassAction;
-import dice.strategy.action.attacker.ShootAction;
-import dice.strategy.action.defender.PassAction;
-import dice.strategy.action.defender.SaveAction;
-import dice.strategy.action.shared.CorrectionAction;
-import dice.strategy.action.shared.ToBallAction;
 
 /**
  * Keep track of what both robots are doing
@@ -27,30 +20,15 @@ import dice.strategy.action.shared.ToBallAction;
 public class StrategyEvaluator {
 
 	private RobotStrategyState attacker, defender;
+	
+	private static final int UPDATE_DELAY = 600;
+	private long lastUpdateTime;
 
 	public StrategyEvaluator() {
-		attacker = new RobotStrategyState(RobotType.ATTACKER);
-		defender = new RobotStrategyState(RobotType.DEFENDER);
-		
-		setAttackerActions();
-		setDefenderActions();
+		attacker = new AttackerStrategyState();
+		defender = new DefenderStrategyState();
 	}
 
-	private void setAttackerActions() {
-		attacker.addAction(new RecievePassAction(RobotType.ATTACKER));
-		attacker.addAction(new ShootAction(RobotType.ATTACKER));
-		attacker.addAction(new ToBallAction(RobotType.ATTACKER));
-		attacker.addAction(new CorrectionAction(RobotType.ATTACKER));
-		attacker.addAction(new BlockAction(RobotType.ATTACKER));
-	}
-	
-	private void setDefenderActions() {
-		defender.addAction(new PassAction(RobotType.DEFENDER));
-		defender.addAction(new ToBallAction(RobotType.DEFENDER));
-		defender.addAction(new CorrectionAction(RobotType.DEFENDER));
-		defender.addAction(new SaveAction(RobotType.DEFENDER));
-	}
-	
 	public void setCommunicator(RobotType type, RobotCommunicator comms) {
 		if(type == RobotType.ATTACKER) {
 			attacker.setCommunicator(comms);
@@ -63,26 +41,16 @@ public class StrategyEvaluator {
 	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
-		StrategyAction bestAttackerAction = null;
-		StrategyAction bestDefenderAction = null;
-		
-		// Don't want to check the actions if we don't have data about our attacker
-		// so check if the position is not null
-		if(attacker.actionsAvailable()) {
-			bestAttackerAction = attacker.getBestAction(state);
+		// Don't update very often. The issue with doing that is that the robot
+		// will get flooded with messages and this will result in erratic movement
+		if(System.currentTimeMillis() - lastUpdateTime < UPDATE_DELAY) {
+			return;
 		}
 		
-		if(defender.actionsAvailable()) {
-			bestDefenderAction = defender.getBestAction(state);
-		}
+		lastUpdateTime = System.currentTimeMillis();
 
-		// Check if we should send actions to the robots
-		if(bestDefenderAction != null) {
-			defender.setCurrentAction(bestDefenderAction, state);
-		}
-		
-		if(bestAttackerAction != null) {
-			attacker.setCurrentAction(bestAttackerAction, state);
-		}
+		// Update actions performed by robots
+		attacker.updateCurrentAction(state);
+		defender.updateCurrentAction(state);
 	}
 }

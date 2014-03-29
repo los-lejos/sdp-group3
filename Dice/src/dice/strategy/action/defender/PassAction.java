@@ -3,6 +3,7 @@ package dice.strategy.action.defender;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.GameObject;
+import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
@@ -21,17 +22,15 @@ public class PassAction extends StrategyAction {
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject defender = state.getOurDefender();
-		GameObject attacker = state.getOurAttacker();
+		Vector2 defenderPos = defender.getPos();
 		
-		double headingDefender = defender.getRotationRelativeTo(attacker);
-		double headingAttacker = attacker.getRotationRelativeTo(defender);
-
-		if(Math.abs(headingDefender) > StratMaths.ROTATION_SHOOT_THRESH ||
-		   Math.abs(headingAttacker) > StratMaths.ROTATION_SHOOT_THRESH) {
-			int rotSpeed = StratMaths.speedForRot(headingDefender);
-			return RobotInstruction.createRotate(headingDefender, rotSpeed);
-		} else {
-			return RobotInstruction.createKick();
+		double passY = StratMaths.getPassY(state.getOpponentAttacker());
+		
+		if(Math.abs(defenderPos.Y - passY) > StratMaths.Y_POS_THRESH) {
+			double dist = StratMaths.getStrafeDist(defenderPos.Y, passY, state.getSide());
+			return RobotInstruction.createLateralMove(dist);
 		}
+		
+		return RobotInstruction.createKick();
 	}
 }
