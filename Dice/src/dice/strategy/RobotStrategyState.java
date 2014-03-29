@@ -33,11 +33,9 @@ public abstract class RobotStrategyState {
 		this.robotComms = robotComms;
 	}
 
-	protected abstract StrategyAction getBestAction(WorldState state);
+	public abstract StrategyAction getBestAction(WorldState state);
 	
-	public void updateCurrentAction(WorldState state) {
-		StrategyAction action = this.getBestAction(state);
-		
+	public void updateCurrentAction(WorldState state, StrategyAction action) {
 		if(action == null) {
 			// Nothing is possible, cancel update
 			return;
@@ -59,11 +57,14 @@ public abstract class RobotStrategyState {
 		// and if the new instruction is different from the currently
 		// assigned one
 		RobotInstruction instruction = action.getInstruction(state);
-		boolean newInstruction = this.currentInstruction == null || !this.currentInstruction.equals(instruction);
 		
-		if(robotComms.isConnected() && newInstruction) {
-			this.currentInstruction = instruction;
-			robotComms.sendInstruction(instruction);
+		if(instruction != null) {
+			boolean newInstruction = this.currentInstruction == null || !this.currentInstruction.equals(instruction);
+			
+			if(robotComms.isConnected() && newInstruction) {
+				this.currentInstruction = instruction;
+				robotComms.sendInstruction(instruction);
+			}
 		}
 	}
 }

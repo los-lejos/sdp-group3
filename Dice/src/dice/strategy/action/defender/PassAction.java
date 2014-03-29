@@ -9,9 +9,15 @@ import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 public class PassAction extends StrategyAction {
+	
+	private double passY = -1;
 
 	public PassAction(RobotType targetRobot) {
 		super(targetRobot);
+	}
+	
+	public void setPassY(double passY) {
+		this.passY = passY;
 	}
 
 	@Override
@@ -23,9 +29,7 @@ public class PassAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject defender = state.getOurDefender();
 		Vector2 defenderPos = defender.getPos();
-		
-		double passY = StratMaths.getPassY(state.getOpponentAttacker());
-		
+
 		if(Math.abs(defenderPos.Y - passY) > StratMaths.Y_POS_THRESH) {
 			double dist = StratMaths.getStrafeDist(defenderPos.Y, passY, state.getSide());
 			return RobotInstruction.createLateralMove(dist);

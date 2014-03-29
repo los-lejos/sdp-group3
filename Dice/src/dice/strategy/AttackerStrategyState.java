@@ -29,7 +29,7 @@ public class AttackerStrategyState extends RobotStrategyState {
 	}
 
 	@Override
-	protected StrategyAction getBestAction(WorldState state) {
+	public StrategyAction getBestAction(WorldState state) {
 		if(recievePass.isPossible(state)) {
 			if(passCorrect.isPossible(state)) {
 				return passCorrect;

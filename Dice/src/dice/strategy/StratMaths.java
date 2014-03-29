@@ -179,18 +179,7 @@ public final class StratMaths {
 		
 		return target.getRotationRelativeTo(forward);
 	}
-	
-	public static double getPassY(GameObject enemyAttacker) {
-		Vector2 pos = enemyAttacker.getPos();
-		
-		// Return the side that has a wider opening relative to where the attacker robot is
-		if(pos.Y > WorldState.PITCH_HEIGHT / 2.0) {
-			return 0.0;
-		} else {
-			return WorldState.PITCH_HEIGHT;
-		}
-	}
-	
+
 	public static double getStrafeDist(double ourY, double targetY,
 			WorldState.Side side) {
 		if (side == WorldState.Side.LEFT) {

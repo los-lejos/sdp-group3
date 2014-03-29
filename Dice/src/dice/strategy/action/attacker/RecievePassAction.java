@@ -13,9 +13,15 @@ import dice.strategy.StrategyAction;
  * @author Sam Stern
  */
 public class RecievePassAction extends StrategyAction {
+	
+	private double passY = -1;
 
 	public RecievePassAction(RobotType targetRobot) {
 		super(targetRobot);
+	}
+	
+	public void setPassY(double passY) {
+		this.passY = passY;
 	}
 
 	@Override
@@ -35,6 +41,11 @@ public class RecievePassAction extends StrategyAction {
 			ballVel.getLength() > 5 &&
 			dot > 0 &&
 			heading <= StratMaths.getRotationThreshold(attackerPos, ballPos);
+			
+		if(ballHeadingTowardsRobot) {
+			// We want to stay where we are if the ball is heading towards the robot
+			this.passY = -1;
+		}
 
 		return state.getObjectWithBall() == state.getOurDefender() ||
 				ball.getCurrentZone() == PitchZone.OUR_DEFEND_ZONE ||
@@ -45,9 +56,13 @@ public class RecievePassAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject target = this.getTargetObject(state);
 		Vector2 targetPos = target.getPos();
-		
-		double passY = StratMaths.getPassY(state.getOpponentAttacker());
-		double dist = StratMaths.getStrafeDist(targetPos.Y, passY, state.getSide());
-		return RobotInstruction.createLateralMove(dist);
+
+		if(this.passY != -1) {
+			double dist = StratMaths.getStrafeDist(targetPos.Y, passY, state.getSide());
+			return RobotInstruction.createLateralMove(dist);
+		} else {
+			// Stay where we are and wait for the ball
+			return null;
+		}
 	}
 }

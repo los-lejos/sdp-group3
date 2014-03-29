@@ -2,7 +2,11 @@ package dice.strategy;
 
 import dice.communication.RobotCommunicator;
 import dice.communication.RobotType;
+import dice.state.GameObject;
+import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.action.attacker.RecievePassAction;
+import dice.strategy.action.defender.PassAction;
 
 /**
  * Keep track of what both robots are doing
@@ -23,6 +27,10 @@ public class StrategyEvaluator {
 	
 	private static final int UPDATE_DELAY = 600;
 	private long lastUpdateTime;
+	
+	private long PASS_TIMEOUT = 6000;
+	private long passTime = 0;
+	private double passY = 0;
 
 	public StrategyEvaluator() {
 		attacker = new AttackerStrategyState();
@@ -41,16 +49,64 @@ public class StrategyEvaluator {
 	 * Make decisions based on new world state.
 	 */
 	public void onNewState(WorldState state) {
+		final long currentTime = System.currentTimeMillis();
+		
 		// Don't update very often. The issue with doing that is that the robot
 		// will get flooded with messages and this will result in erratic movement
-		if(System.currentTimeMillis() - lastUpdateTime < UPDATE_DELAY) {
+		if(currentTime - lastUpdateTime < UPDATE_DELAY) {
 			return;
 		}
 		
-		lastUpdateTime = System.currentTimeMillis();
+		this.lastUpdateTime = currentTime;
 
 		// Update actions performed by robots
-		attacker.updateCurrentAction(state);
-		defender.updateCurrentAction(state);
+		StrategyAction attackerAction = attacker.getBestAction(state);
+		StrategyAction defenderAction = defender.getBestAction(state);
+		
+		// Check if passing behaviour is being executed and synchronize it
+		if(attackerAction != null && defenderAction != null &&
+		   attackerAction instanceof RecievePassAction &&
+		   defenderAction instanceof PassAction)
+		{
+			RecievePassAction recieve = (RecievePassAction)attackerAction;
+			PassAction pass = (PassAction)defenderAction;
+			
+			if(currentTime - this.passTime > PASS_TIMEOUT) {
+				// If we have been trying to pass for a while or are just starting to pass
+				// get the new optimal pass position
+				this.passTime = currentTime;
+				this.passY = getPassY(state.getOpponentAttacker());
+			} else {
+				// If we are trying to pass, try to optimize the pass coordinate, but avoid
+				// changing it too much as it may result in oscillation where
+				// the robots keep moving from one end of the pitch to the other
+				this.passY = updatePassY(state.getOpponentAttacker(), this.passY);
+			}
+			
+			recieve.setPassY(this.passY);
+			pass.setPassY(this.passY);
+		}
+		
+		attacker.updateCurrentAction(state, attackerAction);
+		defender.updateCurrentAction(state, defenderAction);
+	}
+	
+	public static double getPassY(GameObject enemyAttacker) {
+		Vector2 pos = enemyAttacker.getPos();
+		
+		// Return the side that has a wider opening relative to where the attacker robot is
+		if(pos.Y > WorldState.PITCH_HEIGHT / 2.0) {
+			return 0.0;
+		} else {
+			return WorldState.PITCH_HEIGHT;
+		}
+	}
+	
+	public static double updatePassY(GameObject enemyAttacker, double oldPassY) {
+		if(Math.abs(oldPassY - enemyAttacker.getPos().Y) <= StratMaths.Y_POS_THRESH * 2) {
+			return getPassY(enemyAttacker);
+		} else {
+			return oldPassY;
+		}
 	}
 }
