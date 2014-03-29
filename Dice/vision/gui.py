@@ -20,7 +20,10 @@ __author__ = "Ingvaras Merkys"
 class Gui:
 
     _layer_sets = { 'default': ['raw', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
-                    'squares': ['squares', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
+                    'squares1': ['squares', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
+                    'squares2': ['squares', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
+                    'squares3': ['squares', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
+                    'squares4': ['squares', 'robot0', 'robot1', 'robot2', 'robot3', 'ball'],
                     'ball': ['threshR', 'ball'] }
 
     _layers = { 'raw': None,
@@ -197,17 +200,23 @@ class ThresholdGui:
         self._show_on_gui = False
         self.__create_trackbars()
         self.__setup_key_events()
-        self.change_entity('squares')
+        self.change_entity('squares1')
 
     def __setup_key_events(self):
         """Adds key listeners to the main gui for switching between entities
         """
         def ball(): self.change_entity('ball')
-        def squares(): self.change_entity('squares')
+        def squares(i):
+            def s():
+                self.change_entity('squares' + str(i))
+            return s
 
         key_handler = self._gui.get_event_handler()
         key_handler.add_listener('r', ball)
-        key_handler.add_listener('e', squares)
+        key_handler.add_listener('a', squares(1))
+        key_handler.add_listener('s', squares(2))
+        key_handler.add_listener('d', squares(3))
+        key_handler.add_listener('f', squares(4))
         key_handler.add_listener('t', self.toggle_gui)
 
     def __create_trackbars(self):
@@ -223,13 +232,14 @@ class ThresholdGui:
         cv.CreateTrackbar('GRAY-BINARY', self.window, 0, 1, self.__on_trackbar_changed)
 
     def __on_trackbar_changed(self, x):
-        values = []
-        ball_thresholds = [[cv.GetTrackbarPos(' '.join([j, i]), self.window) for j in ['H', 'S', 'V']] for i in ['min', 'max']]
-        values.append(ball_thresholds)
-        values.append(cv.GetTrackbarPos('Threshold', self.window))
-        values.append(cv.GetTrackbarPos('Brightness', self.window))
-        values.append(cv.GetTrackbarPos('Contrast', self.window))
-        self._processor.update_values(self._current_entity, values)
+        if self._current_entity == 'ball':
+            values = [[cv.GetTrackbarPos(' '.join([j, i]), self.window) for j in ['H', 'S', 'V']] for i in ['min', 'max']]
+        else:
+            values = []
+            values.append(cv.GetTrackbarPos('Threshold', self.window))
+            values.append(cv.GetTrackbarPos('Brightness', self.window))
+            values.append(cv.GetTrackbarPos('Contrast', self.window))
+        self._processor.update_values(values, self._current_entity)
 
         pos_gray_bin = cv.GetTrackbarPos('GRAY-BINARY', self.window)
         self._processor.toggle_gray_bin(pos_gray_bin)
@@ -244,7 +254,7 @@ class ThresholdGui:
 
     def change_entity(self, name):
         self._current_entity = name
-        self.set_trackbar_values(self._processor.get_values())
+        self.set_trackbar_values(self._processor.get_values(name))
 
         # Make sure trackbars update immediately
         cv.WaitKey(2)
