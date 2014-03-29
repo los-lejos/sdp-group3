@@ -14,6 +14,7 @@ public class AttackerStrategyState extends RobotStrategyState {
 	private ShootAction shoot;
 	private ToBallAction toBall;
 	private CorrectionAction correction;
+	private CorrectionAction passCorrect;
 	private BlockAction block;
 
 	public AttackerStrategyState() {
@@ -22,6 +23,7 @@ public class AttackerStrategyState extends RobotStrategyState {
 		this.recievePass = new RecievePassAction(RobotType.ATTACKER);
 		this.shoot = new ShootAction(RobotType.ATTACKER);
 		this.toBall = new ToBallAction(RobotType.ATTACKER);
+		this.passCorrect = new CorrectionAction(RobotType.ATTACKER, true);
 		this.correction = new CorrectionAction(RobotType.ATTACKER);
 		this.block = new BlockAction(RobotType.ATTACKER);
 	}
@@ -29,7 +31,9 @@ public class AttackerStrategyState extends RobotStrategyState {
 	@Override
 	protected StrategyAction getBestAction(WorldState state) {
 		if(recievePass.isPossible(state)) {
-			// correct opposite side
+			if(passCorrect.isPossible(state)) {
+				return passCorrect;
+			}
 			
 			return recievePass;
 		}

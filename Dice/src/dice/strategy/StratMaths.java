@@ -34,6 +34,9 @@ public final class StratMaths {
 	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
 	
+	// Threshold for deciding if an object is nearby in Y
+	public static final double Y_POS_THRESH = 35;
+	
 	public static final double CORRECTION_ROT_THRESH = ROTATION_THRESH_MIN;
 	
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
@@ -175,5 +178,25 @@ public final class StratMaths {
 		}
 		
 		return target.getRotationRelativeTo(forward);
+	}
+	
+	public static double getPassY(GameObject enemyAttacker) {
+		Vector2 pos = enemyAttacker.getPos();
+		
+		// Return the side that has a wider opening relative to where the attacker robot is
+		if(pos.Y > WorldState.PITCH_HEIGHT / 2.0) {
+			return 0.0;
+		} else {
+			return WorldState.PITCH_HEIGHT;
+		}
+	}
+	
+	public static double getStrafeDist(double ourY, double targetY,
+			WorldState.Side side) {
+		if (side == WorldState.Side.LEFT) {
+			return targetY - ourY;
+		} else {
+			return ourY - targetY;
+		}
 	}
 }

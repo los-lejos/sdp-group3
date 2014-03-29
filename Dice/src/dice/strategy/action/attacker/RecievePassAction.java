@@ -43,12 +43,11 @@ public class RecievePassAction extends StrategyAction {
 
 	@Override
 	public RobotInstruction getInstruction(WorldState state) {
-		GameObject attacker = state.getOurAttacker();
-		GameObject defender = state.getOurDefender();
+		GameObject target = this.getTargetObject(state);
+		Vector2 targetPos = target.getPos();
 		
-		double heading = attacker.getRotationRelativeTo(defender);
-		
-		int rotSpeed = StratMaths.speedForRot(heading);
-		return RobotInstruction.createRotate(heading, rotSpeed);
+		double passY = StratMaths.getPassY(state.getOpponentAttacker());
+		double dist = StratMaths.getStrafeDist(targetPos.Y, passY, state.getSide());
+		return RobotInstruction.createLateralMove(dist);
 	}
 }

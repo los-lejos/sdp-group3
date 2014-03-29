@@ -6,6 +6,7 @@ import dice.state.GameObject;
 import dice.state.Line;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 public class BlockAction extends StrategyAction {
@@ -34,28 +35,19 @@ public class BlockAction extends StrategyAction {
 			
 			// Move towards wherever the opponent attacker is looking
 			double yAtRobot = line.getYValue(targetPos.X);
-			movementAmount = getMovementAmount(targetPos.Y, yAtRobot,
+			movementAmount = StratMaths.getStrafeDist(targetPos.Y, yAtRobot,
 					state.getSide());
 		}
 
 		// If we haven't decided to do anything smarter, navigate to the ball's y
 		if (this.movementAmount == Double.MAX_VALUE) {
-			movementAmount = getMovementAmount(targetPos.Y,
+			movementAmount = StratMaths.getStrafeDist(targetPos.Y,
 					ballPos.Y, state.getSide());
 		}
 
 		// Don't want to issue lateral movement commands if we're not going to
 		// be moving a decent amount
 		return Math.abs(movementAmount) > 6;
-	}
-
-	private static double getMovementAmount(double ourY, double targetY,
-			WorldState.Side side) {
-		if (side == WorldState.Side.LEFT) {
-			return targetY - ourY;
-		} else {
-			return ourY - targetY;
-		}
 	}
 
 	@Override
