@@ -85,7 +85,7 @@ class Detection:
         if entity.get_blob() is None:
             return entity
         corner_points = entity.get_blob().minRect()
-        DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3*1.1)
+        DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3)
         points = []
         points.append(self.get_middle_point(corner_points[0], corner_points[1]))
         points.append(self.get_middle_point(corner_points[1], corner_points[3]))
@@ -114,7 +114,6 @@ class Detection:
 
     def _find_squares(self):
         binary_frame = self._processor.get_binary_frame('squares')
-        squares = []
         if self._processor._gray_bin == 0:
             frame = self._processor.get_grayscale_frame()
         else:
@@ -123,16 +122,15 @@ class Detection:
         if not blobs is None:
             blobs.draw(color=Color.PUCE, width=2)
         try:
-            square_blobs = blobs.filter([b.isSquare(0.4, 0.25) for b in blobs])
+            square_blobs = blobs#.filter([b.isSquare(0.4, 0.25) for b in blobs])
             if square_blobs:
                 square_blobs.draw(color=Color.RED, width=2)
                 for square in square_blobs:
                     square.drawMinRect(color=Color.LIME, width=2)
-                    squares.append(square)
             frame.addDrawingLayer(binary_frame.dl())
-            return (frame.applyLayers(), squares)
+            return (frame.applyLayers(), square_blobs)
         except:
-            return (frame, squares)
+            return (frame, [])
 
     def _sort_squares(self, squares):
         sorted_squares = [None, None, None, None]
