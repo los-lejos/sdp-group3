@@ -2,6 +2,8 @@ package dice.communication;
 
 import java.util.Arrays;
 
+import dice.state.WorldState;
+
 import shared.RobotInstructions;
 
 /*
@@ -56,6 +58,10 @@ public class RobotInstruction {
 	}
 	
 	public static RobotInstruction createLateralMove(double distance) {
+		if(Math.abs(distance) > WorldState.PITCH_HEIGHT) {
+			distance = distance > 0 ? WorldState.PITCH_HEIGHT : -WorldState.PITCH_HEIGHT;
+		}
+		
 		byte robotDistance = strategyToRobotDistance(distance);
 		return new RobotInstruction(RobotInstructions.LAT_MOVE, robotDistance, (byte) 0, (byte)0);
 	}
