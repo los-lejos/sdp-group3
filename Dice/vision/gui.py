@@ -60,11 +60,9 @@ class Gui:
 
         for key in iterator:
             to_draw = self._layers[key]
-            if to_draw is None:
-                continue
-            elif isinstance(to_draw, DrawingLayer):
+            if isinstance(to_draw, DrawingLayer):
                 base_layer.addDrawingLayer(to_draw)
-            else:
+            elif not to_draw is None:
                 to_draw.draw(entity_layer)
 
         for layer in self._persistent_layers.itervalues():
