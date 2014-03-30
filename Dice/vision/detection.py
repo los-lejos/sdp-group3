@@ -143,31 +143,38 @@ class Detection:
         else:
             frame = binary_frame
         blobs = binary_frame.findBlobs(minsize=int(math.pow(self._scale,2)*300), appx_level=5)
-        if not blobs is None:
-            blobs.draw(color=Color.PUCE, width=2)
-        try:
-            square_blobs = blobs#.filter([b.isSquare(0.4, 0.25) for b in blobs])
-            if square_blobs:
-                square_blobs.draw(color=Color.RED, width=2)
-                for square in square_blobs:
-                    square.drawMinRect(color=Color.LIME, width=2)
-            frame.addDrawingLayer(binary_frame.dl())
-            return (frame.applyLayers(), square_blobs if not square_blobs is None else [])
-        except:
-            return (frame, [])
+        return (frame, blobs if not blobs is None else [])
 
     def _join_split_squares(self, squares):
+        def dist(p1, p2):
+            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
         squares_proper = []
+        half_squares = []
         for i in xrange(len(squares)):
-            for j in xrange(i+1, len(squares)):
-                half_size = 600*math.pow(self._scale, 2)
-                if squares[i].area() < half_size and squares[j].area() < half_size:
-                    joint_square = self._join_squares(squares[i], squares[j])
-                    squares_proper.append(joint_square)
-                    break
+                half_size = 700*math.pow(self._scale, 2)
+                if squares[i].area() < half_size:
+                    half_squares.append(squares[i])
                 else:
-                    print squares[0].area(), squares[1].area()
-            squares_proper.append(squares[i])
+                    squares_proper.append(squares[i])
+        if len(half_squares) % 2 == 1:
+            half_squares.pop()
+        while len(half_squares) > 0:
+            min_dist = float('inf')
+            min_squares = ((-1, None), (-1, None))
+            for i in xrange(len(half_squares)):
+                for j in xrange(i+1, len(half_squares)):
+                    d = dist(half_squares[i].centroid(), half_squares[j].centroid())
+                    if d < min_dist:
+                        min_dist = d
+                        min_squares = ((i, half_squares[i]), (j, half_squares[j]))
+            joint_square = self._join_squares(min_squares[0][1], min_squares[1][1])
+            squares_proper.append(joint_square)
+            if min_squares[0][0] > min_squares[1][0]:
+                del half_squares[min_squares[0][0]]
+                del half_squares[min_squares[1][0]]
+            else:
+                del half_squares[min_squares[1][0]]
+                del half_squares[min_squares[0][0]]
         return squares_proper
 
     def _join_squares(self, square1, square2):
