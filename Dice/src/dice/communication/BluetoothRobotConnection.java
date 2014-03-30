@@ -41,7 +41,7 @@ public class BluetoothRobotConnection extends Thread {
 		
 		this.eventListener = eventListener;
 		
-		if(robot == RobotType.DEFENDER) {
+		if(robot == RobotType.ATTACKER) {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "OptimusPrime", "0016530A553F");
 		} else {
 			nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Ball-E", "0016530A5C22");
