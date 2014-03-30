@@ -50,6 +50,8 @@ class Detection:
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
         squares_frame, squares = self._find_squares()
+        squares = self._join_split_squares(squares)
+        #squares = self._mockblob_test(squares)
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
         entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
@@ -71,6 +73,12 @@ class Detection:
 
         return entities
 
+    def _mockblob_test(self, squares):
+        a = []
+        for square in squares:
+            a.append(MockBlob(square.minRect()))
+        return a
+
     def _find_ball(self):
         binary_frame = self._processor.get_binary_frame('ball')
         frame = binary_frame
@@ -86,20 +94,39 @@ class Detection:
             return entity
         corner_points = entity.get_blob().minRect()
         DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3)
+#        d1 = math.sqrt(math.pow((p[0][0] - p[1][0]), 2) + math.pow((p[0][1] - p[1][1]), 2))
         points = []
-        points.append(self.get_middle_point(corner_points[0], corner_points[1]))
-        points.append(self.get_middle_point(corner_points[1], corner_points[3]))
+        points.append(self.get_middle_point(corner_points[0], corner_points[1]))#
         points.append(self.get_middle_point(corner_points[0], corner_points[2]))
-        points.append(self.get_middle_point(corner_points[2], corner_points[3]))
-        alpha1, _, _ = self.get_line_fn(points[0], points[3])
-        alpha2, _, _ = self.get_line_fn(points[1], points[2])
-        points[0] = (points[0][0]-DOT_OFFSET*math.cos(alpha1), points[0][1]-DOT_OFFSET*math.sin(alpha1))
-        points[3] = (points[3][0]+DOT_OFFSET*math.cos(alpha1), points[3][1]+DOT_OFFSET*math.sin(alpha1))
-        points[1] = (points[1][0]-DOT_OFFSET*math.cos(alpha2), points[1][1]-DOT_OFFSET*math.sin(alpha2))
-        points[2] = (points[2][0]+DOT_OFFSET*math.cos(alpha2), points[2][1]+DOT_OFFSET*math.sin(alpha2))
+        points.append(self.get_middle_point(corner_points[2], corner_points[3]))#
+        points.append(self.get_middle_point(corner_points[1], corner_points[3]))
+
+        alpha1, _, _ = self.get_line_fn(points[0], points[2])
+        alpha2, _, _ = self.get_line_fn(points[1], points[3])
+        alphas = [alpha1, alpha2]
+        for i in xrange(4):
+            alpha = alphas[i%2]
+            if (alpha == -math.pi/2.0 or alpha == math.pi/2.0):
+                if points[(i+2)%4][1]-points[i][1] > 0:
+                    c = 1
+                else:
+                    c = -1
+            elif (alpha > 0 and alpha < math.pi/2.0) or (alpha < -math.pi/2.0):
+                if points[(i+2)%4][0]-points[i][0] > 0:
+                    c = 1
+                else:
+                    c = -1
+            else:
+                if points[(i+2)%4][0]-points[i][0] < 0:
+                    c = -1
+                else:
+                    c = 1
+            x = points[i][0] + DOT_OFFSET * math.cos(alpha) * c
+            y = points[i][1] + DOT_OFFSET * math.sin(alpha) * c
+            points[i] = (x, y)
         values = [ (i, self._get_point_value(point)) for i, point in enumerate(points) ]
         dot_i = min(values, key=lambda x: x[1])[0]
-        entity.set_dot(points[dot_i])
+        entity.set_dot((int(points[dot_i][0]), int(points[dot_i][1])))
         center = entity.get_frame_coords()
         angle = math.atan2(points[dot_i][1] - center[1], points[dot_i][0] - center[0]) + math.pi
         a = math.cos(angle)
@@ -109,7 +136,10 @@ class Detection:
         return entity
 
     def _get_point_value(self, point):
-        x, y = point
+        x = int(point[0])
+        y = int(point[1])
+        self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
+        self._bgr_frame.applyLayers()
         return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
 
     def _find_squares(self):
@@ -118,7 +148,7 @@ class Detection:
             frame = self._processor.get_grayscale_frame()
         else:
             frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=1000, appx_level=5)
+        blobs = binary_frame.findBlobs(minsize=int(math.pow(self._scale,2)*500), appx_level=5)
         if not blobs is None:
             blobs.draw(color=Color.PUCE, width=2)
         try:
@@ -132,23 +162,44 @@ class Detection:
         except:
             return (frame, [])
 
+    def _join_split_squares(self, squares):
+        squares_proper = []
+        for i in xrange(len(squares)):
+            for j in xrange(i+1, len(squares)):
+                half_size = 600*math.pow(self._scale, 2)
+                if squares[i].area() < half_size and squares[j].area() < half_size:
+                    joint_square = self._join_squares(squares[i], squares[j])
+                    squares_proper.append(joint_square)
+                    break
+            squares_proper.append(squares[i])
+        return squares_proper
+
+    def _join_squares(self, square1, square2):
+        new_min_rect = []
+        points1 = list(square1.minRect())
+        points2 = list(square2.minRect())
+        def dist(p1, p2):
+            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
+        def min_dist_point(p, points):
+            return min([(dist(p, p2), i) for i, p2 in enumerate(points)], key=lambda x: x[0])
+        point_distances = [(min_dist_point(p, points2), i) for i, p in enumerate(points1)]
+        # [((dist, i), j)]
+        point_distances = sorted(point_distances, key=lambda x: x[0][0])
+        for i in xrange(2):
+            (_, p1), p2 = point_distances[i]
+            new_min_rect.extend([points1[p1], points2[p2]])
+        return MockBlob(new_min_rect)
+
     def _sort_squares(self, squares):
         sorted_squares = [None, None, None, None]
-        for i in range(0, 4):
+        for i in xrange(4):
             x_min = int(self._scale*self.areas[i][0]*self._pitch_w)
             x_max = int(self._scale*self.areas[i][1]*self._pitch_w)
             for square in squares:
                 if square.minRectX() > x_min and square.minRectX() < x_max:
                     sorted_squares[i] = square
+                    break
         return sorted_squares
-
-    def __find_entity(self, threshold_img, which, image):
-
-        size = map(lambda x: int(x*self._scale), self.shape_sizes['ball'])
-        entity_blob = self.__find_entity_blob(threshold_img, size)
-        entity = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, entity_blob,
-                        self.areas, self._scale, render_tlayers = self._render_tlayers)
-        return entity
 
     def point_to_line_dist(self, p, fn):
         x, y = p
@@ -203,9 +254,6 @@ class Entity:
     def get_coordinates(self):
         return self._coordinates
 
-    def get_local_coords(self):
-        return self._local_coords
-
     def get_frame_coords(self):
         return self._frame_coords
 
@@ -221,24 +269,6 @@ class Entity:
     def set_angle(self, angle):
         self._angle = angle
 
-    def clarify_coords(self, dot_local_x, dot_local_y):
-        local_x, local_y = self.get_local_coords()
-        local_x = (local_x + dot_local_x)/2
-        local_y = (local_y + dot_local_y)/2
-        self._local_coords = (local_x, local_y)
-        
-        frame_x, frame_y = self.get_frame_coords()
-        dot_frame_x = dot_local_x + int(self._areas[self.which][0]*self._pitch_w*self._scale)
-        dot_frame_y = dot_local_y
-        frame_x = int((frame_x + dot_frame_x)/2)
-        frame_y = int((frame_y + dot_frame_y)/2)
-        self._frame_coords = (frame_x, frame_y)
-        
-        x, y = self.get_coordinates()
-        x = int((frame_x/float(self._pitch_w))*WIDTH)
-        y = int((frame_y/float(self._pitch_h))*HEIGHT)
-        self._coordinates = (x, y)
-
     def draw(self, layer):
         """Draw this entity to the specified layer
         If angle is true then orientation will also be drawn
@@ -253,7 +283,7 @@ class Entity:
                 colour = Color.YELLOW
             else:
                 self._logger.log('Unrecognized colour {0} for pitch area.'.format(self._colour_order[self.which]))
-            self._entity_blob.drawMinRect(layer, color=colour, width=5)
+            self._entity_blob.drawMinRect(layer, color=colour, width=3)
             angle = self.get_angle()
             if not angle is None:
                 x, y = self._frame_coords
@@ -269,3 +299,38 @@ class Entity:
             x, y = self.get_frame_coords()
             layer.line((x, 0), (x, h), antialias=False, color=Color.RED)
             layer.line((0, y), (w, y), antialias=False, color=Color.RED)
+
+class MockBlob:
+
+    def __init__(self, min_rect_points):
+        self._min_rect_points = min_rect_points
+        self._x_coord = sum([p[0] for p in min_rect_points])/float(len(min_rect_points))
+        self._y_coord = sum([p[1] for p in min_rect_points])/float(len(min_rect_points))
+
+    def drawMinRect(self, layer, color=Color.BLACK, width=1):
+        p = self._min_rect_points
+        layer.line(p[0], p[1], color=color, width=width)
+        layer.line(p[1], p[3], color=color, width=width)
+        layer.line(p[2], p[3], color=color, width=width)
+        layer.line(p[0], p[2], color=color, width=width)
+
+    def minRectX(self):
+        return self._x_coord
+
+    def minRectY(self):
+        return self._y_coord
+
+    def minRect(self):
+        return self._min_rect_points
+
+    def minRectWidth(self):
+        p = self._min_rect_points
+        d1 = math.sqrt(math.pow((p[0][0] - p[1][0]), 2) + math.pow((p[0][1] - p[1][1]), 2))
+        d2 = math.sqrt(math.pow((p[2][0] - p[3][0]), 2) + math.pow((p[2][1] - p[3][1]), 2))
+        return (d1+d2)/2.0
+
+    def minRectHeight(self):
+        p = self._min_rect_points
+        d1 = math.sqrt(math.pow((p[1][0] - p[3][0]), 2) + math.pow((p[1][1] - p[3][1]), 2))
+        d2 = math.sqrt(math.pow((p[0][0] - p[2][0]), 2) + math.pow((p[0][1] - p[2][1]), 2))
+        return (d1+d2)/2.0
