@@ -128,7 +128,7 @@ class Detection:
                 for square in square_blobs:
                     square.drawMinRect(color=Color.LIME, width=2)
             frame.addDrawingLayer(binary_frame.dl())
-            return (frame.applyLayers(), square_blobs)
+            return (frame.applyLayers(), square_blobs if not square_blobs is None else [])
         except:
             return (frame, [])
 
