@@ -57,7 +57,7 @@ public class RecievePassAction extends StrategyAction {
 		GameObject target = this.getTargetObject(state);
 		Vector2 targetPos = target.getPos();
 
-		if(this.passY != -1) {
+		if(this.passY != -1 && Math.abs(targetPos.Y - passY) > StratMaths.Y_POS_THRESH) {
 			double dist = StratMaths.getStrafeDist(targetPos.Y, passY, state.getSide());
 			return RobotInstruction.createLateralMove(dist);
 		} else {

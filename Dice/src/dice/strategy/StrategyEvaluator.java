@@ -65,12 +65,9 @@ public class StrategyEvaluator {
 		
 		// Check if passing behaviour is being executed and synchronize it
 		if(attackerAction != null && defenderAction != null &&
-		   attackerAction instanceof RecievePassAction &&
-		   defenderAction instanceof PassAction)
+		   (attackerAction instanceof RecievePassAction ||
+		   defenderAction instanceof PassAction))
 		{
-			RecievePassAction recieve = (RecievePassAction)attackerAction;
-			PassAction pass = (PassAction)defenderAction;
-			
 			if(currentTime - this.passTime > PASS_TIMEOUT) {
 				// If we have been trying to pass for a while or are just starting to pass
 				// get the new optimal pass position
@@ -82,9 +79,16 @@ public class StrategyEvaluator {
 				// the robots keep moving from one end of the pitch to the other
 				this.passY = updatePassY(state.getOpponentAttacker(), this.passY);
 			}
+
+			if(attackerAction instanceof RecievePassAction) {
+				RecievePassAction recieve = (RecievePassAction)attackerAction;
+				recieve.setPassY(this.passY);
+			}
 			
-			recieve.setPassY(this.passY);
-			pass.setPassY(this.passY);
+			if(defenderAction instanceof PassAction) {
+				PassAction pass = (PassAction)defenderAction;
+				pass.setPassY(this.passY);
+			}
 		}
 		
 		attacker.updateCurrentAction(state, attackerAction);
