@@ -94,7 +94,6 @@ class Detection:
             return entity
         corner_points = entity.get_blob().minRect()
         DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3)
-#        d1 = math.sqrt(math.pow((p[0][0] - p[1][0]), 2) + math.pow((p[0][1] - p[1][1]), 2))
         points = []
         points.append(self.get_middle_point(corner_points[0], corner_points[1]))#
         points.append(self.get_middle_point(corner_points[0], corner_points[2]))
@@ -143,7 +142,7 @@ class Detection:
             frame = self._processor.get_grayscale_frame()
         else:
             frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=int(math.pow(self._scale,2)*500), appx_level=5)
+        blobs = binary_frame.findBlobs(minsize=int(math.pow(self._scale,2)*300), appx_level=5)
         if not blobs is None:
             blobs.draw(color=Color.PUCE, width=2)
         try:
@@ -166,6 +165,8 @@ class Detection:
                     joint_square = self._join_squares(squares[i], squares[j])
                     squares_proper.append(joint_square)
                     break
+                else:
+                    print squares[0].area(), squares[1].area()
             squares_proper.append(squares[i])
         return squares_proper
 
@@ -174,15 +175,24 @@ class Detection:
         points1 = list(square1.minRect())
         points2 = list(square2.minRect())
         def dist(p1, p2):
-            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
+            return math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2)
         def min_dist_point(p, points):
             return min([(dist(p, p2), i) for i, p2 in enumerate(points)], key=lambda x: x[0])
         point_distances = [(min_dist_point(p, points2), i) for i, p in enumerate(points1)]
         # [((dist, i), j)]
-        point_distances = sorted(point_distances, key=lambda x: x[0][0])
-        for i in xrange(2):
-            (_, p1), p2 = point_distances[i]
-            new_min_rect.extend([points1[p1], points2[p2]])
+        (_, p2), p1 = min(point_distances, key=lambda x: x[0][0])
+        del points1[p1]
+        del points2[p2]
+        point_distances = [(min_dist_point(p, points2), i) for i, p in enumerate(points1)]
+        (_, p2), p1 = min(point_distances, key=lambda x: x[0][0])
+        del points1[p1]
+        del points2[p2]
+        if points1[0][0] > points1[1][0]:
+            points1.reverse()
+        if points2[0][0] > points2[1][0]:
+            points2.reverse()
+        new_min_rect.extend(points1)
+        new_min_rect.extend(points2)
         return MockBlob(new_min_rect)
 
     def _sort_squares(self, squares):
