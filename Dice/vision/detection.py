@@ -106,21 +106,16 @@ class Detection:
         alphas = [alpha1, alpha2]
         for i in xrange(4):
             alpha = alphas[i%2]
+            c = 1
             if (alpha == -math.pi/2.0 or alpha == math.pi/2.0):
-                if points[(i+2)%4][1]-points[i][1] > 0:
-                    c = 1
-                else:
+                if points[(i+2)%4][1]-points[i][1] < 0:
                     c = -1
             elif (alpha > 0 and alpha < math.pi/2.0) or (alpha < -math.pi/2.0):
-                if points[(i+2)%4][0]-points[i][0] > 0:
-                    c = 1
-                else:
+                if points[(i+2)%4][0]-points[i][0] < 0:
                     c = -1
             else:
                 if points[(i+2)%4][0]-points[i][0] < 0:
                     c = -1
-                else:
-                    c = 1
             x = points[i][0] + DOT_OFFSET * math.cos(alpha) * c
             y = points[i][1] + DOT_OFFSET * math.sin(alpha) * c
             points[i] = (x, y)
@@ -138,8 +133,8 @@ class Detection:
     def _get_point_value(self, point):
         x = int(point[0])
         y = int(point[1])
-        self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
-        self._bgr_frame.applyLayers()
+        #self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
+        #self._bgr_frame.applyLayers()
         return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
 
     def _find_squares(self):
