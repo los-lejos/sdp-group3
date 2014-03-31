@@ -94,6 +94,8 @@ public class SocketVisionReader {
 					}
 					
 					Log.logInfo("Client disconnected");
+					scanner.close();
+					server.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

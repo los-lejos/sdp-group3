@@ -389,7 +389,7 @@ public class GameObject {
     private static ArrayList<Rotation> getLastNRotations(LimitedList<Rotation> rotations) {
     	ListIterator<Rotation> li = rotations.listIterator(rotations.size());
     	// Iterate in reverse.
-    	ArrayList<Rotation> lastFew = new ArrayList();
+    	ArrayList<Rotation> lastFew = new ArrayList<Rotation>();
     	long timeNow = System.currentTimeMillis();
     	while(li.hasPrevious()) {
     		Rotation rotation = li.previous();

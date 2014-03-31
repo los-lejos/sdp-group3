@@ -5,7 +5,6 @@ import dice.communication.RobotCommunicator;
 import dice.communication.RobotInstruction;
 import dice.communication.RobotType;
 import dice.state.WorldState;
-import dice.strategy.action.attacker.RepositionAction;
 
 /**
  * @author Joris S. Urbaitis
@@ -47,11 +46,6 @@ public abstract class RobotStrategyState {
 		}
 		
 		this.strategyAction = action;
-		
-		if (robotType == RobotType.ATTACKER && action instanceof RepositionAction) {
-			RepositionAction reposAction = (RepositionAction) action;
-			reposAction.resetRepositionAttempts();
-		}
 
 		// Send instruction if we are connected
 		// and if the new instruction is different from the currently
