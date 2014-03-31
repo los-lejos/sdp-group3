@@ -124,13 +124,17 @@ class Vision:
             #self.output_pitch_size()
             self.processor.set_crop_rect(self.cropper.get_crop_rect())
             self.detection.set_pitch_dims(self.cropper.pitch_size)
+            self.detection.set_coord_rect(self.cropper.get_coord_rect())
+            self.gui.draw_crosshair(self.cropper.get_coord_rect()[0], 'corner1')
+            self.gui.draw_crosshair(self.cropper.get_coord_rect()[1], 'corner2')
+            self.cropper.get_coord_rect()[0]
             self.gui.set_show_mouse(False)
             self.gui.update_layer('corner', None)
         else:
             self.gui.draw_crosshair(where, 'corner')
 
-    '''def output_pitch_size(self):
-        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.processor.pitch_points_string))'''
+    def output_pitch_size(self):
+        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.processor.pitch_points_string))
         
 
     def output_entities(self, entities):

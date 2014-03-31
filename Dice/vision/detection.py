@@ -41,6 +41,7 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
+        self._coord_rect = None
         self._logger = Logger('detection_errors.log')
         self._hsv_frame = None
         self._bgr_frame = None
@@ -50,17 +51,16 @@ class Detection:
         self._bgr_frame = self._processor.get_bgr_frame()
         squares_frame, squares = self._find_squares()
         squares = self._join_split_squares(squares)
-        #squares = self._mockblob_test(squares)
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
-        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
+        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect) for i in xrange(5)]
         for which, square in enumerate(squares):
             if which < 4:
-                entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, square,
+                entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, which, square,
                                          self.areas, self._scale, render_tlayers = self._render_tlayers)
                 entities[which] = self._determine_angle(entities[which])
         ball_frame, ball_blob = self._find_ball()
-        entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, BALL, ball_blob, self.areas,
+        entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, BALL, ball_blob, self.areas,
                                 self._scale, render_tlayers = self._render_tlayers)
 
         if self._render_tlayers:
@@ -71,12 +71,6 @@ class Detection:
         self._gui.update_layer('ball', entities[BALL])
 
         return entities
-
-    def _mockblob_test(self, squares):
-        a = []
-        for square in squares:
-            a.append(MockBlob(square.minRect()))
-        return a
 
     def _find_ball(self):
         binary_frame = self._processor.get_binary_frame('ball')
@@ -133,7 +127,8 @@ class Detection:
         y = int(point[1])
         #self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
         #self._bgr_frame.applyLayers()
-        return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
+        offset = int(round(3*self._scale))
+        return np.sum(self._bgr_frame.getNumpy()[x-offset:x+offset,y-offset:y+offset])
 
     def _find_squares(self):
         binary_frame = self._processor.get_binary_frame('squares')
@@ -237,9 +232,12 @@ class Detection:
     def set_pitch_dims(self, dims):
         self._pitch_w, self._pitch_h = dims
 
+    def set_coord_rect(self, coord_rect):
+        self._coord_rect = coord_rect
+
 class Entity:
 
-    def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None,
+    def __init__(self, pitch_w, pitch_h, colour_order, coord_rect, which = None, entity_blob = None,
                  areas = None, scale = None, render_tlayers = True):
         self._entity_blob = entity_blob
         self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
@@ -254,7 +252,6 @@ class Entity:
         self._colour_order = colour_order
         self._areas = areas
         self.which = which
-        
         if not entity_blob is None:
             x_frame = int(entity_blob.minRectX())
             y_frame = int(entity_blob.minRectY())
@@ -263,7 +260,26 @@ class Entity:
                 self._has_angle = True
             x = int(self._frame_coords[0]/float(self._pitch_w)*WIDTH)
             y = int(self._frame_coords[1]/float(self._pitch_h)*HEIGHT)
-            self._coordinates = (x, y)
+            self._coordinates = self._within_coord_rect(coord_rect, (x, y))
+
+    def _within_coord_rect(self, coord_rect, coords):
+        if coord_rect is None:
+            return coords
+        x, y = coords
+        [(x_min, y_min), (x_max, y_max)] = coord_rect
+        coord_w = x_max - x_min
+        coord_h = y_max - y_min
+        if x < x_min:
+            x = x_min
+        elif x > x_max:
+            x = x_max
+        if y < y_min:
+            y = y_min
+        elif y > y_max:
+            y = y_max
+        x = int((x-x_min)/float(coord_w)*WIDTH)
+        y = int((y-y_min)/float(coord_h)*HEIGHT)
+        return (x, y)
 
     def get_coordinates(self):
         return self._coordinates
