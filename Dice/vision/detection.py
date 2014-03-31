@@ -75,9 +75,8 @@ class Detection:
     def _find_ball(self):
         binary_frame = self._processor.get_binary_frame('ball')
         frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=100, appx_level=5)
+        blobs = binary_frame.findBlobs(minsize=int(50*math.pow(self._scale, 2)), appx_level=5)
         if not blobs is None:
-            blobs.draw(color=Color.PUCE, width=2)
             return (frame, blobs[0])
         else:
             return (frame, None)
