@@ -26,18 +26,18 @@ public final class StratMaths {
 	
 	private static final double MAX_SPEED_ROT = Math.toRadians(170);
 	private static final double MIN_SPEED_ROT = Math.toRadians(30);
-	private static final int MAX_ROT_SPEED = 30;
+	private static final int MAX_ROT_SPEED = 45;
 	private static final int MIN_ROT_SPEED = 15;
-	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
+	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_ROT_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
-	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
+	private static final double ROTATION_THRESH_MIN = Math.PI / 20;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 15;
 	
 	// Threshold for deciding if an object is nearby in Y
 	public static final double Y_POS_THRESH = 35;
 	
-	public static final double CORRECTION_ROT_THRESH = ROTATION_THRESH_MIN;
+	public static final double CORRECTION_ROT_THRESH = Math.PI / 18;
 	
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
@@ -136,7 +136,7 @@ public final class StratMaths {
 		}
 		
 		double slowingRot = rot - MIN_SPEED_ROT;
-		return (int) (100 - slowingRot * SPEED_PER_ROT);
+		return (int) (MAX_ROT_SPEED - slowingRot * SPEED_PER_ROT);
 	}
 
 	/*
