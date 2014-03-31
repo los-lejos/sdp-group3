@@ -48,9 +48,9 @@ public class WorldState {
     private static final int GOAL_WIDTH = 150;
     
     // calibration of the divisions
-    private static final double FIRST_ADJUSTMENT = -20;
+    private static final double FIRST_ADJUSTMENT = 20;
     private static final double SECOND_ADJUSTMENT = 0;
-    private static final double THIRD_ADJUSTMENT = 20;
+    private static final double THIRD_ADJUSTMENT = -20;
 
     private static final double FIRST_DIVISION = PITCH_WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
     private static final double SECOND_DIVISION = PITCH_WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
@@ -134,7 +134,7 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
-
+        
         updateBallOwnership();
         this.updateObjectZone(this.ball);
     }
