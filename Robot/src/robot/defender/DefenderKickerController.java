@@ -24,13 +24,9 @@ public class DefenderKickerController extends KickerController {
 	
 	private I2CPort I2Cport;
 	private I2CSensor I2Csensor;
-	
-	//private NXTMotor motor;
 
 	@SuppressWarnings("deprecation")
 	public DefenderKickerController() {
-		//motor = new NXTMotor(MotorPort.C);
-		//motor.setPower(100);
 		// Set up multiplexer stuff
 		I2Cport = SensorPort.S4;
 		I2Cport.i2cEnable(I2CPort.STANDARD_MODE);
@@ -43,16 +39,12 @@ public class DefenderKickerController extends KickerController {
 	protected void performOpen() throws InterruptedException {
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
-		//motor.backward();
 		Thread.sleep(DELAY_CLOSE);
-		//motor.stop();
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 		
 		// Open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
-		//motor.forward();
 		Thread.sleep(DELAY_OPEN);
-		//motor.stop();
 
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 	}
@@ -61,16 +53,13 @@ public class DefenderKickerController extends KickerController {
 	protected void performKick() throws InterruptedException {
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
-		//motor.backward();
 		Thread.sleep(DELAY_CLOSE);
 		
 		// Release ball
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
-		//motor.forward();
 		Thread.sleep(DELAY_KICK);
 
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
-		//motor.stop();
 		Thread.sleep(DELAY_KICK_END);
 		
 		// Return to normal
@@ -81,10 +70,9 @@ public class DefenderKickerController extends KickerController {
 	protected void performGrab() throws InterruptedException {
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
-		//motor.backward();
+		
 		Thread.sleep(DELAY_CLOSE);
 
-		//motor.stop();
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 	}
