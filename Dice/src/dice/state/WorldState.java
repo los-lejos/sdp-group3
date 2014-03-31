@@ -45,6 +45,7 @@ public class WorldState {
     
     public static final double PITCH_HEIGHT = 320;
     public static final double PITCH_WIDTH = 580;
+    private static final int GOAL_WIDTH = 150;
     
     // calibration of the divisions
     private static final double FIRST_ADJUSTMENT = -20;
@@ -65,8 +66,10 @@ public class WorldState {
     // we are LEFT if our defender is on the left.
     private Side ourSide;
 
-    private Goal leftGoal;
-    private Goal rightGoal;
+    private Goal leftGoal = new Goal(new Vector2(0, PITCH_HEIGHT / 2.0 + GOAL_WIDTH / 2.0),
+    								 new Vector2(0, PITCH_HEIGHT / 2.0 - GOAL_WIDTH / 2.0));
+    private Goal rightGoal = new Goal(new Vector2(PITCH_WIDTH, PITCH_HEIGHT / 2.0 + GOAL_WIDTH / 2.0),
+			 						  new Vector2(PITCH_WIDTH, PITCH_HEIGHT / 2.0 - GOAL_WIDTH / 2.0));
     
     // Utility to create and return a new WorldState
     public static WorldState init() {
@@ -131,7 +134,7 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
-        
+
         updateBallOwnership();
         this.updateObjectZone(this.ball);
     }
