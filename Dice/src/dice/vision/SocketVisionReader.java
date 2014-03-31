@@ -4,15 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import dice.Log;
-import dice.state.BoundedLine;
+import dice.state.AngleMaths;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.AngleMaths;
 import dice.strategy.StrategyEvaluator;
 
 /**
@@ -32,8 +29,6 @@ public class SocketVisionReader {
 
 	private static final int PORT = 28541;
 	private static final String ENTITY_BIT = "E";
-	private static final String PITCH_SIZE_BIT = "P";
-	private static final String GOAL_POS_BIT = "G";
 	
 	private StrategyEvaluator strategy;
 	private WorldState world;
@@ -162,38 +157,7 @@ public class SocketVisionReader {
                 } else {
                 	Log.logInfo("Data unavailable - cancelling strategy evaluation");
                 }
-			} else if (tokens[0].equals(PITCH_SIZE_BIT)) {
-                List<Vector2> points = new ArrayList<Vector2>();
-
-                for (int i = 0; i < 8; i++) {
-                    int j = i * 2;
-                    double x = Double.parseDouble(tokens[j+1]);
-                    double y = WorldState.convertYValue(Double.parseDouble(tokens[j+2]));
-                    Vector2 point = new Vector2(x,y);
-                    points.add(point);
-                }
-
-                BoundedLine top = new BoundedLine(points.get(0), points.get(1));
-                BoundedLine topRight = new BoundedLine(points.get(1), points.get(2));
-                BoundedLine right = new BoundedLine(points.get(2), points.get(3));
-                BoundedLine bottomRight = new BoundedLine(points.get(3), points.get(4));
-                BoundedLine bottom = new BoundedLine(points.get(4), points.get(5));
-                BoundedLine bottomLeft = new BoundedLine(points.get(5), points.get(6));
-                BoundedLine left = new BoundedLine(points.get(6), points.get(7));
-                BoundedLine topLeft = new BoundedLine(points.get(7), points.get(0));
-
-                // set the points around the pitch
-				world.calibratePitch(top, topRight, right, bottomRight,
-                                     bottom, bottomLeft, left, topLeft);
 			}
-			// We probably need this, but don't think vision is sending this right now
-			//else if (tokens[0].equals(GOAL_POS_BIT)) {
-			//	propagateGoals(Double.parseDouble(tokens[1]),
-			//			Double.parseDouble(tokens[2]),
-			//			Double.parseDouble(tokens[3]),
-			//			Double.parseDouble(tokens[4]));
-			//}
-
 		}
 	}
 	

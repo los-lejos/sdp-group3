@@ -22,10 +22,6 @@ public class WorldState {
         RIGHT
     }
 
-    public static final int PITCH_HEIGHT = 320;
-    public static final int PITCH_WIDTH = 580;
-    private static final int GOAL_WIDTH = 200;
-    
     // for ball ownership
     private static double OWNERSHIP_DISTANCE = 20; // in px
     private static double OWNERSHIP_THRESH = 20;
@@ -46,32 +42,23 @@ public class WorldState {
     // o----f----s----t----e v
     // <--------580-------->
     private static final double ORIGIN = 0;
-    private static final double WIDTH = 580;
-    private static final double HEIGHT = 320;
+    
+    public static final double PITCH_HEIGHT = 320;
+    public static final double PITCH_WIDTH = 580;
     
     // calibration of the divisions
     private static final double FIRST_ADJUSTMENT = -20;
     private static final double SECOND_ADJUSTMENT = 0;
     private static final double THIRD_ADJUSTMENT = 20;
 
-    private static final double FIRST_DIVISION = WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
-    private static final double SECOND_DIVISION = WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
-    private static final double THIRD_DIVISION = WIDTH / 4 * 3 + ORIGIN + THIRD_ADJUSTMENT;
-    private static final double END = WIDTH + ORIGIN;
-    
+    private static final double FIRST_DIVISION = PITCH_WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
+    private static final double SECOND_DIVISION = PITCH_WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
+    private static final double THIRD_DIVISION = PITCH_WIDTH / 4 * 3 + ORIGIN + THIRD_ADJUSTMENT;
+    private static final double END = PITCH_WIDTH + ORIGIN;
 
     // lines which represent the outer edge
-    private Line top;
-    private Line topRight;
-    private Line right;
-    private Line bottomRight;
-    private Line bottom;
-    private Line bottomLeft;
-    private Line left;
-    private Line topLeft;
-    
-    // True if we have calibrated pitch measurements with the vision
-    private boolean pitchCalibrated = false;
+    private Line top = new BoundedLine(new Vector2(0, PITCH_HEIGHT), new Vector2(PITCH_WIDTH, PITCH_HEIGHT));
+    private Line bottom = new BoundedLine(new Vector2(0, 0), new Vector2(PITCH_WIDTH, 0));
 
     private GameObject guySlashGirlWithBall;
 
@@ -103,8 +90,7 @@ public class WorldState {
     		this.getOurDefender().hasData() &&
     		this.getOpponentAttacker().hasData() &&
     		this.getOpponentDefender().hasData() &&
-    		this.getBall().hasData() &&
-    		this.pitchCalibrated;
+    		this.getBall().hasData();
     }
 
     public static double convertYValue(double y) {
@@ -194,36 +180,6 @@ public class WorldState {
         this.ourSide = ourSide;
     }
 
-    // do this once at the beginning, so we have an "accurate"
-    // representation of the pitch divisions (the pitch may be nudged
-    // slightly).
-    public void calibratePitch(BoundedLine top, BoundedLine topRight, BoundedLine right,
-                               BoundedLine bottomRight, BoundedLine bottom,
-                               BoundedLine bottomLeft, BoundedLine left, BoundedLine topLeft) {
-        this.top = top;
-        this.topRight = topRight;
-        this.right = right;
-        this.bottomRight = bottomRight;
-        this.bottom = bottom;
-        this.bottomLeft = bottomLeft;
-        this.left = left;
-        this.topLeft = topLeft;
-        
-        // construct the goals
-        double middle = (left.getEndPoint().Y + left.getStartPoint().Y) / 2.0;
-        Vector2 goalLeftTop = new Vector2(left.getEndPoint().X, middle+GOAL_WIDTH/2.0);
-        Vector2 goalLeftBottom = new Vector2(left.getEndPoint().X, middle-GOAL_WIDTH/2.0);
-        leftGoal = new Goal(goalLeftTop, goalLeftBottom);
-        
-        middle = (right.getEndPoint().Y + right.getStartPoint().Y) / 2.0;
-        Vector2 goalRightTop = new Vector2(right.getEndPoint().X, middle+GOAL_WIDTH/2.0);
-        Vector2 goalRightBottom = new Vector2(right.getEndPoint().X, middle-GOAL_WIDTH/2.0);
-        rightGoal = new Goal(goalRightTop, goalRightBottom);
-        
-        this.pitchCalibrated = true;
-        Log.logInfo("Calibrated pitch.");
-    }
-
     // 0-3 left to right on vision. This is done because the order is reversed
     // depending on which side we are on
     private PitchZone zoneFromNumber(int number)
@@ -256,7 +212,8 @@ public class WorldState {
                     break;
                 case 1:
                     result = PitchZone.OUR_ATTACK_ZONE;
-                    break;
+                    break;    
+
                 case 2:
                     result = PitchZone.OPP_ATTACK_ZONE;
                     break;
@@ -274,7 +231,7 @@ public class WorldState {
 
     // pitch cell centers
     public Vector2 getCellCenter(PitchZone zone) {
-        double y = HEIGHT / 2.0;
+        double y = PITCH_HEIGHT / 2.0;
         double x;
 
         if (ourSide == Side.LEFT) {
