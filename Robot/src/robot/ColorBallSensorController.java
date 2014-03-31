@@ -1,17 +1,16 @@
-package robot.defender;
+package robot;
 
 import lejos.nxt.ColorSensor;
 import lejos.nxt.SensorPort;
-import robot.BallSensorController;
 
-public class DefenderBallSensorController extends BallSensorController {
+public class ColorBallSensorController extends BallSensorController {
 	
 	private static final int NEARBY_CUTOFF = 6;
 	private static final int KICKER_CUTOFF = 6;
 
 	private static final ColorSensor ballSensor = new ColorSensor(SensorPort.S2);
 	
-	public DefenderBallSensorController() {
+	public ColorBallSensorController() {
 		super(ballSensor);
 	}
 	

@@ -2,6 +2,8 @@ package robot.defender;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
+import robot.ColorBallSensorController;
+import robot.HolonomicMovementController;
 import robot.Robot;
 
 
@@ -17,9 +19,9 @@ public class DefenderMain {
 
 		Robot robot = new Robot(
 				leftLightSensor, rightLightSensor,
-    			new DefenceKickerController(),
-    			new DefenderMovementController(),
-    			new DefenderBallSensorController());
+    			new DefenderKickerController(),
+    			new HolonomicMovementController(),
+    			new ColorBallSensorController());
 		
 		robot.run();
 	}

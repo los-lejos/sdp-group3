@@ -1,11 +1,10 @@
 package robot.attacker;
 
-import robot.Robot;
-import robot.defender.DefenceKickerController;
-import robot.defender.DefenderBallSensorController;
-import robot.defender.DefenderMovementController;
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
+import robot.ColorBallSensorController;
+import robot.HolonomicMovementController;
+import robot.Robot;
 
 /*
  * @author Joris Urbaitis
@@ -19,9 +18,9 @@ public class AttackerMain {
 
 		Robot robot = new Robot(
 				leftLightSensor, rightLightSensor,
-    			new DefenceKickerController(),
-    			new DefenderMovementController(),
-    			new DefenderBallSensorController());
+    			new AttackerKickerController(),
+    			new HolonomicMovementController(),
+    			new ColorBallSensorController());
 		
 		robot.run();
 	}

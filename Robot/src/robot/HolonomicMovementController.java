@@ -1,11 +1,11 @@
-package robot.defender;
+package robot;
 
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
-import robot.MovementController;
+import robot.defender.StrafeThread;
 
-public class DefenderMovementController extends MovementController {
+public class HolonomicMovementController extends MovementController {
 	
 	private static final NXTRegulatedMotor leftMotor = Motor.B;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
@@ -22,7 +22,7 @@ public class DefenderMovementController extends MovementController {
 	private double travelSpeed;
 	private double rotateSpeed;
 
-	public DefenderMovementController() {
+	public HolonomicMovementController() {
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
     	maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
