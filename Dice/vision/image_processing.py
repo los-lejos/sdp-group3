@@ -219,6 +219,13 @@ class Cropper:
     def _set_coord_point(self, point):
         self._coord_rect.append(point)
         if len(self._coord_rect) == 2:
+            (x1, y1), (x2, y2) = self._coord_rect
+            (x3, y3), (x4, y4) = self._crop_rect
+            x5 = x1 - x3
+            y5 = y1 - y3
+            x6 = x4 - x1
+            y6 = y4 - y1
+            self._coord_rect = [(x5, y5), (x6, y6)]
             self._all_set = True
             self.__save_pitch_size()
 
@@ -238,3 +245,10 @@ class Cropper:
         x = self._crop_rect[1][0] - self._crop_rect[0][0]
         y = self._crop_rect[1][1] - self._crop_rect[0][1]
         return (x, y)
+
+'''    @property
+    def pitch_points_string(self):
+        if not self.has_pitch_size:
+            return None
+        pitch_points = ' '.join(['{0} {1}'.format(point[0], point[1]) for point in self._pitch_points])
+        return pitch_points'''
