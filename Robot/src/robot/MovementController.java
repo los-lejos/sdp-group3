@@ -15,12 +15,16 @@ public abstract class MovementController {
     
     // Public interface for initiating movement
     public void move(int newDistance) {
+    	this.stopLateral();
+    	
 		// Convert to cm
 		newDistance *= 10;
 		performMove(newDistance);
     }
     
     public void rotate(int newHeading) {
+    	this.stopLateral();
+    	
     	if(newHeading > 180) {
     		newHeading -= 360;
 		} else if(newHeading < -180) {
