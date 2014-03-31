@@ -46,7 +46,6 @@ class Detection:
         self._bgr_frame = None
 
     def detect_objects(self):
-        self._pitch_w, self._pitch_h = self._processor.pitch_size
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
         squares_frame, squares = self._find_squares()
@@ -234,6 +233,9 @@ class Detection:
         b = y1 - a * x1
         alpha = math.atan(a)
         return (alpha, a, b)
+
+    def set_pitch_dims(self, dims):
+        self._pitch_w, self._pitch_h = dims
 
 class Entity:
 

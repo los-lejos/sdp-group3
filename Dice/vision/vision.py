@@ -16,7 +16,7 @@ import time
 import socket
 from optparse import OptionParser
 from SimpleCV import Camera, VirtualCamera
-from image_processing import Processor
+from image_processing import Processor, Cropper
 from gui import Gui, ThresholdGui
 from detection import Detection, Entity
 from logger import Logger
@@ -26,7 +26,7 @@ __author__ = "Ingvaras Merkys"
 HOST = 'localhost'
 PORT = 28541
 ENTITY_BIT = 'E'
-PITCH_SIZE_BIT = 'P'
+#PITCH_SIZE_BIT = 'P'
 BALL = 4
 
 class Vision:
@@ -55,9 +55,10 @@ class Vision:
             self._logger.log(error_msg)
             print error_msg
 
+        self.cropper = Cropper(pitch_num=pitch_num, reset_pitch=reset_pitch_size)
         self.processor = Processor(pitch_num, reset_pitch_size, reset_thresh, scale)
-        if self.processor.has_pitch_size:
-            self.gui = Gui(self.processor.pitch_size)
+        if self.cropper.is_ready():
+            self.gui = Gui(self.cropper.pitch_size)
         else:
             self.gui = Gui()
         self.threshold_gui = ThresholdGui(self.processor, self.gui, pitch_num = pitch_num)
@@ -72,8 +73,10 @@ class Vision:
                     self.connect()
                 else:
                     self.connected = True
-                if self.processor.has_pitch_size:
-                    self.output_pitch_size()
+                if self.cropper.is_ready():
+                    #self.output_pitch_size()
+                    self.processor.set_crop_rect(self.cropper.get_crop_rect())
+                    self.detection.set_pitch_dims(self.cropper.pitch_size)
                     self.gui.set_show_mouse(False)
                 else:
                     self.event_handler.set_click_listener(self.set_next_pitch_corner)
@@ -102,12 +105,12 @@ class Vision:
             frame = self.cam.getImageUndistort()
 
         self.processor.preprocess(frame, self.scale)
-        if self.processor.has_pitch_size:
+        if self.cropper.is_ready():
             self.gui.update_layer('raw', self.processor.get_bgr_frame())
         else:
             self.gui.update_layer('raw', frame)
 
-        if self.processor.has_pitch_size:
+        if self.cropper.is_ready():
             entities = self.detection.detect_objects()
             self.output_entities(entities)
 
@@ -115,22 +118,24 @@ class Vision:
 
     def set_next_pitch_corner(self, where):
 
-        self.processor.set_next_pitch_corner(where)
+        self.cropper.set_point(where)
 
-        if self.processor.has_pitch_size:
-            self.output_pitch_size()
+        if self.cropper.is_ready():
+            #self.output_pitch_size()
+            self.processor.set_crop_rect(self.cropper.get_crop_rect())
+            self.detection.set_pitch_dims(self.cropper.pitch_size)
             self.gui.set_show_mouse(False)
             self.gui.update_layer('corner', None)
         else:
             self.gui.draw_crosshair(where, 'corner')
 
-    def output_pitch_size(self):
-        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.processor.pitch_points_string))
+    '''def output_pitch_size(self):
+        self.send('{0} {1}\n'.format(PITCH_SIZE_BIT, self.processor.pitch_points_string))'''
         
 
     def output_entities(self, entities):
 
-        if not self.connected or not self.processor.has_pitch_size:
+        if not self.connected or not self.cropper.is_ready():
             return
 
         self.send('{0} '.format(ENTITY_BIT))
