@@ -160,8 +160,9 @@ class Detection:
                     if d < min_dist:
                         min_dist = d
                         min_squares = ((i, half_squares[i]), (j, half_squares[j]))
-            joint_square = self._join_squares(min_squares[0][1], min_squares[1][1])
-            squares_proper.append(joint_square)
+            if min_dist < 100*math.pow(self._scale, 2):
+                joint_square = self._join_squares(min_squares[0][1], min_squares[1][1])
+                squares_proper.append(joint_square)
             if min_squares[0][0] > min_squares[1][0]:
                 del half_squares[min_squares[0][0]]
                 del half_squares[min_squares[1][0]]
@@ -276,8 +277,33 @@ class Entity:
             y = y_min
         elif y > y_max:
             y = y_max
-        x = int((x-x_min)/float(coord_w)*WIDTH)
-        y = int((y-y_min)/float(coord_h)*HEIGHT)
+        x = (x-x_min)/float(coord_w)*WIDTH
+        y = (y-y_min)/float(coord_h)*HEIGHT
+        return (x, y)
+
+    def perspective_correction(x, y, w, h):
+        H = None
+        h = None
+        a = WIDTH/2
+        b = HEIGHT/2
+        c = 0.008819444444444444
+
+        if x < a:
+            d = x
+            displacement = (H - h)*(a-d)*c
+            x = x + displacement
+        else:
+            d = w - x
+            displacement = (H - h)*(a-d)*c
+            x = x - displacement
+        if y < b:
+            d = y
+            displacement = (H - h)*(b-d)*c
+            x = x + displacement
+        else:
+            d = h - y
+            displacement = (H - h)*(b-d)*c
+            y = y - displacement
         return (x, y)
 
     def get_coordinates(self):
