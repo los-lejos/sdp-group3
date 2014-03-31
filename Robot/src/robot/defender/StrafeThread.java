@@ -103,6 +103,7 @@ public class StrafeThread extends Thread {
 		// Wait to move the required distance
 		long startTime = System.currentTimeMillis();
 		while(!interrupted && System.currentTimeMillis() - startTime < this.movementDelay);
+		stopMotor();
 	}
 	
 	private void stopMotor() {
