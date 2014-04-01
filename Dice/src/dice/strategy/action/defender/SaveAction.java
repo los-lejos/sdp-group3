@@ -42,7 +42,6 @@ public class SaveAction extends StrategyAction {
 			
 			// Move towards wherever the opponent attacker is looking
 			double yAtRobot = line.getYValue(targetPos.X);
-			System.out.println(yAtRobot);
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y, yAtRobot,
 					state.getSide());
 		}

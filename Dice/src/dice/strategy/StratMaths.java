@@ -26,8 +26,8 @@ public final class StratMaths {
 	
 	private static final double MAX_SPEED_ROT = Math.toRadians(170);
 	private static final double MIN_SPEED_ROT = Math.toRadians(30);
-	private static final int MAX_ROT_SPEED = 45;
-	private static final int MIN_ROT_SPEED = 15;
+	private static final int MAX_ROT_SPEED = 30;
+	private static final int MIN_ROT_SPEED = 10;
 	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_ROT_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 10;
@@ -37,7 +37,7 @@ public final class StratMaths {
 	// Threshold for deciding if an object is nearby in Y
 	public static final double Y_POS_THRESH = 35;
 	
-	public static final double CORRECTION_ROT_THRESH = Math.PI / 18;
+	public static final double CORRECTION_ROT_THRESH = Math.PI / 16;
 	
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 

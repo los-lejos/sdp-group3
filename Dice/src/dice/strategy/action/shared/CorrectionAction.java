@@ -29,6 +29,7 @@ public class CorrectionAction extends StrategyAction {
 		GameObject target = this.getTargetObject(state);
 		
 		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
+		//System.out.println(target.getPos().X);
 
 		boolean facingLeft = state.getSide() == Side.RIGHT;
 		if(faceBackwards) facingLeft = !facingLeft;
