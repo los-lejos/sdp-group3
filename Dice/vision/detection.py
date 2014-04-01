@@ -41,27 +41,26 @@ class Detection:
         self._scale = scale
         self._colour_order = colour_order
         self._pitch_num = pitch_num
+        self._coord_rect = None
         self._logger = Logger('detection_errors.log')
         self._hsv_frame = None
         self._bgr_frame = None
 
     def detect_objects(self):
-        self._pitch_w, self._pitch_h = self._processor.pitch_size
         self._hsv_frame = self._processor.get_hsv_frame()
         self._bgr_frame = self._processor.get_bgr_frame()
         squares_frame, squares = self._find_squares()
         squares = self._join_split_squares(squares)
-        #squares = self._mockblob_test(squares)
         squares = self._sort_squares(squares)
         # robots left to right, entities[4] is ball
-        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order) for i in xrange(5)]
+        entities = [Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect) for i in xrange(5)]
         for which, square in enumerate(squares):
             if which < 4:
-                entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, which, square,
+                entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, which, square,
                                          self.areas, self._scale, render_tlayers = self._render_tlayers)
                 entities[which] = self._determine_angle(entities[which])
         ball_frame, ball_blob = self._find_ball()
-        entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, BALL, ball_blob, self.areas,
+        entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, BALL, ball_blob, self.areas,
                                 self._scale, render_tlayers = self._render_tlayers)
 
         if self._render_tlayers:
@@ -73,18 +72,11 @@ class Detection:
 
         return entities
 
-    def _mockblob_test(self, squares):
-        a = []
-        for square in squares:
-            a.append(MockBlob(square.minRect()))
-        return a
-
     def _find_ball(self):
         binary_frame = self._processor.get_binary_frame('ball')
         frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=100, appx_level=5)
+        blobs = binary_frame.findBlobs(minsize=int(50*math.pow(self._scale, 2)), appx_level=5)
         if not blobs is None:
-            blobs.draw(color=Color.PUCE, width=2)
             return (frame, blobs[0])
         else:
             return (frame, None)
@@ -134,7 +126,8 @@ class Detection:
         y = int(point[1])
         #self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
         #self._bgr_frame.applyLayers()
-        return np.sum(self._bgr_frame.getNumpy()[x-3:x+3,y-3:y+3])
+        offset = int(round(3*self._scale))
+        return np.sum(self._bgr_frame.getNumpy()[x-offset:x+offset,y-offset:y+offset])
 
     def _find_squares(self):
         binary_frame = self._processor.get_binary_frame('squares')
@@ -167,8 +160,9 @@ class Detection:
                     if d < min_dist:
                         min_dist = d
                         min_squares = ((i, half_squares[i]), (j, half_squares[j]))
-            joint_square = self._join_squares(min_squares[0][1], min_squares[1][1])
-            squares_proper.append(joint_square)
+            if min_dist < 100*math.pow(self._scale, 2):
+                joint_square = self._join_squares(min_squares[0][1], min_squares[1][1])
+                squares_proper.append(joint_square)
             if min_squares[0][0] > min_squares[1][0]:
                 del half_squares[min_squares[0][0]]
                 del half_squares[min_squares[1][0]]
@@ -235,9 +229,15 @@ class Detection:
         alpha = math.atan(a)
         return (alpha, a, b)
 
+    def set_pitch_dims(self, dims):
+        self._pitch_w, self._pitch_h = dims
+
+    def set_coord_rect(self, coord_rect):
+        self._coord_rect = coord_rect
+
 class Entity:
 
-    def __init__(self, pitch_w, pitch_h, colour_order, which = None, entity_blob = None,
+    def __init__(self, pitch_w, pitch_h, colour_order, coord_rect, which = None, entity_blob = None,
                  areas = None, scale = None, render_tlayers = True):
         self._entity_blob = entity_blob
         self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
@@ -252,7 +252,6 @@ class Entity:
         self._colour_order = colour_order
         self._areas = areas
         self.which = which
-        
         if not entity_blob is None:
             x_frame = int(entity_blob.minRectX())
             y_frame = int(entity_blob.minRectY())
@@ -261,7 +260,51 @@ class Entity:
                 self._has_angle = True
             x = int(self._frame_coords[0]/float(self._pitch_w)*WIDTH)
             y = int(self._frame_coords[1]/float(self._pitch_h)*HEIGHT)
-            self._coordinates = (x, y)
+            self._coordinates = self._within_coord_rect(coord_rect, (x, y))
+
+    def _within_coord_rect(self, coord_rect, coords):
+        if coord_rect is None:
+            return coords
+        x, y = coords
+        [(x_min, y_min), (x_max, y_max)] = coord_rect
+        coord_w = x_max - x_min
+        coord_h = y_max - y_min
+        if x < x_min:
+            x = x_min
+        elif x > x_max:
+            x = x_max
+        if y < y_min:
+            y = y_min
+        elif y > y_max:
+            y = y_max
+        x = (x-x_min)/float(coord_w)*WIDTH
+        y = (y-y_min)/float(coord_h)*HEIGHT
+        return (x, y)
+
+    def perspective_correction(x, y, w, h):
+        H = None
+        h = None
+        a = WIDTH/2
+        b = HEIGHT/2
+        c = 0.008819444444444444
+
+        if x < a:
+            d = x
+            displacement = (H - h)*(a-d)*c
+            x = x + displacement
+        else:
+            d = w - x
+            displacement = (H - h)*(a-d)*c
+            x = x - displacement
+        if y < b:
+            d = y
+            displacement = (H - h)*(b-d)*c
+            x = x + displacement
+        else:
+            d = h - y
+            displacement = (H - h)*(b-d)*c
+            y = y - displacement
+        return (x, y)
 
     def get_coordinates(self):
         return self._coordinates
