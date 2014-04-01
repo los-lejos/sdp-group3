@@ -12,8 +12,8 @@ public abstract class KickerController {
 
 	private boolean hasBall = false;
 	private boolean isRunning = true;
-	
-	public KickerController() {
+
+	public void init() {
 		kickerThread = new KickerThread();
 		kickerThread.setDaemon(true);
 		kickerThread.start();

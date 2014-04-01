@@ -66,6 +66,8 @@ public class Robot {
 		}
 		
 		conn.start();
+		
+		this.kicker.init();
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
