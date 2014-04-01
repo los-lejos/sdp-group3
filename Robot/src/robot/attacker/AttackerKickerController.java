@@ -34,6 +34,11 @@ public class AttackerKickerController extends KickerController {
 		I2Csensor.setAddress(0xB4);
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 	}
+	
+	@Override
+	protected void stop() {
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+	}
 
 	@Override
 	protected void performOpen() throws InterruptedException {

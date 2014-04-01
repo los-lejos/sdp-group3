@@ -14,12 +14,14 @@ public class DefenderKickerController extends KickerController {
 	private static final byte BACKWARD = (byte) 2;
 	private static final byte STOP = (byte) 0;
 	
+	private static final byte RETAINMENT_SPEED = (byte)30;
 	private static final byte KICK_SPEED = (byte) 255;
+	private static final byte CATCH_SPEED = (byte) 100;
 	
-	private static final int DELAY_OPEN = 40;
-	private static final int DELAY_KICK = 80;
+	private static final int DELAY_OPEN = 90;
+	private static final int DELAY_KICK = 40;
 	private static final int DELAY_KICK_END = 500;
-	private static final int DELAY_CLOSE = 100;
+	private static final int DELAY_CLOSE = 130;
 	private static final int DELAY_STOP = 200;
 	
 	private I2CPort I2Cport;
@@ -34,9 +36,17 @@ public class DefenderKickerController extends KickerController {
 		I2Csensor.setAddress(0xB4);
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 	}
+	
+	@Override
+	protected void stop() {
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+	}
 
 	@Override
 	protected void performOpen() throws InterruptedException {
+		System.out.println("OPEN");
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
+		
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
@@ -53,6 +63,8 @@ public class DefenderKickerController extends KickerController {
 
 	@Override
 	protected void performKick() throws InterruptedException {
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
+		
 		// Release ball
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
 		Thread.sleep(DELAY_KICK);
@@ -66,9 +78,12 @@ public class DefenderKickerController extends KickerController {
 	
 	@Override
 	protected void performGrab() throws InterruptedException {
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
-		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
+
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, RETAINMENT_SPEED);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_STOP);
 	}
 }
