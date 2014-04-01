@@ -56,13 +56,11 @@ public class StrafeThread extends Thread {
 		// can find a function that fits this, but this is simpler to adjust
 		int absDist = Math.abs(distance);
 		if(absDist <= 5) {
-			this.movementDelay = (long) (absDist*28);
+			this.movementDelay = (long) (absDist*38);
 		} else if(absDist <= 15) {
-			this.movementDelay = (long) (absDist*21);
-		} else if(absDist <= 20) {
-			this.movementDelay = (long) (absDist*18);
+			this.movementDelay = (long) (absDist*26);
 		} else {
-			this.movementDelay = (long) (absDist*14);
+			this.movementDelay = (long) (absDist*22);
 		}
 
 		if(this.movementDelay > MAX_DELAY) {
@@ -90,12 +88,11 @@ public class StrafeThread extends Thread {
 				stopMotor();
 				state = StrafeState.READY;
 			}
-			
-			interrupted = false;
-			
+
 			if(newState != StrafeState.READY) {
 				state = newState;
 				newState = StrafeState.READY;
+				interrupted = false;
 			} else if(isMoving) {
 				this.isMoving = false;
 				this.stopMotor();
