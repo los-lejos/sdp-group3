@@ -48,9 +48,9 @@ public class WorldState {
     private static final int GOAL_WIDTH = 150;
     
     // calibration of the divisions
-    private static final double FIRST_ADJUSTMENT = 0;
+    private static final double FIRST_ADJUSTMENT = -18;
     private static final double SECOND_ADJUSTMENT = 0;
-    private static final double THIRD_ADJUSTMENT = 0;
+    private static final double THIRD_ADJUSTMENT = 15;
 
     private static final double FIRST_DIVISION = PITCH_WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
     private static final double SECOND_DIVISION = PITCH_WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
@@ -134,6 +134,9 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
+        if(this.ball.getPos() != null) {
+        	System.out.println(this.ball.getPos());
+        }
         
         //updateBallOwnership();
         this.updateObjectZone(this.ball);
@@ -282,7 +285,11 @@ public class WorldState {
     public void updateBallOwnership() {
     	// only do this if the ball is visible. This way, the owner cannot
     	// be changed unless the ball is visible
-    	if (!ball.isVisible())
+    	// Also don't consider this if our robot has the ball as this is already
+    	// confirmed by a sensor on the robot
+    	if (!ball.isVisible() ||
+    			this.guySlashGirlWithBall == this.getOurAttacker() ||
+    			this.guySlashGirlWithBall == this.getOurDefender())
     		return;
     	
 		GameObject result = null;
@@ -290,15 +297,13 @@ public class WorldState {
     	PitchZone ballZone = ball.getCurrentZone();
     	
     	// get the object who owns the zone the ball is in
+    	// only consider the opponent's robots as our robots
+    	// let us know when they have the ball
     	GameObject nearestObject = null;
     	if(ballZone == WorldState.PitchZone.OPP_ATTACK_ZONE) {
     		nearestObject = getOpponentAttacker(); 
     	} else if (ballZone == WorldState.PitchZone.OPP_DEFEND_ZONE) {
     		nearestObject = getOpponentDefender();
-    	} else if (ballZone == WorldState.PitchZone.OUR_ATTACK_ZONE) {
-    		nearestObject = getOurAttacker();
-    	} else if (ballZone == WorldState.PitchZone.OUR_DEFEND_ZONE) {
-    		nearestObject = getOurDefender();
     	}
     	
     	// as long as the ball is in _a_ zone, check if the ball
