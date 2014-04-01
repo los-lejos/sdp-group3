@@ -3,7 +3,6 @@ package robot;
 import java.io.IOException;
 
 import lejos.nxt.Button;
-import lejos.nxt.LightSensor;
 import robot.communication.BluetoothCommunicationException;
 import robot.communication.BluetoothDiceConnection;
 import robot.communication.IssuedInstruction;
@@ -22,12 +21,8 @@ import shared.RobotInstructions;
 
 public class Robot {
 	
-	private static final int LIGHT_SENSOR_CUTOFF = 40;
 	private static final int KICKER_RESET_DELAY = 10000; // 10 seconds
 
-	private final LightSensor LEFT_LIGHT_SENSOR;
-	private final LightSensor RIGHT_LIGHT_SENSOR;
-	
 	protected final BluetoothDiceConnection conn;
 	
     private IssuedInstruction currentInstruction, newInstruction;
@@ -41,12 +36,8 @@ public class Robot {
     private long prevKickerResetTime = System.currentTimeMillis();
     
     public Robot(
-    		LightSensor LEFT_LIGHT_SENSOR, LightSensor RIGHT_LIGHT_SENSOR,
     		KickerController kicker, MovementController movementController,
     		BallSensorController ballSensor) {
-    	this.LEFT_LIGHT_SENSOR = LEFT_LIGHT_SENSOR;
-    	this.RIGHT_LIGHT_SENSOR = RIGHT_LIGHT_SENSOR;
-
     	this.movementController = movementController;
     	this.kicker = kicker;
     	this.ballSensor = ballSensor;
@@ -90,12 +81,6 @@ public class Robot {
 				} else {
 					this.handleInstruction(currentInstruction);
 				}
-			}
-			
-			if (rightSensorOnBoundary() || leftSensorOnBoundary()) {
-				// Provisional: just stop and wait
-				// this.movementThread.stopMovement();
-				// System.out.println("Boundary detected! Waiting for further instructions.");
 			}
 			
 			// Update the sensor
@@ -220,12 +205,4 @@ public class Robot {
 			e.printStackTrace();
 		}
 	}
-	
-    private boolean rightSensorOnBoundary() {
-    	return RIGHT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
-    }
-
-    private boolean leftSensorOnBoundary() {
-    	return LEFT_LIGHT_SENSOR.getLightValue() >= LIGHT_SENSOR_CUTOFF;
-    }
 }
