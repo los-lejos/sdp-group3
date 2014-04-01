@@ -90,6 +90,7 @@ class Detection:
         alpha1, _, _ = self.get_line_fn(points[0], points[2])
         alpha2, _, _ = self.get_line_fn(points[1], points[3])
         alphas = [alpha1, alpha2]
+        points_new = []
         for i in xrange(4):
             alpha = alphas[i%2]
             c = 1
@@ -105,12 +106,12 @@ class Detection:
             dot_offset = util.euclidean(points[i], points[(i+2)%4]) * 0.3
             x = points[i][0] + dot_offset * math.cos(alpha) * c
             y = points[i][1] + dot_offset * math.sin(alpha) * c
-            points[i] = (x, y)
-        values = [ (i, self._get_point_value(point)) for i, point in enumerate(points) ]
+            points_new.append((x, y))
+        values = [ (i, self._get_point_value(point)) for i, point in enumerate(points_new) ]
         dot_i = min(values, key=lambda x: x[1])[0]
-        entity.set_dot((int(points[dot_i][0]), int(points[dot_i][1])))
+        entity.set_dot((int(points_new[dot_i][0]), int(points_new[dot_i][1])))
         center = entity.get_frame_coords()
-        angle = math.atan2(points[dot_i][1] - center[1], points[dot_i][0] - center[0]) + math.pi
+        angle = math.atan2(points_new[dot_i][1] - center[1], points_new[dot_i][0] - center[0]) + math.pi
         a = math.cos(angle)
         b = math.sin(angle)
         angle = math.atan2(b, a)
@@ -120,6 +121,8 @@ class Detection:
     def _get_point_value(self, point):
         x = int(point[0])
         y = int(point[1])
+        #self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.ORANGE)
+        #self._bgr_frame.applyLayers()
         offset = int(round(3*self._scale))
         return np.sum(self._bgr_frame.getNumpy()[x-offset:x+offset,y-offset:y+offset])
 
@@ -360,10 +363,10 @@ class MockBlob:
 
     def drawMinRect(self, layer, color=Color.BLACK, width=1):
         p = self._min_rect_points
-        layer.line(p[0], p[1], color=color, width=width)
-        layer.line(p[1], p[3], color=color, width=width)
-        layer.line(p[2], p[3], color=color, width=width)
-        layer.line(p[0], p[2], color=color, width=width)
+        layer.line(p[0], p[1], color=color, width=width, alpha=128)
+        layer.line(p[1], p[3], color=color, width=width, alpha=128)
+        layer.line(p[2], p[3], color=color, width=width, alpha=128)
+        layer.line(p[0], p[2], color=color, width=width, alpha=128)
 
     def minRectX(self):
         return self._x_coord
