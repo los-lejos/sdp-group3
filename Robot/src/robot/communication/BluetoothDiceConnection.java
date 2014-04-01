@@ -28,9 +28,7 @@ public class BluetoothDiceConnection extends Thread {
 	private OnNewInstructionHandler instructionHandler;
 
 	private BTConnection btc;
-	
-	private Object sendingLock = new Object();
-	
+
 	private InputStream in;
 	private OutputStream out;
 	
@@ -43,10 +41,8 @@ public class BluetoothDiceConnection extends Thread {
         	throw new BluetoothCommunicationException("Can't send message. Not connected to Dice");
         }
 		
-		synchronized(sendingLock) {
-			out.write(msg);
-			out.flush();
-		}
+		out.write(msg);
+		out.flush();
 	}
 	
 	@Override

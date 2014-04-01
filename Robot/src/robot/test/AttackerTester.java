@@ -6,7 +6,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 public class AttackerTester {
 	
-	private static final NXTRegulatedMotor leftMotor = Motor.C;
+	private static final NXTRegulatedMotor leftMotor = Motor.B;
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	
 	private static final int tireDiameterMm = 62;
@@ -16,12 +16,11 @@ public class AttackerTester {
 		DifferentialPilot pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
 		
 		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
-		pilot.forward();
+		pilot.travel(200, true);
+		pilot.rotate(90, true);
+		pilot.travel(200, true);
 		
-		Thread.sleep(1000);
-		
-		pilot.setTravelSpeed(pilot.getMaxTravelSpeed() * 0.5);
-		Thread.sleep(1000);
+		while(pilot.isMoving());
 		
 		pilot.stop();
 	}
