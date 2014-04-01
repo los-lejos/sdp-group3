@@ -82,10 +82,11 @@ class Detection:
             return (frame, None)
 
     def _determine_angle(self, entity):
+        def dist(p1, p2):
+            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
         if entity.get_blob() is None:
             return entity
         corner_points = entity.get_blob().minRect()
-        DOT_OFFSET = int(((entity.get_blob().minRectHeight() + entity.get_blob().minRectWidth())/2.0)*0.3)
         points = []
         points.append(self.get_middle_point(corner_points[0], corner_points[1]))#
         points.append(self.get_middle_point(corner_points[0], corner_points[2]))
@@ -107,7 +108,7 @@ class Detection:
             else:
                 if points[(i+2)%4][0]-points[i][0] < 0:
                     c = -1
-            x = points[i][0] + DOT_OFFSET * math.cos(alpha) * c
+            x = points[i][0] + dist(points[i], points[(i+2)%4])*0.3 * math.cos(alpha) * c
             y = points[i][1] + DOT_OFFSET * math.sin(alpha) * c
             points[i] = (x, y)
         values = [ (i, self._get_point_value(point)) for i, point in enumerate(points) ]
