@@ -44,7 +44,6 @@ public class DefenderKickerController extends KickerController {
 
 	@Override
 	protected void performOpen() throws InterruptedException {
-		System.out.println("OPEN");
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		
 		// Shut fully in case open
