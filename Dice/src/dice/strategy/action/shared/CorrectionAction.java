@@ -42,7 +42,7 @@ public class CorrectionAction extends StrategyAction {
 			this.dist = heading;
 			
 			return true;
-		} else if(Math.abs(deltaX) > StratMaths.POSITION_FUZZ) {
+		} else if(Math.abs(deltaX) > StratMaths.CORRECTION_POS_THRESH) {
 			shouldRotate = false;
 			
 			if(state.getSide() == Side.LEFT) {
@@ -70,8 +70,7 @@ public class CorrectionAction extends StrategyAction {
 			int rotSpeed = StratMaths.speedForRot(this.dist);
 			return RobotInstruction.createRotate(this.dist, rotSpeed);
 		} else {
-			int moveSpeed = StratMaths.speedForDist(this.dist);
-			return RobotInstruction.createMove(this.dist, moveSpeed);
+			return RobotInstruction.createMove(this.dist, 70);
 		}
 	}
 	
