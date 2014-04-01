@@ -124,8 +124,6 @@ class Detection:
     def _get_point_value(self, point):
         x = int(point[0])
         y = int(point[1])
-        #self._bgr_frame.dl().circle((x,y), radius=2, filled=1, color=Color.YELLOW)
-        #self._bgr_frame.applyLayers()
         offset = int(round(3*self._scale))
         return np.sum(self._bgr_frame.getNumpy()[x-offset:x+offset,y-offset:y+offset])
 
@@ -242,6 +240,7 @@ class Entity:
         self._entity_blob = entity_blob
         self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
         self._frame_coords = (-1, -1) # coordinates in the frame
+        self._frame_coords_c = (-1, -1)
         self._render_tlayers = render_tlayers
         self._dot_point = None
         self._angle = None
@@ -253,20 +252,18 @@ class Entity:
         self._areas = areas
         self.which = which
         if not entity_blob is None:
-            x_frame = int(entity_blob.minRectX())
-            y_frame = int(entity_blob.minRectY())
+            x_frame, y_frame = (entity_blob.minRectX(), entity_blob.minRectY())
             self._frame_coords = (x_frame, y_frame)
+            self._frame_coords_c = self._perspective_correction(x_frame, y_frame)
             if which >= 0 and which < 4:
                 self._has_angle = True
-            x = int(self._frame_coords[0]/float(self._pitch_w)*WIDTH)
-            y = int(self._frame_coords[1]/float(self._pitch_h)*HEIGHT)
+            x = int(self._frame_coords_c[0]/float(self._pitch_w)*WIDTH)
+            y = int(self._frame_coords_c[1]/float(self._pitch_h)*HEIGHT)            
             self._coordinates = self._within_coord_rect(coord_rect, (x, y))
 
     def _within_coord_rect(self, coord_rect, coords):
-        if coord_rect is None:
-            return coords
         x, y = coords
-        [(x_min, y_min), (x_max, y_max)] = coord_rect
+        (x_min, y_min), (x_max, y_max) = coord_rect
         coord_w = x_max - x_min
         coord_h = y_max - y_min
         if x < x_min:
@@ -279,32 +276,31 @@ class Entity:
             y = y_max
         x = (x-x_min)/float(coord_w)*WIDTH
         y = (y-y_min)/float(coord_h)*HEIGHT
-        return (x, y)
+        return (int(x), int(y))
 
-    def perspective_correction(x, y, w, h):
-        H = None
-        h = None
-        a = WIDTH/2
-        b = HEIGHT/2
-        c = 0.008819444444444444
-
+    def _perspective_correction(self, x, y):
+        width, height = (self._pitch_w, self._pitch_h)
+        c = 720/0.635
+        h = 17.5
+        a = width/2.0
+        b = height/2.0
         if x < a:
             d = x
-            displacement = (H - h)*(a-d)*c
+            displacement = (h*(a-d))/c
             x = x + displacement
         else:
-            d = w - x
-            displacement = (H - h)*(a-d)*c
+            d = width - x
+            displacement = (h*(a-d))/c
             x = x - displacement
         if y < b:
             d = y
-            displacement = (H - h)*(b-d)*c
-            x = x + displacement
+            displacement = (h*(b-d))/c
+            y = y + displacement
         else:
-            d = h - y
-            displacement = (H - h)*(b-d)*c
+            d = height - y
+            displacement = (h*(b-d))/c
             y = y - displacement
-        return (x, y)
+        return (int(x), int(y))
 
     def get_coordinates(self):
         return self._coordinates
@@ -329,6 +325,9 @@ class Entity:
         If angle is true then orientation will also be drawn
         """
         if self.get_coordinates()[0] == -1: return
+        if self.which != BALL:        
+            o, p = self._frame_coords_c
+            layer.circle((o, p), radius=2, filled=1, color=Color.BLUE)
         if not self._dot_point is None:
             layer.circle(self._dot_point, radius=2, filled=1, color=Color.RED)
         if self.which >= 0 and self.which < 4:
