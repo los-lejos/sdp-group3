@@ -37,6 +37,8 @@ public abstract class MovementController {
     }
     
     public void moveLat(int newDistance) {
+    	this.stop();
+    	
     	performMoveLat(newDistance);
     }
 
