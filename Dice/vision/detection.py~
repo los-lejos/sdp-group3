@@ -268,18 +268,7 @@ class Entity:
                 y = (self._frame_coords_c[1] - y_min)/float(coord_h)*HEIGHT
             else:
                 x = (self._frame_coords[0] - x_min)/float(coord_w)*WIDTH
-                y = (self._frame_coords[1] - y_min)/float(coord_h)*HEIGHT   
-
-            if x > WIDTH:
-                x = WIDTH
-            elif x < 0:
-                x = 0
-
-            if y > HEIGHT:
-                y = HEIGHT
-            elif y < 0:
-                y = 0
-          
+                y = (self._frame_coords[1] - y_min)/float(coord_h)*HEIGHT               
             self._coordinates = (int(x), int(y))
 
     def _perspective_correction(self, x, y):
