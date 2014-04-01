@@ -80,6 +80,7 @@ public class Robot {
 				if(currentInstruction.getType() == 0) {
 					System.out.println("Instruction type 0");
 					this.isRunning = false;
+					break;
 				} else {
 					this.handleInstruction(currentInstruction);
 				}
