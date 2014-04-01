@@ -18,10 +18,11 @@ public class AttackerKickerController extends KickerController {
 	private static final byte KICK_SPEED = (byte) 255;
 	private static final byte CATCH_SPEED = (byte) 100;
 	
-	private static final int DELAY_OPEN = 50;
+	private static final int DELAY_OPEN = 100;
 	private static final int DELAY_KICK = 80;
 	private static final int DELAY_KICK_END = 500;
-	private static final int DELAY_CLOSE = 140;
+	private static final int DELAY_CLOSE = 350;
+	private static final int DELAY_CLEANUP = 30;
 	
 	private I2CPort I2Cport;
 	private I2CSensor I2Csensor;
@@ -59,11 +60,13 @@ public class AttackerKickerController extends KickerController {
 
 	@Override
 	protected void performKick() throws InterruptedException {
-		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
+		
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 		
 		// Release ball
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, BACKWARD);
@@ -84,5 +87,14 @@ public class AttackerKickerController extends KickerController {
 
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, RETAINMENT_SPEED);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+	}
+	
+	@Override
+	protected void performCleanup() throws InterruptedException {
+		// Go back to a known position
+		performOpen();
+		
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+		Thread.sleep(DELAY_CLEANUP);
 	}
 }

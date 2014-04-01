@@ -70,7 +70,7 @@ public abstract class KickerController {
 					}
 				}
 
-				performGrab();
+				performCleanup();
 				stop();
 			} catch (InterruptedException e) {
 				// Exit if we were interrupted
@@ -82,4 +82,5 @@ public abstract class KickerController {
 	protected abstract void performGrab() throws InterruptedException;
 	protected abstract void performKick() throws InterruptedException;
 	protected abstract void performOpen() throws InterruptedException;
+	protected abstract void performCleanup() throws InterruptedException;
 }
