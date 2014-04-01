@@ -11,7 +11,7 @@ public class HolonomicMovementController extends MovementController {
 	private static final NXTRegulatedMotor rightMotor = Motor.A;
 	
 	private static final int tireDiameterMm = 48;
-	private static final int trackWidthMm = 127;
+	private static final int trackWidthMm = 117;
 
 	private final DifferentialPilot pilot;
 	private final StrafeThread strafeThread;
