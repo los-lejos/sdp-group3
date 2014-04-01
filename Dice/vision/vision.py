@@ -75,8 +75,9 @@ class Vision:
                     self.connected = True
                 if self.cropper.is_ready():
                     #self.output_pitch_size()
-                    self.processor.set_crop_rect(self.cropper.get_crop_rect())
+                    self.detection.set_coord_rect(self.cropper.get_coord_rect())
                     self.detection.set_pitch_dims(self.cropper.pitch_size)
+                    self.processor.set_crop_rect(self.cropper.get_crop_rect())
                     self.gui.set_show_mouse(False)
                 else:
                     self.event_handler.set_click_listener(self.set_next_pitch_corner)

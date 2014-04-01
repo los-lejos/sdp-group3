@@ -189,7 +189,6 @@ class Cropper:
 
     def __init__(self, pitch_num=0, reset_pitch=False):
         self._path_pitch_size = os.path.join('data', 'default_pitch_size_{0}').format(pitch_num)
-        self._pitch_points = []
         self._crop_rect = []
         self._coord_rect = []
         self._all_set = False
@@ -203,7 +202,7 @@ class Cropper:
             self._all_set = True
 
     def __save_pitch_size(self):
-        util.dump_to_file((self._crop_rect, self._pitch_points), self._path_pitch_size)
+        util.dump_to_file((self._crop_rect, self._coord_rect), self._path_pitch_size)
 
     def set_point(self, point):
         if len(self._crop_rect) < 2:
