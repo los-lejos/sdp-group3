@@ -281,24 +281,25 @@ class Entity:
     def _perspective_correction(self, x, y):
         width, height = (self._pitch_w, self._pitch_h)
         c = 720/0.635
+        H = 18.5
         h = 17.5
         a = width/2.0
         b = height/2.0
         if x < a:
-            d = x
-            displacement = (h*(a-d))/c
+            d = a - x
+            displacement = ((H-h)*d)/H
             x = x + displacement
         else:
-            d = width - x
-            displacement = (h*(a-d))/c
+            d = x - a
+            displacement = ((H-h)*d)/H
             x = x - displacement
         if y < b:
-            d = y
-            displacement = (h*(b-d))/c
+            d = b - y
+            displacement = ((H-h)*d)/H
             y = y + displacement
         else:
-            d = height - y
-            displacement = (h*(b-d))/c
+            d = y - b
+            displacement = ((H-h)*d)/H
             y = y - displacement
         return (int(x), int(y))
 
