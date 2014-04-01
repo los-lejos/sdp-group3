@@ -271,6 +271,10 @@ class Entity:
                 x = (self._frame_coords[0] - x_min)/float(coord_w)*WIDTH
                 y = (self._frame_coords[1] - y_min)/float(coord_h)*HEIGHT   
 
+            if scale != None:
+                x = x / scale
+                y = y / scale
+
             if x > WIDTH:
                 x = WIDTH
             elif x < 0:
