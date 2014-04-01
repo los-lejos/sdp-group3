@@ -281,7 +281,7 @@ class Entity:
     def _perspective_correction(self, x, y):
         width, height = (self._pitch_w, self._pitch_h)
         c = 720/0.635
-        H = 18.5
+        H = 18.25
         h = 17.5
         a = width/2.0
         b = height/2.0
