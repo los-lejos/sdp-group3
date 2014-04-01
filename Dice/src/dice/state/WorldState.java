@@ -138,7 +138,7 @@ public class WorldState {
         	System.out.println(this.ball.getPos());
         }
         
-        //updateBallOwnership();
+        updateBallOwnership();
         this.updateObjectZone(this.ball);
     }
     
