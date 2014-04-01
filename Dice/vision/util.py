@@ -10,6 +10,7 @@ Some static functions for saving/loading files.
 
 import sys
 import os
+import math
 import cPickle
 
 __author__ = 'Ingvaras Merkys'
@@ -56,4 +57,7 @@ def get_real_path(path):
     Gets a file path relative to the directory that this script is being run from
     """
     return os.path.join(sys.path[0], path)
+
+def euclidean(p1, p2):
+    return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
 

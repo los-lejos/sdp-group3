@@ -15,6 +15,7 @@ import time
 import numpy as np
 from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
 from logger import Logger
+import util
 
 __author__ = "Ingvaras Merkys"
 
@@ -26,14 +27,11 @@ DOT_RADIUS = 8
 
 class Detection:
 
-    # Format: (area_min, area_expected, area_max)
-
     # Areas of the robots (width). Symmetrical, allowing for some overlap.
     areas = [(0.0, 0.241), (0.207, 0.516), (0.484, 0.793), (0.759, 1.0)]
 
     def __init__(self, gui, processor, colour_order, scale, pitch_num, render_tlayers = True):
-    
-        self._render_tlayers = render_tlayers
+
         self._processor = processor
         self._pitch_w = WIDTH
         self._pitch_h = HEIGHT
@@ -57,33 +55,29 @@ class Detection:
         for which, square in enumerate(squares):
             if which < 4:
                 entities[which] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, which, square,
-                                         self.areas, self._scale, render_tlayers = self._render_tlayers)
+                                         self.areas, self._scale)
                 entities[which] = self._determine_angle(entities[which])
         ball_frame, ball_blob = self._find_ball()
         entities[BALL] = Entity(self._pitch_w, self._pitch_h, self._colour_order, self._coord_rect, BALL, ball_blob, self.areas,
-                                self._scale, render_tlayers = self._render_tlayers)
+                                self._scale)
 
-        if self._render_tlayers:
-            [self._gui.update_layer('robot' + str(i), entities[i]) for i in xrange(4)]
-            self._gui.update_layer('threshR', ball_frame)
-            self._gui.update_layer('squares', squares_frame)
+        [self._gui.update_layer('robot' + str(i), entities[i]) for i in xrange(4)]
+        self._gui.update_layer('threshR', ball_frame)
+        self._gui.update_layer('squares', squares_frame)
 
         self._gui.update_layer('ball', entities[BALL])
 
         return entities
 
     def _find_ball(self):
-        binary_frame = self._processor.get_binary_frame('ball')
-        frame = binary_frame
-        blobs = binary_frame.findBlobs(minsize=int(50*math.pow(self._scale, 2)), appx_level=5)
+        frame = self._processor.get_binary_frame('ball')
+        blobs = frame.findBlobs(minsize=int(50*math.pow(self._scale, 2)), appx_level=5)
         if not blobs is None:
             return (frame, blobs[0])
         else:
             return (frame, None)
 
     def _determine_angle(self, entity):
-        def dist(p1, p2):
-            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
         if entity.get_blob() is None:
             return entity
         corner_points = entity.get_blob().minRect()
@@ -108,8 +102,9 @@ class Detection:
             else:
                 if points[(i+2)%4][0]-points[i][0] < 0:
                     c = -1
-            x = points[i][0] + dist(points[i], points[(i+2)%4])*0.3 * math.cos(alpha) * c
-            y = points[i][1] + dist(points[i], points[(i+2)%4])*0.3 * math.sin(alpha) * c
+            dot_offset = util.euclidean(points[i], points[(i+2)%4]) * 0.3
+            x = points[i][0] + dot_offset * math.cos(alpha) * c
+            y = points[i][1] + dot_offset * math.sin(alpha) * c
             points[i] = (x, y)
         values = [ (i, self._get_point_value(point)) for i, point in enumerate(points) ]
         dot_i = min(values, key=lambda x: x[1])[0]
@@ -138,8 +133,6 @@ class Detection:
         return (frame, blobs if not blobs is None else [])
 
     def _join_split_squares(self, squares):
-        def dist(p1, p2):
-            return math.sqrt(math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2))
         squares_proper = []
         half_squares = []
         for i in xrange(len(squares)):
@@ -155,7 +148,7 @@ class Detection:
             min_squares = ((-1, None), (-1, None))
             for i in xrange(len(half_squares)):
                 for j in xrange(i+1, len(half_squares)):
-                    d = dist(half_squares[i].centroid(), half_squares[j].centroid())
+                    d = util.euclidean(half_squares[i].centroid(), half_squares[j].centroid())
                     if d < min_dist:
                         min_dist = d
                         min_squares = ((i, half_squares[i]), (j, half_squares[j]))
@@ -174,10 +167,8 @@ class Detection:
         new_min_rect = []
         points1 = list(square1.minRect())
         points2 = list(square2.minRect())
-        def dist(p1, p2):
-            return math.pow((p1[0] - p2[0]), 2) + math.pow((p1[1] - p2[1]), 2)
         def min_dist_point(p, points):
-            return min([(dist(p, p2), i) for i, p2 in enumerate(points)], key=lambda x: x[0])
+            return min([(util.euclidean(p, p2), i) for i, p2 in enumerate(points)], key=lambda x: x[0])
         point_distances = [(min_dist_point(p, points2), i) for i, p in enumerate(points1)]
         # [((dist, i), j)]
         (_, p2), p1 = min(point_distances, key=lambda x: x[0][0])
@@ -237,12 +228,11 @@ class Detection:
 class Entity:
 
     def __init__(self, pitch_w, pitch_h, colour_order, coord_rect, which = None, entity_blob = None,
-                 areas = None, scale = None, render_tlayers = True):
+                 areas = None, scale = 1.0):
         self._entity_blob = entity_blob
         self._coordinates = (-1, -1)  # coordinates in 580x320 coordinate system
         self._frame_coords = (-1, -1) # coordinates in the frame
         self._frame_coords_c = (-1, -1)
-        self._render_tlayers = render_tlayers
         self._dot_point = None
         self._angle = None
         self._scale = scale
@@ -254,26 +244,25 @@ class Entity:
         self.which = which
 
         (x_min, y_min), (x_max, y_max) = coord_rect
+        x_min *= scale
+        y_min *= scale
+        x_max *= scale
+        y_max *= scale
         coord_w = x_max - x_min
         coord_h = y_max - y_min
 
         if not entity_blob is None:
             x_frame, y_frame = (entity_blob.minRectX(), entity_blob.minRectY())
             self._frame_coords = (x_frame, y_frame)
-            self._frame_coords_c = self._perspective_correction(x_frame, y_frame)
 		
-            if which >= 0 and which < 4:
-                self._has_angle = True
             if which != BALL:
-                x = (self._frame_coords_c[0] - x_min)/float(coord_w)*WIDTH
-                y = (self._frame_coords_c[1] - y_min)/float(coord_h)*HEIGHT
+                self._has_angle = True
+                self._frame_coords_c = self._perspective_correction(x_frame, y_frame)
+                x = (self._frame_coords_c[0] - x_min)/coord_w*WIDTH
+                y = (self._frame_coords_c[1] - y_min)/coord_h*HEIGHT
             else:
-                x = (self._frame_coords[0] - x_min)/float(coord_w)*WIDTH
-                y = (self._frame_coords[1] - y_min)/float(coord_h)*HEIGHT   
-
-            if scale != None:
-                x = x / scale
-                y = y / scale
+                x = (self._frame_coords[0] - x_min)/coord_w*WIDTH
+                y = (self._frame_coords[1] - y_min)/coord_h*HEIGHT
 
             if x > WIDTH:
                 x = WIDTH
@@ -335,12 +324,11 @@ class Entity:
         If angle is true then orientation will also be drawn
         """
         if self.get_coordinates()[0] == -1: return
-        if self.which != BALL:        
-            o, p = self._frame_coords_c
-            layer.circle((o, p), radius=2, filled=1, color=Color.BLUE)
         if not self._dot_point is None:
             layer.circle(self._dot_point, radius=2, filled=1, color=Color.RED)
-        if self.which >= 0 and self.which < 4:
+        if self.which != BALL:
+            o, p = self._frame_coords_c
+            layer.circle((o, p), radius=2, filled=1, color=Color.BLUE)
             if self._colour_order[self.which] == 'b':
                 colour = Color.BLUE
             elif self._colour_order[self.which] == 'y':
@@ -354,9 +342,8 @@ class Entity:
                 endx = x + int(RADIUS * self._scale * math.cos(angle))
                 endy = y + int(RADIUS * self._scale * math.sin(angle))
                 layer.line((x, y), (endx, endy), antialias=False)
-                if self._render_tlayers:
-                    degrees = (self._angle * 180) / math.pi
-                    layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
+                degrees = (self._angle * 180) / math.pi
+                layer.ezViewText('{0:.1f} deg'.format(degrees), (x, y-int(40*self._scale)))
         elif self.which == BALL:
             w = layer.width
             h = layer.height
@@ -389,12 +376,12 @@ class MockBlob:
 
     def minRectWidth(self):
         p = self._min_rect_points
-        d1 = math.sqrt(math.pow((p[0][0] - p[1][0]), 2) + math.pow((p[0][1] - p[1][1]), 2))
-        d2 = math.sqrt(math.pow((p[2][0] - p[3][0]), 2) + math.pow((p[2][1] - p[3][1]), 2))
+        d1 = util.euclidean(p[0], p[1])
+        d2 = util.euclidean(p[2], p[3])
         return (d1+d2)/2.0
 
     def minRectHeight(self):
         p = self._min_rect_points
-        d1 = math.sqrt(math.pow((p[1][0] - p[3][0]), 2) + math.pow((p[1][1] - p[3][1]), 2))
-        d2 = math.sqrt(math.pow((p[0][0] - p[2][0]), 2) + math.pow((p[0][1] - p[2][1]), 2))
+        d1 = util.euclidean(p[1], p[3])
+        d2 = util.euclidean(p[0], p[2])
         return (d1+d2)/2.0
