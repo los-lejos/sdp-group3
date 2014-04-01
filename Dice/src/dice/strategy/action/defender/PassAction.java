@@ -29,8 +29,11 @@ public class PassAction extends StrategyAction {
 	public RobotInstruction getInstruction(WorldState state) {
 		GameObject defender = state.getOurDefender();
 		Vector2 defenderPos = defender.getPos();
-
-		if(Math.abs(defenderPos.Y - passY) > StratMaths.Y_POS_THRESH) {
+		
+		double yDist = Math.abs(defenderPos.Y - passY); 
+		System.out.println(yDist);
+		
+		if(yDist > StratMaths.Y_POS_THRESH) {
 			double dist = StratMaths.getStrafeDist(defenderPos.Y, passY, state.getSide());
 			return RobotInstruction.createLateralMove(dist);
 		}
