@@ -3,7 +3,6 @@ package robot;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
-import robot.defender.StrafeThread;
 
 public class HolonomicMovementController extends MovementController {
 	

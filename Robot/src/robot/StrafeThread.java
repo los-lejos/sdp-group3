@@ -1,4 +1,4 @@
-package robot.defender;
+package robot;
 
 import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
@@ -13,7 +13,8 @@ public class StrafeThread extends Thread {
 	
 	private final int POWER = 100;
 	private final int MAX_DELAY = 3000;
-	private final double ROTATION_MULTIPLIER = 0.1;
+	private final double ROTATION_LEFT_MULTIPLIER = 0.1;
+	private final double ROTATION_RIGHT_MULTIPLIER = 0.1;
 	
 	private final NXTMotor lateralMotor;
 	private final NXTRegulatedMotor rightWheel = Motor.A;
@@ -33,9 +34,11 @@ public class StrafeThread extends Thread {
 		lateralMotor = new NXTMotor(MotorPort.C);
 		
 		// Set speed of correction rotations
-		float rotateSpeed = (float) (this.leftWheel.getMaxSpeed() * ROTATION_MULTIPLIER);
-		this.rightWheel.setSpeed(rotateSpeed);
-		this.leftWheel.setSpeed(rotateSpeed);
+		float maxSpeed = this.leftWheel.getMaxSpeed();
+		float leftRotateSpeed = (float) (maxSpeed * ROTATION_LEFT_MULTIPLIER);
+		float rightRotateSpeed = (float) (maxSpeed * ROTATION_RIGHT_MULTIPLIER);
+		this.leftWheel.setSpeed(leftRotateSpeed);
+		this.rightWheel.setSpeed(rightRotateSpeed);
 	}
 	
 	public void cleanup() {
