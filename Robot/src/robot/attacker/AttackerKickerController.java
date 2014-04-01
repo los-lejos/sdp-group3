@@ -14,6 +14,7 @@ public class AttackerKickerController extends KickerController {
 	private static final byte BACKWARD = (byte) 1;
 	private static final byte STOP = (byte) 0;
 	
+	private static final byte RETAINMENT_SPEED = (byte)30;
 	private static final byte KICK_SPEED = (byte) 255;
 	private static final byte CATCH_SPEED = (byte) 100;
 	
@@ -42,6 +43,8 @@ public class AttackerKickerController extends KickerController {
 
 	@Override
 	protected void performOpen() throws InterruptedException {
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
+		
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
@@ -56,6 +59,8 @@ public class AttackerKickerController extends KickerController {
 
 	@Override
 	protected void performKick() throws InterruptedException {
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
+		
 		// Shut fully in case open
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
@@ -75,10 +80,9 @@ public class AttackerKickerController extends KickerController {
 	protected void performGrab() throws InterruptedException {
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
-		
 		Thread.sleep(DELAY_CLOSE);
 
-		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
-		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
+		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, RETAINMENT_SPEED);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 	}
 }
