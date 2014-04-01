@@ -109,7 +109,7 @@ class Detection:
                 if points[(i+2)%4][0]-points[i][0] < 0:
                     c = -1
             x = points[i][0] + dist(points[i], points[(i+2)%4])*0.3 * math.cos(alpha) * c
-            y = points[i][1] + DOT_OFFSET * math.sin(alpha) * c
+            y = points[i][1] + dist(points[i], points[(i+2)%4])*0.3 * math.sin(alpha) * c
             points[i] = (x, y)
         values = [ (i, self._get_point_value(point)) for i, point in enumerate(points) ]
         dot_i = min(values, key=lambda x: x[1])[0]
