@@ -155,6 +155,10 @@ public class Robot {
 			case RobotInstructions.OPEN_KICKER:
 				this.kicker.open();
 				break;
+			case RobotInstructions.CLOSE_KICKER:
+				this.kicker.kick();
+				this.sendReleasedBallMessage();
+				break;
 			default: 
 				System.out.println("Unknown instruction: " + instructionType);
 				break;

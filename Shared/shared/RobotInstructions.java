@@ -27,6 +27,7 @@ public final class RobotInstructions {
 	
 	/* e. g. "send <robot> 8 0 0 0" */
 	public static final byte OPEN_KICKER = 8;
+	public static final byte CLOSE_KICKER = 9;
 
 	// To DICE
 	public static final byte CAUGHT_BALL = -2;
