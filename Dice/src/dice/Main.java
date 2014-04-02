@@ -123,6 +123,7 @@ public class Main {
 				Log.logInfo("connect <robot> - starts up a bluetooth connection with the robot");
 				Log.logInfo("send <robot> <instruction type> <param1> <param2> - sends an instruction to the robot. Parameters are bytes between -127 and 126");
 				Log.logInfo("side <side> - Sets our side. Side is determined by the side our defender is on. Parameter is 'left' or 'right'");
+				Log.logInfo("pitch <pitch> - Sets pitch. 0 for main pitch, 1 for small room.");
 				Log.logInfo("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
 				Log.logInfo("pause - pauses execution of strategy and state logic");
 				Log.logInfo("resume - resumes execution of strategy and state logic");
@@ -132,6 +133,9 @@ public class Main {
 			} 
 			else if(cmd[0].equals("side")) {
 				setSide(cmd);
+			}
+			else if(cmd[0].equals("pitch")) {
+				setPitch(cmd);
 			}
 			else if(cmd[0].equals("pause")) {
 				this.visionReader.pause();
@@ -194,6 +198,16 @@ public class Main {
 			Log.logError("Invalid side. Side should be 'left' or 'right'");
 		}
 			
+	}
+	
+	private void setPitch(String[] cmd) {
+		if (cmd[1].equals("0")) {
+			worldState.setPitch(WorldState.Pitch.PITCH0);
+		} else if (cmd[1].equals("1")) {
+			worldState.setPitch(WorldState.Pitch.PITCH1);
+		} else {
+			Log.logError("Invalid pitch. Pitch should be '0' or '1'");
+		}
 	}
 	
 	private RobotType getRobotTypeFromCommand(String[] cmd) {

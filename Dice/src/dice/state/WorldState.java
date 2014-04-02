@@ -21,6 +21,11 @@ public class WorldState {
         LEFT,
         RIGHT
     }
+    
+    public enum Pitch {
+    	PITCH0,
+    	PITCH1
+    }
 
     // for ball ownership
     private static double OWNERSHIP_DISTANCE = 20; // in px
@@ -47,10 +52,10 @@ public class WorldState {
     public static final double PITCH_WIDTH = 580;
     private static final int GOAL_WIDTH = 150;
     
-    // calibration of the divisions
-    private static final double FIRST_ADJUSTMENT = -18;
-    private static final double SECOND_ADJUSTMENT = 0;
-    private static final double THIRD_ADJUSTMENT = 15;
+    // Zone calibration: use PITCH0 values by default
+    private static double FIRST_ADJUSTMENT = -18;
+    private static double SECOND_ADJUSTMENT = 0;
+    private static double THIRD_ADJUSTMENT = 15;
 
     private static final double FIRST_DIVISION = PITCH_WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
     private static final double SECOND_DIVISION = PITCH_WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
@@ -65,6 +70,9 @@ public class WorldState {
 
     // we are LEFT if our defender is on the left.
     private Side ourSide;
+    
+    // This is pitch0 for main pitch, pitch1 otherwise
+    private Pitch pitch;
 
     private Goal leftGoal = new Goal(new Vector2(0, PITCH_HEIGHT / 2.0 + GOAL_WIDTH / 2.0),
     								 new Vector2(0, PITCH_HEIGHT / 2.0 - GOAL_WIDTH / 2.0));
@@ -79,7 +87,7 @@ public class WorldState {
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
 
-		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
+		WorldState result = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT, Pitch.PITCH0);
         Vector2 start = new Vector2(0,0);
         Vector2 end = new Vector2(1000,0);
         result.setTop(new BoundedLine(start,end));
@@ -134,6 +142,10 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
+        
+        if (this.ball.getPos() != null) {
+        	System.out.println(this.ball.getCurrentZone());
+        }
 
         updateBallOwnership();
         this.updateObjectZone(this.ball);
@@ -166,13 +178,23 @@ public class WorldState {
     public Side getSide() {
     	return ourSide;
     }
+    
+    public void setPitch(Pitch pitch) {
+    	this.pitch = pitch;
+    	updateZoneCalibration(this.pitch);
+    }
+    
+    public Pitch getPitch() {
+    	return pitch;
+    }
 
     // populate the world. First all robots and the
     // ball must be created
     public WorldState(
     		GameObject a, GameObject b,
     		GameObject c, GameObject d,
-    		GameObject ball, Side ourSide) {
+    		GameObject ball, Side ourSide,
+    		Pitch pitch) {
         
         this.farLeftRobot = a;
         this.middleLeftRobot = b;
@@ -181,6 +203,23 @@ public class WorldState {
         this.ball = ball;
 
         this.ourSide = ourSide;
+        this.pitch = pitch;
+        
+        updateZoneCalibration(this.pitch);
+    }
+    
+    private void updateZoneCalibration(Pitch pitch) {
+        if (this.pitch == Pitch.PITCH1) {
+        	FIRST_ADJUSTMENT = -6;
+        	SECOND_ADJUSTMENT = 7;
+        	THIRD_ADJUSTMENT = 25;
+        } else {
+        	FIRST_ADJUSTMENT = -18;
+            SECOND_ADJUSTMENT = 0;
+            THIRD_ADJUSTMENT = 15;
+        }
+        
+        Log.logInfo("Pitch calibrated for " + pitch);
     }
 
     // 0-3 left to right on vision. This is done because the order is reversed

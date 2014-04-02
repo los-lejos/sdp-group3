@@ -18,7 +18,7 @@ public class StrategyTests {
 		GameObject opponentAttacker = new GameObject();
 		GameObject ourDefender = new GameObject();
 		GameObject ball = new GameObject();
-		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT);
+		WorldState state = new WorldState(opponentDefender, opponentAttacker, ourDefender, ourAttacker, ball, Side.LEFT, WorldState.Pitch.PITCH0);
 		
 		RobotCommunicator attackerComms = new MockRobotCommunicator();
 		attackerComms.init(RobotType.ATTACKER, null);
