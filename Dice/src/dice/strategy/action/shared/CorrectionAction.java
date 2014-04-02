@@ -29,7 +29,6 @@ public class CorrectionAction extends StrategyAction {
 		GameObject target = this.getTargetObject(state);
 		
 		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
-		//System.out.println(target.getPos().X);
 
 		boolean facingLeft = state.getSide() == Side.RIGHT;
 		if(faceBackwards) facingLeft = !facingLeft;
@@ -44,13 +43,7 @@ public class CorrectionAction extends StrategyAction {
 			return true;
 		} else if(Math.abs(deltaX) > StratMaths.CORRECTION_POS_THRESH) {
 			shouldRotate = false;
-			
-			if(state.getSide() == Side.LEFT) {
-				this.dist = deltaX;
-			} else {
-				this.dist = -deltaX;
-			}
-			
+			this.dist = facingLeft ? -deltaX : deltaX;
 			return true;
 		}
 		

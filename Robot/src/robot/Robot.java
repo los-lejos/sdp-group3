@@ -77,10 +77,8 @@ public class Robot {
 				
 				// If we have encountered an instruction beginning with '0'
 				// assume error and terminate
-				if(currentInstruction.getType() == 0) {
+				if(currentInstruction.getType() <= 0) {
 					System.out.println("Instruction type 0");
-					this.isRunning = false;
-					break;
 				} else {
 					this.handleInstruction(currentInstruction);
 				}
