@@ -17,8 +17,9 @@ public final class StratMaths {
 	 */
 	public static final double BALL_SPEED_THRESH = 8;
 	public static final double BALL_DISTANCE_THRESH = 60;
+	private static final double MIN_SPEED_DIST = 40;
 	private static final double MAX_SPEED_DIST = 200;
-	private static final int MIN_SPEED = 30;
+	private static final int MIN_SPEED = 60;
 	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
 
 	/*
@@ -64,12 +65,11 @@ public final class StratMaths {
 			return 100;
 		}
 		
-		if(dist <= BALL_DISTANCE_THRESH) {
+		if(dist <= MIN_SPEED_DIST) {
 			return MIN_SPEED;
 		}
 		
-		double slowingDist = dist - BALL_DISTANCE_THRESH;
-
+		double slowingDist = MAX_SPEED_DIST - dist;
 		return (int) (100 - slowingDist * SPEED_PER_DIST);
 	}
 	
@@ -84,7 +84,7 @@ public final class StratMaths {
 			return MIN_ROT_SPEED;
 		}
 		
-		double slowingRot = rot - MIN_SPEED_ROT;
+		double slowingRot = MAX_SPEED_ROT - rot;
 		return (int) (MAX_ROT_SPEED - slowingRot * SPEED_PER_ROT);
 	}
 
