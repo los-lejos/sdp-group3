@@ -70,5 +70,6 @@ local.properties
 
 # Vision stuff
 *.pyc
+*.py~
 Dice/vision/data/*
 *.log
