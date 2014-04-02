@@ -24,6 +24,9 @@ public final class RobotInstructions {
 	
 	/* e. g. "send <robot> 6 75 0 0" (set rotate speed to 75% of max capacity)*/
 	public static final byte SET_ROTATE_SPEED = 7;
+	
+	/* e. g. "send <robot> 8 0 0 0" */
+	public static final byte OPEN_KICKER = 8;
 
 	// To DICE
 	public static final byte CAUGHT_BALL = -2;

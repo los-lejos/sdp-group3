@@ -20,8 +20,6 @@ import shared.RobotInstructions;
  */
 
 public class Robot {
-	
-	private static final int KICKER_RESET_DELAY = 10000; // 10 seconds
 
 	protected final BluetoothDiceConnection conn;
 	
@@ -32,8 +30,6 @@ public class Robot {
     private final BallSensorController ballSensor;
     
     private boolean isRunning = true;
-    
-    private long prevKickerResetTime = System.currentTimeMillis();
     
     public Robot(
     		KickerController kicker, MovementController movementController,
@@ -88,23 +84,17 @@ public class Robot {
 			this.ballSensor.takeReading();
 			
 			// If we tried to catch the ball but didn't, restore kicker
-			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
-				prevKickerResetTime = System.currentTimeMillis();
+			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving() && this.kicker.isOpen()) {
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
-			// If the ball is in front of the kicker, try to grab
-			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+			// If the ball is in front of the kicker + kicker is open, try to grab
+			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				
 				// Reset so that we gather some measurements to make sure we have the ball
 				this.ballSensor.resetMeasurements();
-			}
-			// Periodically reset kicker to open
-			else if (this.kickerResetElapsed() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
-				prevKickerResetTime = System.currentTimeMillis();
-				this.kicker.open();
 			}
 		}
 
@@ -117,19 +107,9 @@ public class Robot {
 		}
 		
 		this.movementController.cleanup();
-		this.kicker.cleanup();
+		this.kicker.kill();
 		
 		System.out.println("Exiting");
-	}
-
-	private boolean kickerResetElapsed() {
-		long currTime = System.currentTimeMillis();
-		
-		if (currTime - prevKickerResetTime > KICKER_RESET_DELAY) {
-			return true;
-		}
-		
-		return false;
 	}
 
 	private void handleInstruction(IssuedInstruction instruction) {
@@ -171,6 +151,9 @@ public class Robot {
 				break;
 			case RobotInstructions.SET_ROTATE_SPEED:
 				this.movementController.setRotateSpeed(instructionParams[0]);
+				break;
+			case RobotInstructions.OPEN_KICKER:
+				this.kicker.open();
 				break;
 			default: 
 				System.out.println("Unknown instruction: " + instructionType);

@@ -44,6 +44,8 @@ public class IssuedInstruction {
 			return new int[] { instruction[1] };
 		case RobotInstructions.SET_ROTATE_SPEED:
 			return new int[] { instruction[1] };
+		case RobotInstructions.OPEN_KICKER:
+			return new int[] { };
 		default: 
 			System.out.println("Unknown instruction: " + type);
 			return null;
