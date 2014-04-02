@@ -142,10 +142,6 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
-        
-        if (this.ball.getPos() != null) {
-        	System.out.println(this.ball.getCurrentZone());
-        }
 
         updateBallOwnership();
         this.updateObjectZone(this.ball);
