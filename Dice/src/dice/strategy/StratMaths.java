@@ -20,7 +20,7 @@ public final class StratMaths {
 	private static final double MIN_SPEED_DIST = 40;
 	private static final double MAX_SPEED_DIST = 200;
 	private static final int MIN_SPEED = 60;
-	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - BALL_DISTANCE_THRESH);
+	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - MIN_SPEED_DIST);
 
 	/*
 	 * Rotation thresholds
