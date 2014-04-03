@@ -185,6 +185,18 @@ public class WorldState {
     public Pitch getPitch() {
     	return pitch;
     }
+    
+    public double getFirstDelimiter() {
+    	return FIRST_DIVISION;
+    }
+    
+    public double getSecondDelimiter() {
+    	return SECOND_DIVISION;
+    }
+    
+    public double getThirdDelimiter() {
+    	return THIRD_DIVISION;
+    }
 
     // populate the world. First all robots and the
     // ball must be created

@@ -44,6 +44,11 @@ public class RobotInstruction {
 		return (byte)speedPercent;
 	}
 	
+	public static RobotInstruction createMoveAndKick(double dist) {
+		byte robotDistance = strategyToRobotDistance(dist);
+		return new RobotInstruction(RobotInstructions.MOVE_AND_KICK, robotDistance, (byte)100, (byte)0);
+	}
+	
 	public static RobotInstruction createOpenKicker() {
 		return new RobotInstruction(RobotInstructions.OPEN_KICKER, (byte)0, (byte)0, (byte)0);
 	}

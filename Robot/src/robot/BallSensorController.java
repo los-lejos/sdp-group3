@@ -23,6 +23,7 @@ public abstract class BallSensorController {
 	
 	public void takeReading() {
 		readings[readingIndex] = ballSensor.getColor().getRed();
+		System.out.println(readings[readingIndex]);
 		readingIndex++;
 		
 		if(readingIndex >= BALL_SENSOR_READING_MAX) {

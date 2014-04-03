@@ -53,8 +53,14 @@ public class ShootAction extends StrategyAction {
 			return RobotInstruction.createLateralMove(dist);
 		}
 		
-		// Shoot at the goal
-		System.out.println("Kick");
-		return RobotInstruction.createKick();
+		double xDist;
+		if(state.getSide() == Side.LEFT) {
+			xDist = state.getThirdDelimiter() - targetPos.X;
+		} else {
+			xDist = targetPos.X - state.getFirstDelimiter();
+		}
+		
+		xDist -= StratMaths.BALL_DISTANCE_THRESH;
+		return RobotInstruction.createMoveAndKick(xDist);
 	}
 }

@@ -90,7 +90,7 @@ public class Robot {
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker + kicker is open, try to grab
-			if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
+			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				
@@ -138,6 +138,18 @@ public class Robot {
 			case RobotInstructions.KICK:
 				this.kicker.kick();
 				this.sendReleasedBallMessage();
+				break;
+			case RobotInstructions.MOVE_AND_KICK:
+				distance = instructionParams[0];
+				speed = instructionParams[1];
+				this.movementController.setTravelSpeed(speed);
+				this.movementController.move(distance);
+				try {
+					Thread.sleep(400);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				this.kicker.kick();
 				break;
 			case RobotInstructions.LAT_MOVE:
 				distance = instructionParams[0];
