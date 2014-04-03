@@ -5,7 +5,9 @@ import dice.state.WorldState;
 import dice.strategy.action.attacker.BlockAction;
 import dice.strategy.action.attacker.RecievePassAction;
 import dice.strategy.action.attacker.ShootAction;
+import dice.strategy.action.shared.CloseKickerAction;
 import dice.strategy.action.shared.CorrectionAction;
+import dice.strategy.action.shared.OpenKickerAction;
 import dice.strategy.action.shared.ToBallAction;
 
 public class AttackerStrategyState extends RobotStrategyState {
@@ -17,6 +19,8 @@ public class AttackerStrategyState extends RobotStrategyState {
 	private CorrectionAction passCorrect;
 	private CorrectionAction shootCorrect;
 	private BlockAction block;
+	private OpenKickerAction openKicker;
+	private CloseKickerAction closeKicker;
 
 	public AttackerStrategyState() {
 		super(RobotType.ATTACKER);
@@ -28,6 +32,8 @@ public class AttackerStrategyState extends RobotStrategyState {
 		this.shootCorrect = new CorrectionAction(RobotType.ATTACKER, CorrectionAction.Side.OPP);
 		this.correction = new CorrectionAction(RobotType.ATTACKER, CorrectionAction.Side.EITHER);
 		this.block = new BlockAction(RobotType.ATTACKER);
+		this.openKicker = new OpenKickerAction(RobotType.ATTACKER);
+		this.closeKicker = new CloseKickerAction(RobotType.ATTACKER);
 	}
 
 	@Override
@@ -50,7 +56,13 @@ public class AttackerStrategyState extends RobotStrategyState {
 		}
 		
 		if(toBall.isPossible(state)) {
+			if(!this.isKickerOpen()) {
+				return openKicker;
+			}
+			
 			return toBall;
+		} else if(this.isKickerOpen()) {
+			return closeKicker;
 		}
 		
 		if(block.isPossible(state)) {

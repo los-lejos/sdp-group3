@@ -1,7 +1,5 @@
 package dice.strategy;
 
-import java.util.Arrays;
-
 import shared.RobotInstructions;
 import dice.Log;
 import dice.communication.RobotCommunicator;
@@ -23,42 +21,22 @@ public abstract class RobotStrategyState {
 	private RobotCommunicator robotComms;
 	private RobotType robotType;
 	
-	private int STRAFE_TIMEOUT = 2000;
-	private long strafeStartTime;
-	private boolean isStrafing = false;
+	private boolean kickerOpen = false;
 	
 	public RobotStrategyState(RobotType robotType) {
 		this.robotType = robotType;
 	}
 	
-	public boolean isStrafing() {
-		return this.isStrafing;
+	public boolean isKickerOpen() {
+		return this.kickerOpen;
 	}
-	
-	public void setIsStrafing(boolean isStrafing) {
-		this.isStrafing = isStrafing;
-		
-		if(this.isStrafing) {
-			this.strafeStartTime = System.currentTimeMillis();
-		}
-		
-		if(this.robotType == RobotType.ATTACKER) {
-			System.out.println(isStrafing);
-		}
-	}
-	
+
 	public StrategyAction getCurrentAction() {
 		return this.strategyAction;
 	}
 
 	public void setCommunicator(RobotCommunicator robotComms) {
 		this.robotComms = robotComms;
-	}
-	
-	public void update() {
-		if(this.isStrafing && System.currentTimeMillis() - this.strafeStartTime > STRAFE_TIMEOUT) {
-			this.isStrafing = false;
-		}
 	}
 
 	public abstract StrategyAction getBestAction(WorldState state);
@@ -85,8 +63,12 @@ public abstract class RobotStrategyState {
 			boolean newInstruction = this.currentInstruction == null || !this.currentInstruction.equals(instruction);
 			
 			if(robotComms.isConnected() && newInstruction) {
-				if(instruction.getType() == RobotInstructions.LAT_MOVE) {
-					this.setIsStrafing(true);
+				if(instruction.getType() == RobotInstructions.OPEN_KICKER) {
+					this.kickerOpen = true;
+				} else if(instruction.getType() == RobotInstructions.CLOSE_KICKER) {
+					this.kickerOpen = false;
+				} else if(instruction.getType() == RobotInstructions.KICK) {
+					this.kickerOpen = false;
 				}
 				
 				this.currentInstruction = instruction;

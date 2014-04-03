@@ -1,6 +1,5 @@
 package robot;
 
-import robot.communication.BluetoothDiceConnection;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -33,7 +32,7 @@ public class HolonomicMovementController extends MovementController {
 		pilot.setTravelSpeed(travelSpeed);
 		pilot.setRotateSpeed(rotateSpeed);
 
-		strafeThread = new StrafeThread(isAttacker);
+		strafeThread = new StrafeThread();
 		strafeThread.start();
 	}
 
@@ -97,10 +96,5 @@ public class HolonomicMovementController extends MovementController {
 	public void setRotateSpeed(int speedPercentage) {
 		rotateSpeed = speedPercentage * 0.01 * maxRotateSpeed;
 		pilot.setRotateSpeed(rotateSpeed);
-	}
-
-	@Override
-	protected void setCommunicator(BluetoothDiceConnection conn) {
-		this.strafeThread.setCommunicator(conn);
 	}
 }

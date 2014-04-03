@@ -36,14 +36,6 @@ public class StrategyEvaluator {
 		attacker = new AttackerStrategyState();
 		defender = new DefenderStrategyState();
 	}
-	
-	public void setRobotStrafing(RobotType robot, boolean isStrafing) {
-		if(robot == RobotType.ATTACKER) {
-			this.attacker.setIsStrafing(isStrafing);
-		} else {
-			this.defender.setIsStrafing(isStrafing);
-		}
-	}
 
 	public void setCommunicator(RobotType type, RobotCommunicator comms) {
 		if(type == RobotType.ATTACKER) {
@@ -66,9 +58,6 @@ public class StrategyEvaluator {
 		}
 		
 		this.lastUpdateTime = currentTime;
-		
-		attacker.update();
-		defender.update();
 
 		// Update actions performed by robots
 		StrategyAction attackerAction = attacker.getBestAction(state);

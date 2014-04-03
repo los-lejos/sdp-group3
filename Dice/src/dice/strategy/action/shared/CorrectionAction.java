@@ -89,6 +89,4 @@ public class CorrectionAction extends StrategyAction {
 			return RobotInstruction.createMove(this.dist, 80);
 		}
 	}
-	
-	
 }

@@ -45,7 +45,7 @@ public class SaveAction extends StrategyAction {
 			double yAtRobot = line.getYValue(targetPos.X);
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y, yAtRobot,
 					state.getSide() == Side.RIGHT);
-			System.out.println("Opp: " + yAtRobot);
+			//System.out.println("Opp: " + yAtRobot);
 		}
 		// Try to move to the projected point of the ball, if it is moving
 		else if (ballVel.getLength() > StratMaths.BALL_SPEED_THRESH) {
@@ -57,7 +57,7 @@ public class SaveAction extends StrategyAction {
 				double yAtRobot = ballTraj.getYValue(targetPos.X);
 				movementAmount = StratMaths.getStrafeDist(targetPos.Y,
 						yAtRobot, state.getSide() == Side.RIGHT);
-				System.out.println("Vel: " + yAtRobot);
+				//System.out.println("Vel: " + yAtRobot);
 			}
 		}
 
@@ -65,7 +65,7 @@ public class SaveAction extends StrategyAction {
 		if (this.movementAmount == Double.MAX_VALUE) {
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y,
 					ballPos.Y, state.getSide() == Side.RIGHT);
-			System.out.println("Ball: " + ballPos.Y);
+			//System.out.println("Ball: " + ballPos.Y);
 		}
 
 		// Don't move past the post while blocking since you want to be in front

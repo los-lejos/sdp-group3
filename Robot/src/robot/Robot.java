@@ -64,7 +64,6 @@ public class Robot {
 		
 		conn.start();
 		
-		this.movementController.setCommunicator(conn);
 		this.kicker.init();
 
 		while(isRunning && Button.readButtons() == 0) {
@@ -86,12 +85,12 @@ public class Robot {
 			this.ballSensor.takeReading();
 			
 			// If we tried to catch the ball but didn't, restore kicker
-			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving() && this.kicker.isOpen()) {
+			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker + kicker is open, try to grab
-			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
+			if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				

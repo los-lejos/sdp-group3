@@ -50,20 +50,6 @@ public class Main {
 				worldState.setObjectWithBall(null);
 			}
 		}
-		
-		@Override
-		public void onStrafeStart() {
-			synchronized(worldState) {
-				strategy.setRobotStrafing(RobotType.ATTACKER, true);
-			}
-		}
-		
-		@Override
-		public void onStrafeEnd() {
-			synchronized(worldState) {
-				strategy.setRobotStrafing(RobotType.ATTACKER, false);
-			}
-		}
 	};
 	
 	private RobotEventListener defenderEventListener = new RobotEventListener() {
@@ -79,20 +65,6 @@ public class Main {
 		public void onBallReleased() {
 			synchronized(worldState) {
 				worldState.setObjectWithBall(null);
-			}
-		}
-		
-		@Override
-		public void onStrafeStart() {
-			synchronized(worldState) {
-				strategy.setRobotStrafing(RobotType.DEFENDER, true);
-			}
-		}
-		
-		@Override
-		public void onStrafeEnd() {
-			synchronized(worldState) {
-				strategy.setRobotStrafing(RobotType.DEFENDER, false);
 			}
 		}
 	};

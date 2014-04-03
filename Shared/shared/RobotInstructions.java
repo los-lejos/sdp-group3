@@ -32,7 +32,5 @@ public final class RobotInstructions {
 	// To DICE
 	public static final byte CAUGHT_BALL = -2;
 	public static final byte RELEASED_BALL = -3;
-	public static final byte STRAFE_START = -4;
-	public static final byte STRAFE_END = -5;
 
 }

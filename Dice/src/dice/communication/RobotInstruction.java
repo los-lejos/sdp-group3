@@ -44,6 +44,14 @@ public class RobotInstruction {
 		return (byte)speedPercent;
 	}
 	
+	public static RobotInstruction createOpenKicker() {
+		return new RobotInstruction(RobotInstructions.OPEN_KICKER, (byte)0, (byte)0, (byte)0);
+	}
+	
+	public static RobotInstruction createCloseKicker() {
+		return new RobotInstruction(RobotInstructions.CLOSE_KICKER, (byte)0, (byte)0, (byte)0);
+	}
+	
 	public static RobotInstruction createMove(double distance, int speedPercent) {
 		byte robotDistance = strategyToRobotDistance(distance);
 		byte speed = boundSpeed(speedPercent);

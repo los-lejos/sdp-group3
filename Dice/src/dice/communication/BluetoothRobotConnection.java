@@ -109,10 +109,6 @@ public class BluetoothRobotConnection extends Thread {
 				eventListener.onBallCaught();
 			} else if(instructionId == RobotInstructions.RELEASED_BALL) {
 				eventListener.onBallReleased();
-			} else if(instructionId == RobotInstructions.STRAFE_START) {
-				eventListener.onStrafeStart();
-			} else if(instructionId == RobotInstructions.STRAFE_END) {
-				eventListener.onStrafeEnd();
 			}
 		}
 	}

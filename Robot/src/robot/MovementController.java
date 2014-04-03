@@ -1,6 +1,5 @@
 package robot;
 
-import robot.communication.BluetoothDiceConnection;
 
 
 public abstract class MovementController {
@@ -111,7 +110,5 @@ public abstract class MovementController {
     protected abstract void performRotate(int heading);
     protected abstract void performMove(int distance);
     protected abstract void performMoveLat(int distance);
-    
-    protected abstract void setCommunicator(BluetoothDiceConnection conn);
 
 }

@@ -30,16 +30,6 @@ public class RotationCalibration {
 		public void onBallCaught() {}
 		@Override
 		public void onBallReleased() {}
-		@Override
-		public void onStrafeStart() {
-			// TODO Auto-generated method stub
-			
-		}
-		@Override
-		public void onStrafeEnd() {
-			// TODO Auto-generated method stub
-			
-		}
 	};
 	private GameObject attackerRobot;
 

@@ -15,7 +15,7 @@ public final class StratMaths {
 	 * Distance and speed thresholds
 	 */
 	public static final double BALL_SPEED_THRESH = 8;
-	public static final double BALL_DISTANCE_THRESH = 40;
+	public static final double BALL_DISTANCE_THRESH = 30;
 	private static final double MIN_SPEED_DIST = 40;
 	private static final double MAX_SPEED_DIST = 200;
 	private static final int MIN_SPEED = 50;
@@ -38,7 +38,7 @@ public final class StratMaths {
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
 	
 	// Threshold for deciding if an object is nearby in Y
-	public static final double Y_POS_THRESH = 50;
+	public static final double Y_POS_THRESH = 40;
 	
 	private static final double MAX_STRAFE_DIST = 80;
 	

@@ -1,12 +1,7 @@
 package robot;
 
-import java.io.IOException;
-
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
-import robot.communication.BluetoothCommunicationException;
-import robot.communication.BluetoothDiceConnection;
-import shared.RobotInstructions;
 
 public class StrafeThread extends Thread {
 	
@@ -31,22 +26,13 @@ public class StrafeThread extends Thread {
 
 	private boolean interrupted = false;
 	private boolean isMoving = false;
-	
-	private boolean isAttacker;
-	
-	private BluetoothDiceConnection conn;
 
-	public StrafeThread(boolean isAttacker) {
-		this.isAttacker = isAttacker;
+	public StrafeThread() {
 		this.setDaemon(true);
 		lateralMotor = new NXTMotor(MotorPort.C);
 		lateralMotor.flt();
 	}
-	
-	public void setCommunicator(BluetoothDiceConnection conn) {
-		this.conn = conn;
-	}
-	
+
 	public void cleanup() {
 		this.newState = StrafeState.EXIT;
 	}
@@ -113,8 +99,6 @@ public class StrafeThread extends Thread {
 	}
 	
 	private void moveLat() {
-		//this.sendStrafeStartMessage();
-		
 		this.isMoving = true;
 		
 		this.lateralMotor.setPower(this.POWER);
@@ -128,46 +112,11 @@ public class StrafeThread extends Thread {
 		// Wait to move the required distance
 		long startTime = System.currentTimeMillis();
 		while(!interrupted && System.currentTimeMillis() - startTime < this.movementDelay);
-
-		//this.sendStrafeEndMessage();
 	}
 	
 	private void stopMotor() {
 		this.isMoving = false;
 		this.lateralMotor.stop();
-
-//		// Wait for motor to wind down
-//		try {
-//			Thread.sleep(300);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-	}
-	
-	private void sendStrafeStartMessage() {
-		// Notify DICE that we started strafing
-		byte[] startedStrafing = {RobotInstructions.STRAFE_START, 0, 0, 0};
-		
-		try {
-			conn.send(startedStrafing);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void sendStrafeEndMessage() {
-		// Notify DICE that we stopped strafing
-		byte[] startedStrafing = {RobotInstructions.STRAFE_END, 0, 0, 0};
-		
-		try {
-			conn.send(startedStrafing);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BluetoothCommunicationException e) {
-			e.printStackTrace();
-		}
 	}
 }
 
