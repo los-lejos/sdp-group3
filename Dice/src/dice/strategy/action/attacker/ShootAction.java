@@ -7,6 +7,7 @@ import dice.state.GameObject;
 import dice.state.Goal;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -47,7 +48,7 @@ public class ShootAction extends StrategyAction {
 				targetY = (oppGoal.getTopPost().Y - defenderPos.Y) / 2.0 + defenderPos.Y;
 			}
 
-			double dist = StratMaths.getStrafeDist(targetPos.Y, targetY, state.getSide());
+			double dist = StratMaths.getStrafeDist(targetPos.Y, targetY, state.getSide() == Side.RIGHT);
 			System.out.println("Strafe " + dist);
 			return RobotInstruction.createLateralMove(dist);
 		}

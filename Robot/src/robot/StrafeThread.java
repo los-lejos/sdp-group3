@@ -1,9 +1,12 @@
 package robot;
 
-import lejos.nxt.Motor;
+import java.io.IOException;
+
 import lejos.nxt.MotorPort;
 import lejos.nxt.NXTMotor;
-import lejos.nxt.NXTRegulatedMotor;
+import robot.communication.BluetoothCommunicationException;
+import robot.communication.BluetoothDiceConnection;
+import shared.RobotInstructions;
 
 public class StrafeThread extends Thread {
 	
@@ -13,32 +16,35 @@ public class StrafeThread extends Thread {
 	
 	private final int POWER = 100;
 	private final int MAX_DELAY = 3000;
-	private final double ROTATION_LEFT_MULTIPLIER = 0.1;
-	private final double ROTATION_RIGHT_MULTIPLIER = 0.1;
-	
+
 	private final NXTMotor lateralMotor;
-	private final NXTRegulatedMotor rightWheel = Motor.A;
-	private final NXTRegulatedMotor leftWheel = Motor.B;
+
+	private Object updateLock = new Object();
 	
 	private StrafeState state = StrafeState.READY;
-	private StrafeState newState = StrafeState.READY;
-	
 	private boolean forwardDirection;
 	private long movementDelay = 0;
 	
+	private StrafeState newState = StrafeState.READY;
+	private boolean newForwardDirection;
+	private long newMovementDelay = 0;
+
 	private boolean interrupted = false;
 	private boolean isMoving = false;
+	
+	private boolean isAttacker;
+	
+	private BluetoothDiceConnection conn;
 
-	public StrafeThread() {
+	public StrafeThread(boolean isAttacker) {
+		this.isAttacker = isAttacker;
 		this.setDaemon(true);
 		lateralMotor = new NXTMotor(MotorPort.C);
-		
-		// Set speed of correction rotations
-		float maxSpeed = this.leftWheel.getMaxSpeed();
-		float leftRotateSpeed = (float) (maxSpeed * ROTATION_LEFT_MULTIPLIER);
-		float rightRotateSpeed = (float) (maxSpeed * ROTATION_RIGHT_MULTIPLIER);
-		this.leftWheel.setSpeed(leftRotateSpeed);
-		this.rightWheel.setSpeed(rightRotateSpeed);
+		lateralMotor.flt();
+	}
+	
+	public void setCommunicator(BluetoothDiceConnection conn) {
+		this.conn = conn;
 	}
 	
 	public void cleanup() {
@@ -50,31 +56,30 @@ public class StrafeThread extends Thread {
 	}
 	
 	public void move(int distance) {
-		this.interrupted = true;
-		
-		// Calculations based on power being 100,
-		// can find a function that fits this, but this is simpler to adjust
-		int absDist = Math.abs(distance);
-		if(absDist <= 5) {
-			this.movementDelay = (long) (absDist*38);
-		} else if(absDist <= 15) {
-			this.movementDelay = (long) (absDist*26);
-		} else {
-			this.movementDelay = (long) (absDist*22);
+		synchronized(updateLock) {
+			this.interrupted = true;
+			
+			// Calculations based on power being 100,
+			// can find a function that fits this, but this is simpler to adjust
+			int absDist = Math.abs(distance);
+			if(absDist <= 5) {
+				this.newMovementDelay = (long) (absDist*38);
+			} else if(absDist <= 15) {
+				this.newMovementDelay = (long) (absDist*26);
+			} else {
+				this.newMovementDelay = (long) (absDist*22);
+			}
+	
+			if(this.newMovementDelay > MAX_DELAY) {
+				this.newMovementDelay = MAX_DELAY;
+			}
+			
+			this.newForwardDirection = distance > 0;
+			this.newState = StrafeState.STRAFE;
 		}
-
-		if(this.movementDelay > MAX_DELAY) {
-			this.movementDelay = MAX_DELAY;
-		}
-		
-		this.forwardDirection = distance > 0;
-		this.isMoving = true;
-
-		this.newState = StrafeState.STRAFE;
 	}
 	
 	public void stop() {
-		this.isMoving = false;
 		this.newState = StrafeState.STOP;
 	}
 	
@@ -89,13 +94,18 @@ public class StrafeThread extends Thread {
 				state = StrafeState.READY;
 			}
 
-			if(newState != StrafeState.READY) {
-				state = newState;
-				newState = StrafeState.READY;
-				interrupted = false;
-			} else if(isMoving) {
-				this.isMoving = false;
-				this.stopMotor();
+			synchronized(updateLock) {
+				if(newState != StrafeState.READY) {
+					state = newState;
+					newState = StrafeState.READY;
+					movementDelay = newMovementDelay;
+					forwardDirection = newForwardDirection;
+					interrupted = false;
+				}
+			}
+			
+			if(this.isMoving && state == StrafeState.READY) {
+				stopMotor();
 			}
 		}
 		
@@ -103,27 +113,61 @@ public class StrafeThread extends Thread {
 	}
 	
 	private void moveLat() {
+		//this.sendStrafeStartMessage();
+		
+		this.isMoving = true;
+		
 		this.lateralMotor.setPower(this.POWER);
 		
 		if(this.forwardDirection) {
 			this.lateralMotor.forward();
-			this.leftWheel.forward();
 		} else {
 			this.lateralMotor.backward();
-			this.rightWheel.forward();
 		}
 		
 		// Wait to move the required distance
 		long startTime = System.currentTimeMillis();
 		while(!interrupted && System.currentTimeMillis() - startTime < this.movementDelay);
-		stopMotor();
+
+		//this.sendStrafeEndMessage();
 	}
 	
 	private void stopMotor() {
 		this.isMoving = false;
-		this.lateralMotor.flt();
-		this.leftWheel.flt();
-		this.rightWheel.flt();
+		this.lateralMotor.stop();
+
+//		// Wait for motor to wind down
+//		try {
+//			Thread.sleep(300);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+	}
+	
+	private void sendStrafeStartMessage() {
+		// Notify DICE that we started strafing
+		byte[] startedStrafing = {RobotInstructions.STRAFE_START, 0, 0, 0};
+		
+		try {
+			conn.send(startedStrafing);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void sendStrafeEndMessage() {
+		// Notify DICE that we stopped strafing
+		byte[] startedStrafing = {RobotInstructions.STRAFE_END, 0, 0, 0};
+		
+		try {
+			conn.send(startedStrafing);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BluetoothCommunicationException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

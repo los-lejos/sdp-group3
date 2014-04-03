@@ -7,6 +7,7 @@ import dice.state.GameObject;
 import dice.state.Line;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -43,7 +44,8 @@ public class SaveAction extends StrategyAction {
 			// Move towards wherever the opponent attacker is looking
 			double yAtRobot = line.getYValue(targetPos.X);
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y, yAtRobot,
-					state.getSide());
+					state.getSide() == Side.RIGHT);
+			System.out.println("Opp: " + yAtRobot);
 		}
 		// Try to move to the projected point of the ball, if it is moving
 		else if (ballVel.getLength() > StratMaths.BALL_SPEED_THRESH) {
@@ -54,14 +56,16 @@ public class SaveAction extends StrategyAction {
 			if (intersection != null && goalLine.withinBounds(intersection)) {
 				double yAtRobot = ballTraj.getYValue(targetPos.X);
 				movementAmount = StratMaths.getStrafeDist(targetPos.Y,
-						yAtRobot, state.getSide());
+						yAtRobot, state.getSide() == Side.RIGHT);
+				System.out.println("Vel: " + yAtRobot);
 			}
 		}
 
 		// If we haven't decided to do anything smarter, navigate to the ball's y
 		if (this.movementAmount == Double.MAX_VALUE) {
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y,
-					ballPos.Y, state.getSide());
+					ballPos.Y, state.getSide() == Side.RIGHT);
+			System.out.println("Ball: " + ballPos.Y);
 		}
 
 		// Don't move past the post while blocking since you want to be in front
@@ -70,7 +74,7 @@ public class SaveAction extends StrategyAction {
 
 		// Don't want to issue lateral movement commands if we're not going to
 		// be moving a decent amount
-		return Math.abs(movementAmount) > 8;
+		return Math.abs(movementAmount) > StratMaths.Y_POS_THRESH;
 	}
 
 	@Override

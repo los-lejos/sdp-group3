@@ -6,6 +6,7 @@ import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
 import dice.state.WorldState.PitchZone;
+import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -58,7 +59,8 @@ public class RecievePassAction extends StrategyAction {
 		Vector2 targetPos = target.getPos();
 
 		if(this.passY != -1 && Math.abs(targetPos.Y - passY) > StratMaths.Y_POS_THRESH) {
-			double dist = StratMaths.getStrafeDist(targetPos.Y, passY, state.getSide());
+			Side side = state.getSide() == Side.LEFT ? Side.RIGHT : Side.LEFT;
+			double dist = StratMaths.getStrafeDist(targetPos.Y, passY, side == Side.RIGHT);
 			return RobotInstruction.createLateralMove(dist);
 		} else {
 			// Stay where we are and wait for the ball

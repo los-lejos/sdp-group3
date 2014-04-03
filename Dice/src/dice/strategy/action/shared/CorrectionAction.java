@@ -5,24 +5,30 @@ import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
-import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
 public class CorrectionAction extends StrategyAction {
 	
-	private boolean faceBackwards = false;
-	private boolean shouldRotate;
-	private double dist;
-	
-	public CorrectionAction(RobotType targetRobot) {
-		super(targetRobot);
+	public enum Side {
+		OUR,
+		OPP,
+		EITHER
 	}
 	
-	public CorrectionAction(RobotType targetRobot, boolean faceBackwards) {
+	private Side faceSide = Side.OPP;
+	private boolean shouldRotate;
+	private double dist;
+	private boolean facingLeft;
+
+	public CorrectionAction(RobotType targetRobot, Side faceSide) {
 		super(targetRobot);
 		
-		this.faceBackwards = faceBackwards;
+		this.faceSide = faceSide;
+	}
+	
+	public boolean isFacingLeft() {
+		return this.facingLeft;
 	}
 	
 	public boolean isPossible(WorldState state) {
@@ -30,10 +36,27 @@ public class CorrectionAction extends StrategyAction {
 		
 		Vector2 zoneMiddle = state.getCellCenter(target.getCurrentZone());
 
-		boolean facingLeft = state.getSide() == Side.RIGHT;
-		if(faceBackwards) facingLeft = !facingLeft;
-		
-		double heading = StratMaths.getAngleRelativeToHorizontal(target, facingLeft);
+		double heading;
+
+		if(this.faceSide == Side.OPP) {
+			facingLeft = state.getSide() == WorldState.Side.RIGHT;
+			heading = StratMaths.getAngleRelativeToHorizontal(target, facingLeft);
+		} else if(this.faceSide == Side.OUR) {
+			facingLeft = state.getSide() == WorldState.Side.LEFT;
+			heading = StratMaths.getAngleRelativeToHorizontal(target, facingLeft);
+		} else {
+			double headingLeft = StratMaths.getAngleRelativeToHorizontal(target, true);
+			double headingRight = StratMaths.getAngleRelativeToHorizontal(target, false);
+			
+			if(Math.abs(headingLeft) < Math.abs(headingRight)) {
+				facingLeft = true;
+				heading = headingLeft;
+			} else {
+				facingLeft = false;
+				heading = headingRight;
+			}
+		}
+
 		double deltaX = zoneMiddle.X - target.getPos().X;
 
 		if(Math.abs(heading) > StratMaths.CORRECTION_ROT_THRESH) {
@@ -63,7 +86,7 @@ public class CorrectionAction extends StrategyAction {
 			int rotSpeed = StratMaths.speedForRot(this.dist);
 			return RobotInstruction.createRotate(this.dist, rotSpeed);
 		} else {
-			return RobotInstruction.createMove(this.dist, 70);
+			return RobotInstruction.createMove(this.dist, 80);
 		}
 	}
 	

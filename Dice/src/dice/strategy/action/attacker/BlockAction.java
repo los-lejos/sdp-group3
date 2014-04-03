@@ -12,9 +12,15 @@ import dice.strategy.StrategyAction;
 public class BlockAction extends StrategyAction {
 	
 	double movementAmount = 0;
+	private boolean isFacingLeft;
 
 	public BlockAction(RobotType targetRobot) {
 		super(targetRobot);
+	}
+	
+	public void setFacingLeft(boolean facingLeft) {
+		System.out.println(facingLeft);
+		this.isFacingLeft = facingLeft;
 	}
 
 	@Override
@@ -36,13 +42,13 @@ public class BlockAction extends StrategyAction {
 			// Move towards wherever the opponent attacker is looking
 			double yAtRobot = line.getYValue(targetPos.X);
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y, yAtRobot,
-					state.getSide());
+					isFacingLeft);
 		}
 
 		// If we haven't decided to do anything smarter, navigate to the ball's y
 		if (this.movementAmount == Double.MAX_VALUE) {
 			movementAmount = StratMaths.getStrafeDist(targetPos.Y,
-					ballPos.Y, state.getSide());
+					ballPos.Y, isFacingLeft);
 		}
 
 		// Don't want to issue lateral movement commands if we're not going to

@@ -19,7 +19,7 @@ public class DefenderKickerController extends KickerController {
 	private static final byte CATCH_SPEED = (byte) 100;
 	
 	private static final int DELAY_OPEN = 90;
-	private static final int DELAY_KICK = 40;
+	private static final int DELAY_KICK = 60;
 	private static final int DELAY_KICK_END = 500;
 	private static final int DELAY_CLOSE = 130;
 	private static final int DELAY_STOP = 200;
@@ -82,17 +82,13 @@ public class DefenderKickerController extends KickerController {
 		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_CLOSE);
 
-		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, RETAINMENT_SPEED);
-		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
+		//I2Csensor.sendData(REGISTER_ADDRESS_SPEED, RETAINMENT_SPEED);
+		//I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
 		Thread.sleep(DELAY_STOP);
 	}
 	
 	@Override
 	protected void performCleanup() throws InterruptedException {
-		// Go back to a known position
-		performOpen();
-		
-		I2Csensor.sendData(REGISTER_ADDRESS_STATE, FORWARD);
-		Thread.sleep(DELAY_CLEANUP);
+		I2Csensor.sendData(REGISTER_ADDRESS_STATE, STOP);
 	}
 }

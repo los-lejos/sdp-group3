@@ -1,11 +1,31 @@
 package robot;
 
+import robot.communication.BluetoothDiceConnection;
+
 
 public abstract class MovementController {
+	
+	private enum State {
+		MOVING,
+		ROTATING,
+		STRAFING,
+		IDLE
+	}
+	
+	private State state;
+	private boolean lastDir;
+	
+	private boolean isAttacker;
+	
+	public MovementController(boolean isAttacker) {
+		this.isAttacker = isAttacker;
+	}
     
     // Abstract public interface methods
 	public abstract void cleanup();
     public abstract boolean isMoving();
+    public abstract boolean isDriving();
+    public abstract boolean isStrafing();
     public abstract void stop();
     public abstract void stopLateral();
     
@@ -15,7 +35,22 @@ public abstract class MovementController {
     
     // Public interface for initiating movement
     public void move(int newDistance) {
-    	this.stopLateral();
+    	if(!this.isMoving()) {
+    		this.state = State.IDLE;
+    	}
+    	
+    	if(this.isAttacker) {
+    		this.stopLateral();
+    	}
+    	
+    	boolean newDir = newDistance > 0;
+		this.state = State.MOVING;
+		
+		if(this.isDriving() && this.lastDir == newDir) {
+    		return;
+    	}
+		
+		this.lastDir = newDir;
     	
 		// Convert to cm
 		newDistance *= 10;
@@ -23,8 +58,16 @@ public abstract class MovementController {
     }
     
     public void rotate(int newHeading) {
-    	this.stopLateral();
-    	
+    	if(this.isAttacker && this.isStrafing()) {
+    		if(Math.abs(newHeading) > 12) {
+    			return;
+    		}
+    	}
+    		
+    	if(!this.isMoving()) {
+    		this.state = State.IDLE;
+    	}
+
     	if(newHeading > 180) {
     		newHeading -= 360;
 		} else if(newHeading < -180) {
@@ -32,12 +75,34 @@ public abstract class MovementController {
 		}
 		
 		assert (newHeading >= -180) && (newHeading <= 180);
-	
-		performRotate(newHeading);
+
+		boolean newDir = newHeading > 0;
+		if(newDir != lastDir || this.state != State.ROTATING) {
+			this.lastDir = newDir;
+			this.state = State.ROTATING;
+			
+			if(this.isAttacker) {
+	    		this.stopLateral();
+	    	}
+		
+			performRotate(newHeading);
+		}
     }
     
     public void moveLat(int newDistance) {
+    	if(!this.isMoving()) {
+    		this.state = State.IDLE;
+    	}
+
+    	boolean newDir = newDistance > 0;
+    	
+    	if(this.isStrafing() && newDir == this.lastDir) {
+    		return;
+    	}
+    	
     	this.stop();
+    	this.lastDir = newDir;
+		this.state = State.STRAFING;
     	
     	performMoveLat(newDistance);
     }
@@ -46,5 +111,7 @@ public abstract class MovementController {
     protected abstract void performRotate(int heading);
     protected abstract void performMove(int distance);
     protected abstract void performMoveLat(int distance);
+    
+    protected abstract void setCommunicator(BluetoothDiceConnection conn);
 
 }

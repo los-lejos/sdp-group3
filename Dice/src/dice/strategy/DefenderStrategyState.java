@@ -19,7 +19,7 @@ public class DefenderStrategyState extends RobotStrategyState {
 		
 		this.pass = new PassAction(RobotType.DEFENDER);
 		this.toBall = new ToBallAction(RobotType.DEFENDER);
-		this.correction = new CorrectionAction(RobotType.DEFENDER);
+		this.correction = new CorrectionAction(RobotType.DEFENDER, CorrectionAction.Side.OPP);
 		this.save = new SaveAction(RobotType.DEFENDER);
 	}
 

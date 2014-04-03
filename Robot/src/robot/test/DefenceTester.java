@@ -1,31 +1,17 @@
 package robot.test;
 
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.robotics.navigation.DifferentialPilot;
+import lejos.nxt.MotorPort;
+import lejos.nxt.NXTMotor;
 
 
 public class DefenceTester {
-	
-	private static final NXTRegulatedMotor leftMotor = Motor.B;
-	private static final NXTRegulatedMotor rightMotor = Motor.A;
-	
-	private static final int tireDiameterMm = 48;
-	private static final int trackWidthMm = 127;
-
-	private static DifferentialPilot pilot;
 
 	public static void main(String[] args) throws Exception {
-		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
-		
-		pilot.setTravelSpeed(pilot.getMaxTravelSpeed());
-		
-		pilot.rotate(180, true);
-		pilot.rotate(90, true);
-
-		while(pilot.isMoving()) {
-			System.out.println("aa");
-		}
+		NXTMotor lateral = new NXTMotor(MotorPort.C);
+		lateral.setPower(100);
+		lateral.forward();
+		Thread.sleep(2000);
+		lateral.stop();
 	}
 
 

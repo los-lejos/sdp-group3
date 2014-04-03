@@ -3,7 +3,6 @@ package dice.strategy;
 
 import dice.state.GameObject;
 import dice.state.Vector2;
-import dice.state.WorldState;
 
 /*
  * @author Sam Stern
@@ -16,10 +15,10 @@ public final class StratMaths {
 	 * Distance and speed thresholds
 	 */
 	public static final double BALL_SPEED_THRESH = 8;
-	public static final double BALL_DISTANCE_THRESH = 60;
+	public static final double BALL_DISTANCE_THRESH = 40;
 	private static final double MIN_SPEED_DIST = 40;
 	private static final double MAX_SPEED_DIST = 200;
-	private static final int MIN_SPEED = 60;
+	private static final int MIN_SPEED = 50;
 	private static final double SPEED_PER_DIST = (double)(100 - MIN_SPEED) / (MAX_SPEED_DIST - MIN_SPEED_DIST);
 
 	/*
@@ -28,21 +27,23 @@ public final class StratMaths {
 	// We want to hit minimum threshold when we're at BALL_DISTANCE_THRESH
 	private static final double MAX_SPEED_ROT = Math.toRadians(170);
 	private static final double MIN_SPEED_ROT = Math.toRadians(30);
-	private static final int MAX_ROT_SPEED = 30;
-	private static final int MIN_ROT_SPEED = 15;
+	private static final int MAX_ROT_SPEED = 40;
+	private static final int MIN_ROT_SPEED = 20;
 	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_ROT_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
 	public static final double ROTATION_SHOOT_THRESH = Math.PI / 14;
-	private static final double ROTATION_THRESH_MIN = Math.PI / 24;
-	private static final double ROTATION_THRESH_MAX = Math.PI / 18;
+	private static final double ROTATION_THRESH_MIN = Math.PI / 20;
+	private static final double ROTATION_THRESH_MAX = Math.PI / 14;
 	
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
 	
 	// Threshold for deciding if an object is nearby in Y
 	public static final double Y_POS_THRESH = 50;
 	
-	public static final double CORRECTION_ROT_THRESH = Math.PI / 26;
-	public static final double CORRECTION_POS_THRESH = 30;
+	private static final double MAX_STRAFE_DIST = 80;
+	
+	public static final double CORRECTION_ROT_THRESH = Math.PI / 22;
+	public static final double CORRECTION_POS_THRESH = 10;
 
 	public static double getRotationThreshold(Vector2 obj, Vector2 target) {
 		double dist = obj.getEuclidean(target);
@@ -109,11 +110,23 @@ public final class StratMaths {
 	}
 
 	public static double getStrafeDist(double ourY, double targetY,
-			WorldState.Side side) {
-		if (side == WorldState.Side.LEFT) {
-			return targetY - ourY;
+			boolean facingLeft) {
+		double dist;
+		
+		if (!facingLeft) {
+			dist = targetY - ourY;
 		} else {
-			return ourY - targetY;
+			dist = ourY - targetY;
 		}
+		
+		if(Math.abs(dist) >= MAX_STRAFE_DIST) {
+			if(dist < 0) {
+				dist = -MAX_STRAFE_DIST;
+			} else {
+				dist = MAX_STRAFE_DIST;
+			}
+		}
+		
+		return dist;
 	}
 }

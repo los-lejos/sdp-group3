@@ -25,7 +25,7 @@ public class StrategyEvaluator {
 
 	private RobotStrategyState attacker, defender;
 	
-	private static final int UPDATE_DELAY = 600;
+	private static final int UPDATE_DELAY = 200;
 	private long lastUpdateTime;
 	
 	private long PASS_TIMEOUT = 6000;
@@ -35,6 +35,14 @@ public class StrategyEvaluator {
 	public StrategyEvaluator() {
 		attacker = new AttackerStrategyState();
 		defender = new DefenderStrategyState();
+	}
+	
+	public void setRobotStrafing(RobotType robot, boolean isStrafing) {
+		if(robot == RobotType.ATTACKER) {
+			this.attacker.setIsStrafing(isStrafing);
+		} else {
+			this.defender.setIsStrafing(isStrafing);
+		}
 	}
 
 	public void setCommunicator(RobotType type, RobotCommunicator comms) {
@@ -58,6 +66,9 @@ public class StrategyEvaluator {
 		}
 		
 		this.lastUpdateTime = currentTime;
+		
+		attacker.update();
+		defender.update();
 
 		// Update actions performed by robots
 		StrategyAction attackerAction = attacker.getBestAction(state);

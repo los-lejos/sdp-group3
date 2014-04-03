@@ -401,8 +401,14 @@ public class GameObject {
     }
     
     private static double getMedianRotation(List<Rotation> newrotations) {
-    	double result;
+    	double result = 0;
     	
+//    	for(Rotation r : newrotations) {
+//    		result += r.getAngle();
+//    	}
+//    	
+//    	return result / (double)newrotations.size();
+
     	Collections.sort(newrotations, new RotationComparator());
     	if (newrotations.size() % 2 == 0) {
     		result = (newrotations.get((int) Math.floor(newrotations.size() / 2.0)).getAngle() +

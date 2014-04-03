@@ -81,6 +81,10 @@ public class RobotInstruction {
 		this.instruction[2] = param2;
 		this.instruction[3] = param3;
 	}
+	
+	public byte getType() {
+		return this.instruction[0];
+	}
 
 	public byte[] getInstruction() {
 		return instruction;

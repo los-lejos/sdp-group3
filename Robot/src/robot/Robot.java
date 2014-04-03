@@ -1,6 +1,7 @@
 package robot;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import lejos.nxt.Button;
 import robot.communication.BluetoothCommunicationException;
@@ -67,11 +68,12 @@ public class Robot {
 		
 		conn.start();
 		
+		this.movementController.setCommunicator(conn);
 		this.kicker.init();
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
-				//System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
+				System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
 				
 				currentInstruction = newInstruction;
 				

@@ -5,8 +5,8 @@ import lejos.nxt.SensorPort;
 
 public class ColorBallSensorController extends BallSensorController {
 	
-	private static final int NEARBY_CUTOFF = 6;
-	private static final int KICKER_CUTOFF = 6;
+	private static final int NEARBY_CUTOFF = 8;
+	private static final int KICKER_CUTOFF = 8;
 
 	private static final ColorSensor ballSensor = new ColorSensor(SensorPort.S2);
 	

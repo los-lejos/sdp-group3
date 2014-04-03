@@ -4,7 +4,6 @@ import robot.ColorBallSensorController;
 import robot.HolonomicMovementController;
 import robot.Robot;
 
-
 /*
  * @author Joris Urbaitis
  */
@@ -14,7 +13,7 @@ public class DefenderMain {
 	public static void main(String[] args) {
 		Robot robot = new Robot(
     			new DefenderKickerController(),
-    			new HolonomicMovementController(),
+    			new HolonomicMovementController(false),
     			new ColorBallSensorController());
 		
 		robot.run();

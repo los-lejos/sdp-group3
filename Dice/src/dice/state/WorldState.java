@@ -52,10 +52,12 @@ public class WorldState {
     public static final double PITCH_WIDTH = 580;
     private static final int GOAL_WIDTH = 150;
     
-    // Zone calibration: use PITCH0 values by default
-    private static double FIRST_ADJUSTMENT = -18;
-    private static double SECOND_ADJUSTMENT = 0;
-    private static double THIRD_ADJUSTMENT = 15;
+    private static double FIRST_ADJUSTMENT;
+    private static double SECOND_ADJUSTMENT;
+    private static double THIRD_ADJUSTMENT;
+    
+    private static double FIRST_CENTER_OFFSET = -20;
+    private static double FOURTH_CENTER_OFFSET = 20;
 
     private static final double FIRST_DIVISION = PITCH_WIDTH / 4 + ORIGIN + FIRST_ADJUSTMENT;
     private static final double SECOND_DIVISION = PITCH_WIDTH / 4 * 2 + ORIGIN + SECOND_ADJUSTMENT;
@@ -275,7 +277,7 @@ public class WorldState {
         if (ourSide == Side.LEFT) {
             switch (zone) {
                 case OUR_DEFEND_ZONE:
-                    x = (ORIGIN + FIRST_DIVISION) / 2.0;
+                    x = (ORIGIN + FIRST_DIVISION) / 2.0 + FIRST_CENTER_OFFSET;
                     break;
                 case OPP_ATTACK_ZONE:
                     x = (FIRST_DIVISION + SECOND_DIVISION) / 2.0;
@@ -284,7 +286,7 @@ public class WorldState {
                     x = (SECOND_DIVISION + THIRD_DIVISION) / 2.0;
                     break;
                 case OPP_DEFEND_ZONE:
-                    x = (THIRD_DIVISION + END) / 2.0;
+                    x = (THIRD_DIVISION + END) / 2.0 + FOURTH_CENTER_OFFSET;
                     break;
                 default:
                     x = -1;
@@ -292,7 +294,7 @@ public class WorldState {
         } else {
             switch (zone) {
                 case OPP_DEFEND_ZONE:
-                    x = (ORIGIN + FIRST_DIVISION) / 2.0;
+                    x = (ORIGIN + FIRST_DIVISION) / 2.0 + FIRST_CENTER_OFFSET;
                     break;
                 case OUR_ATTACK_ZONE:
                     x = (FIRST_DIVISION + SECOND_DIVISION) / 2.0;
@@ -301,7 +303,7 @@ public class WorldState {
                     x = (SECOND_DIVISION + THIRD_DIVISION) / 2.0;
                     break;
                 case OUR_DEFEND_ZONE:
-                    x = (THIRD_DIVISION + END) / 2.0;
+                    x = (THIRD_DIVISION + END) / 2.0 + FOURTH_CENTER_OFFSET;
                     break;
                 default:
                     x = -1;

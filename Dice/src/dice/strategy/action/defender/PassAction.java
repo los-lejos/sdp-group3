@@ -5,6 +5,7 @@ import dice.communication.RobotType;
 import dice.state.GameObject;
 import dice.state.Vector2;
 import dice.state.WorldState;
+import dice.state.WorldState.Side;
 import dice.strategy.StratMaths;
 import dice.strategy.StrategyAction;
 
@@ -34,7 +35,7 @@ public class PassAction extends StrategyAction {
 		System.out.println(yDist);
 		
 		if(yDist > StratMaths.Y_POS_THRESH) {
-			double dist = StratMaths.getStrafeDist(defenderPos.Y, passY, state.getSide());
+			double dist = StratMaths.getStrafeDist(defenderPos.Y, passY, state.getSide() == Side.RIGHT);
 			return RobotInstruction.createLateralMove(dist);
 		}
 		
