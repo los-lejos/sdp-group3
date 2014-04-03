@@ -173,17 +173,21 @@ public class Main {
 		RobotType type = getRobotTypeFromCommand(cmd);
 		
 		if(type != null) {
-			byte instructionType = Byte.parseByte(cmd[2]);
-			byte param1 = Byte.parseByte(cmd[3]);
-			byte param2 = Byte.parseByte(cmd[4]);
-			byte param3 = Byte.parseByte(cmd[5]);
-
-
-			RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3);
-			if(type == RobotType.ATTACKER) {
-				this.attackerComms.sendInstruction(instruction);
-			} else {
-				this.defenderComms.sendInstruction(instruction);
+			try {
+				byte instructionType = Byte.parseByte(cmd[2]);
+				byte param1 = Byte.parseByte(cmd[3]);
+				byte param2 = Byte.parseByte(cmd[4]);
+				byte param3 = Byte.parseByte(cmd[5]);
+	
+	
+				RobotInstruction instruction = new RobotInstruction(instructionType, param1, param2, param3);
+				if(type == RobotType.ATTACKER) {
+					this.attackerComms.sendInstruction(instruction);
+				} else {
+					this.defenderComms.sendInstruction(instruction);
+				}
+			} catch (NumberFormatException e) {
+				Log.logInfo("Can't parse parameter");
 			}
 		}
 	}
