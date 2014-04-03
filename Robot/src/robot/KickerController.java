@@ -12,6 +12,7 @@ public abstract class KickerController {
 
 	private boolean hasBall = false;
 	private boolean isRunning = true;
+	private boolean isOpen = false;
 
 	public void init() {
 		kickerThread = new KickerThread();
@@ -19,7 +20,7 @@ public abstract class KickerController {
 		kickerThread.start();
 	}
 	
-	public void cleanup() {
+	public void kill() {
 		this.isRunning = false;
 	}
 	
@@ -29,6 +30,10 @@ public abstract class KickerController {
 	
 	public boolean isMoving() {
 		return state != KickerState.READY;
+	}
+	
+	public boolean isOpen() {
+		return isOpen;
 	}
 	
 	public void kick() {
@@ -48,18 +53,20 @@ public abstract class KickerController {
 		@Override
 		public void run() {
 			try {
-				performOpen();
+				performCleanup();
 	
 				while (isRunning) {
 					if (state == KickerState.KICK) {
 						performKick();
 						hasBall = false;
+						isOpen = false;
 					} else if (state == KickerState.GRAB) {
 						performGrab();
 						hasBall = true;
 					} else if(state == KickerState.OPEN) {
 						performOpen();
 						hasBall = false;
+						isOpen = true;
 					}
 					
 					state = KickerState.READY;
@@ -71,14 +78,12 @@ public abstract class KickerController {
 				}
 
 				performCleanup();
-				stop();
 			} catch (InterruptedException e) {
 				// Exit if we were interrupted
 			}
 		}
 	}
 
-	protected abstract void stop();
 	protected abstract void performGrab() throws InterruptedException;
 	protected abstract void performKick() throws InterruptedException;
 	protected abstract void performOpen() throws InterruptedException;
