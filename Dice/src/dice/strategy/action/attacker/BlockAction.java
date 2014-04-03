@@ -19,7 +19,6 @@ public class BlockAction extends StrategyAction {
 	}
 	
 	public void setFacingLeft(boolean facingLeft) {
-		System.out.println(facingLeft);
 		this.isFacingLeft = facingLeft;
 	}
 

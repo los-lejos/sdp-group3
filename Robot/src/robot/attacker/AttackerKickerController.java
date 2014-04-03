@@ -18,10 +18,10 @@ public class AttackerKickerController extends KickerController {
 	private static final byte KICK_SPEED = (byte) 255;
 	private static final byte CATCH_SPEED = (byte) 100;
 
-	private static final int DELAY_OPEN = 75;
-	private static final int DELAY_KICK = 70;
-	private static final int DELAY_CLOSE = 200;
-	private static final int DELAY_CLEANUP = 35;
+	private static final int DELAY_OPEN = 80;
+	private static final int DELAY_KICK = 50;
+	private static final int DELAY_CLOSE = 120;
+	private static final int DELAY_CLEANUP = 20;
 	
 	private I2CPort I2Cport;
 	private I2CSensor I2Csensor;

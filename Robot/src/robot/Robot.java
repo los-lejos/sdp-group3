@@ -1,7 +1,6 @@
 package robot;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import lejos.nxt.Button;
 import robot.communication.BluetoothCommunicationException;
@@ -29,7 +28,7 @@ public class Robot {
     private MovementController movementController;
     private KickerController kicker;
     private final BallSensorController ballSensor;
-    
+
     private boolean isRunning = true;
     
     public Robot(
@@ -68,7 +67,7 @@ public class Robot {
 
 		while(isRunning && Button.readButtons() == 0) {
 			if(currentInstruction != newInstruction) {
-				System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
+				//System.out.println(newInstruction.getType() + " - " + Arrays.toString(newInstruction.getParameters()));
 				
 				currentInstruction = newInstruction;
 				
@@ -86,11 +85,13 @@ public class Robot {
 			
 			// If we tried to catch the ball but didn't, restore kicker
 			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
+				System.out.println("Fakeout");
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker + kicker is open, try to grab
-			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving() && this.kicker.isOpen()) {
+			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
+				System.out.println("Grab");
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				
@@ -151,12 +152,34 @@ public class Robot {
 				this.movementController.setTravelSpeed(speed);
 				this.movementController.move(distance);
 				try {
-					Thread.sleep(400);
+					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				this.kicker.kick();
+				this.sendReleasedBallMessage();
 				break;
+			case RobotInstructions.STRAFE_AND_MOVE_AND_KICK:
+				distance = instructionParams[0];
+				int strafeDistance = instructionParams[1];
+				this.movementController.setTravelSpeed(100);
+				this.movementController.moveLat(strafeDistance);
+				
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				this.movementController.move(distance);
+				
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				this.kicker.kick();
 			case RobotInstructions.LAT_MOVE:
 				distance = instructionParams[0];
 				this.movementController.moveLat(distance);
@@ -172,9 +195,12 @@ public class Robot {
 				this.movementController.setRotateSpeed(instructionParams[0]);
 				break;
 			case RobotInstructions.OPEN_KICKER:
+				System.out.println("Open");
 				this.kicker.open();
+				this.sendReleasedBallMessage();
 				break;
 			case RobotInstructions.CLOSE_KICKER:
+				System.out.println("Close");
 				this.kicker.kick();
 				this.sendReleasedBallMessage();
 				break;

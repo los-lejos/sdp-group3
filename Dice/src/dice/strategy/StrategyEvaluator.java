@@ -36,6 +36,14 @@ public class StrategyEvaluator {
 		attacker = new AttackerStrategyState();
 		defender = new DefenderStrategyState();
 	}
+	
+	public void onKickerClosed(RobotType type) {
+		if(type == RobotType.ATTACKER) {
+			this.attacker.onKickerClosed();
+		} else {
+			this.defender.onKickerClosed();
+		}
+	}
 
 	public void setCommunicator(RobotType type, RobotCommunicator comms) {
 		if(type == RobotType.ATTACKER) {

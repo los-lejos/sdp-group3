@@ -44,6 +44,17 @@ public class RobotInstruction {
 		return (byte)speedPercent;
 	}
 	
+	public static RobotInstruction createStrafeAndMoveAndKick(double moveDist, double strafeDist) {
+		byte dist = strategyToRobotDistance(moveDist);
+		
+		if(Math.abs(strafeDist) > WorldState.PITCH_HEIGHT) {
+			strafeDist = strafeDist > 0 ? WorldState.PITCH_HEIGHT : -WorldState.PITCH_HEIGHT;
+		}
+		
+		byte strafe = strategyToRobotDistance(strafeDist);
+		return new RobotInstruction(RobotInstructions.STRAFE_AND_MOVE_AND_KICK, dist, strafe, (byte)0);
+	}
+	
 	public static RobotInstruction createMoveAndKick(double dist) {
 		byte robotDistance = strategyToRobotDistance(dist);
 		return new RobotInstruction(RobotInstructions.MOVE_AND_KICK, robotDistance, (byte)100, (byte)0);

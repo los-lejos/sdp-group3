@@ -24,6 +24,7 @@ public class IssuedInstruction {
 		int speed;
 		
 		switch(type) {
+		case RobotInstructions.STRAFE_AND_MOVE_AND_KICK:
 		case RobotInstructions.MOVE_AND_KICK:
 		case RobotInstructions.MOVE:
 			distance = instruction[1];

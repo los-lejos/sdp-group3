@@ -47,6 +47,7 @@ public class Main {
 		@Override
 		public void onBallReleased() {
 			synchronized(worldState) {
+				Log.logInfo("Attacker: Ball has been released eheheh");
 				worldState.setObjectWithBall(null);
 			}
 		}
@@ -64,6 +65,7 @@ public class Main {
 		@Override
 		public void onBallReleased() {
 			synchronized(worldState) {
+				Log.logInfo("Defender: Ball has been released eheheh");
 				worldState.setObjectWithBall(null);
 			}
 		}

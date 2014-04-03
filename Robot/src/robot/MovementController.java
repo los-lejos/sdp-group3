@@ -37,11 +37,9 @@ public abstract class MovementController {
     	if(!this.isMoving()) {
     		this.state = State.IDLE;
     	}
-    	
-    	if(this.isAttacker) {
-    		this.stopLateral();
-    	}
-    	
+
+    	this.stopLateral();
+
     	boolean newDir = newDistance > 0;
 		this.state = State.MOVING;
 		

@@ -30,6 +30,7 @@ public final class RobotInstructions {
 	public static final byte CLOSE_KICKER = 9;
 	
 	public static final byte MOVE_AND_KICK = 10;
+	public static final byte STRAFE_AND_MOVE_AND_KICK = 11;
 
 	// To DICE
 	public static final byte CAUGHT_BALL = -2;

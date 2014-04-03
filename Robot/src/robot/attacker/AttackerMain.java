@@ -14,7 +14,7 @@ public class AttackerMain {
 		Robot robot = new Robot(
     			new AttackerKickerController(),
     			new HolonomicMovementController(true),
-    			new ColorBallSensorController());
+    			new ColorBallSensorController(true));
 		
 		robot.run();
 	}

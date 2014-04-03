@@ -27,6 +27,10 @@ public abstract class RobotStrategyState {
 		this.robotType = robotType;
 	}
 	
+	public void onKickerClosed() {
+		this.kickerOpen = false;
+	}
+	
 	public boolean isKickerOpen() {
 		return this.kickerOpen;
 	}

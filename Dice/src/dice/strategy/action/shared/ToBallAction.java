@@ -28,7 +28,7 @@ public class ToBallAction extends StrategyAction {
 		boolean weHaveTheBall = state.getObjectWithBall() == robot;
 		boolean ballIsInSameZone = ball.getCurrentZone() == robot.getCurrentZone();
 		boolean ballSlow = ball.getVelocity().getLength() < StratMaths.BALL_SPEED_THRESH;
-		
+
 		return ballIsInSameZone && !weHaveTheBall && ballSlow;
 	}
 

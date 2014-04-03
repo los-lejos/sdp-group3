@@ -14,7 +14,7 @@ public class DefenderMain {
 		Robot robot = new Robot(
     			new DefenderKickerController(),
     			new HolonomicMovementController(false),
-    			new ColorBallSensorController());
+    			new ColorBallSensorController(false));
 		
 		robot.run();
 	}

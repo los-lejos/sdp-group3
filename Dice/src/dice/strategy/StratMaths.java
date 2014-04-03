@@ -31,17 +31,18 @@ public final class StratMaths {
 	private static final int MIN_ROT_SPEED = 20;
 	private static final double SPEED_PER_ROT = (double)(MAX_ROT_SPEED - MIN_ROT_SPEED) / (MAX_SPEED_ROT - MIN_SPEED_ROT);
 	
-	public static final double ROTATION_SHOOT_THRESH = Math.PI / 14;
+	public static final double ROTATION_SHOOT_THRESH = Math.PI / 20;
 	private static final double ROTATION_THRESH_MIN = Math.PI / 20;
 	private static final double ROTATION_THRESH_MAX = Math.PI / 14;
 	
 	private static final double ROTATION_THRESH_PER_DIST = ROTATION_THRESH_MIN / BALL_DISTANCE_THRESH; 
 	
 	// Threshold for deciding if an object is nearby in Y
-	public static final double Y_POS_THRESH = 40;
+	public static final double Y_POS_THRESH = 30;
+	public static final double SHOOT_GOAL_Y_THRESH = 10;
 	
 	private static final double MAX_STRAFE_DIST = 80;
-	
+
 	public static final double CORRECTION_ROT_THRESH = Math.PI / 22;
 	public static final double CORRECTION_POS_THRESH = 10;
 
