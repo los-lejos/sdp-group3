@@ -38,7 +38,6 @@ public class AttackerKickerController extends KickerController {
 
 	@Override
 	protected void performOpen() throws InterruptedException {
-		System.out.println("OPEN");
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		
 		// Shut fully in case open
@@ -55,7 +54,6 @@ public class AttackerKickerController extends KickerController {
 
 	@Override
 	protected void performKick() throws InterruptedException {
-		System.out.println("KICK");
 		// GOGOGO
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, KICK_SPEED);
 		
@@ -73,7 +71,6 @@ public class AttackerKickerController extends KickerController {
 	
 	@Override
 	protected void performGrab() throws InterruptedException {
-		System.out.println("GRAB");
 		// Reduce speed
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		
@@ -88,7 +85,6 @@ public class AttackerKickerController extends KickerController {
 	
 	@Override
 	protected void performCleanup() throws InterruptedException {
-		System.out.println("CLEANUP");
 		// Kicker in chillaxed mode
 		I2Csensor.sendData(REGISTER_ADDRESS_SPEED, CATCH_SPEED);
 		
