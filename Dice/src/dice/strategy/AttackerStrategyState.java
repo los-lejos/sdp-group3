@@ -37,13 +37,26 @@ public class AttackerStrategyState extends RobotStrategyState {
 	}
 
 	@Override
-	public StrategyAction getBestAction(WorldState state) {
+	public StrategyAction getBestPenaltyAction(WorldState state) {
+		return getBestMatchAction(state);
+	}
+	
+	@Override
+	public StrategyAction getBestMatchAction(WorldState state) {
+		boolean toBallPossible = toBall.isPossible(state);
+		
 		if(recievePass.isPossible(state)) {
 			if(passCorrect.isPossible(state)) {
 				return passCorrect;
 			}
 			
+			if(!this.isKickerOpen()) {
+				return openKicker;
+			}
+			
 			return recievePass;
+		} else if(this.isKickerOpen() && !toBallPossible) {
+			return closeKicker;
 		}
 		
 		if(shoot.isPossible(state)) {
@@ -55,14 +68,12 @@ public class AttackerStrategyState extends RobotStrategyState {
 			}
 		}
 		
-		if(toBall.isPossible(state)) {
+		if(toBallPossible) {
 			if(!this.isKickerOpen()) {
 				return openKicker;
 			}
 			
 			return toBall;
-		} else if(this.isKickerOpen()) {
-			return closeKicker;
 		}
 		
 		if(block.isPossible(state)) {

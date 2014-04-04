@@ -13,7 +13,7 @@ public class AttackerMain {
 	public static void main(String[] args) {
 		Robot robot = new Robot(
     			new AttackerKickerController(),
-    			new HolonomicMovementController(true),
+    			new HolonomicMovementController(),
     			new ColorBallSensorController(true));
 		
 		robot.run();

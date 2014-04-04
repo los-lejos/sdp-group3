@@ -13,7 +13,7 @@ public class DefenderMain {
 	public static void main(String[] args) {
 		Robot robot = new Robot(
     			new DefenderKickerController(),
-    			new HolonomicMovementController(false),
+    			new HolonomicMovementController(),
     			new ColorBallSensorController(false));
 		
 		robot.run();

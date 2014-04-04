@@ -17,7 +17,7 @@ import dice.strategy.StrategyAction;
 
 public class ShootAction extends StrategyAction {
 	
-	private final int TIMEOUT = 10000;
+	private final int TIMEOUT = 15000;
 	
 	private long startTime = -1;
 

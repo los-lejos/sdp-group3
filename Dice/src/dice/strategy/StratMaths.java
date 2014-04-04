@@ -41,7 +41,7 @@ public final class StratMaths {
 	public static final double Y_POS_THRESH = 30;
 	public static final double SHOOT_GOAL_Y_THRESH = 10;
 	
-	private static final double MAX_STRAFE_DIST = 80;
+	private static final double MAX_STRAFE_DIST = 90;
 
 	public static final double CORRECTION_ROT_THRESH = Math.PI / 22;
 	public static final double CORRECTION_POS_THRESH = 10;

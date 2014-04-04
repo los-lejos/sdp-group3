@@ -13,11 +13,8 @@ public abstract class MovementController {
 	
 	private State state;
 	private boolean lastDir;
-	
-	private boolean isAttacker;
-	
-	public MovementController(boolean isAttacker) {
-		this.isAttacker = isAttacker;
+
+	public MovementController() {
 	}
     
     // Abstract public interface methods
@@ -55,7 +52,7 @@ public abstract class MovementController {
     }
     
     public void rotate(int newHeading) {
-    	if(this.isAttacker && this.isStrafing()) {
+    	if(this.isStrafing()) {
     		if(Math.abs(newHeading) > 12) {
     			return;
     		}
@@ -78,10 +75,8 @@ public abstract class MovementController {
 			this.lastDir = newDir;
 			this.state = State.ROTATING;
 			
-			if(this.isAttacker) {
-	    		this.stopLateral();
-	    	}
-		
+	    	this.stopLateral();
+
 			performRotate(newHeading);
 		}
     }

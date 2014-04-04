@@ -166,7 +166,7 @@ public class Robot {
 				this.movementController.moveLat(strafeDistance);
 				
 				try {
-					Thread.sleep(200);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -180,6 +180,7 @@ public class Robot {
 				}
 				
 				this.kicker.kick();
+				this.sendReleasedBallMessage();
 			case RobotInstructions.LAT_MOVE:
 				distance = instructionParams[0];
 				this.movementController.moveLat(distance);

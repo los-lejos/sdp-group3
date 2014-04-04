@@ -72,15 +72,7 @@ public class CorrectionAction extends StrategyAction {
 		
 		return false;
 	}
-	
-	/** The utility of this action should be high
-	 * when the angle is off by a certain amount (NEEDS_CORRECTION_THRESH)
-	 * Otherwise, it is worthless.
-	 */
-	public int calculateUtility(WorldState state) {
-		return 1;
-	}
-	
+
 	public RobotInstruction getInstruction(WorldState state) {
 		if(this.shouldRotate) {
 			int rotSpeed = StratMaths.speedForRot(this.dist);

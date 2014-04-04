@@ -31,10 +31,16 @@ public class StrategyEvaluator {
 	private long PASS_TIMEOUT = 6000;
 	private long passTime = 0;
 	private double passY = 0;
+	
+	private boolean match = true;
 
 	public StrategyEvaluator() {
 		attacker = new AttackerStrategyState();
 		defender = new DefenderStrategyState();
+	}
+	
+	public void setIsMatch(boolean match) {
+		this.match = match;
 	}
 	
 	public void onKickerClosed(RobotType type) {
@@ -68,8 +74,16 @@ public class StrategyEvaluator {
 		this.lastUpdateTime = currentTime;
 
 		// Update actions performed by robots
-		StrategyAction attackerAction = attacker.getBestAction(state);
-		StrategyAction defenderAction = defender.getBestAction(state);
+		StrategyAction attackerAction;
+		StrategyAction defenderAction;
+		
+		if(this.match) {
+			attackerAction = attacker.getBestMatchAction(state);
+			defenderAction = defender.getBestMatchAction(state);
+		} else {
+			attackerAction = attacker.getBestPenaltyAction(state);
+			defenderAction = defender.getBestPenaltyAction(state);
+		}
 		
 		// Check if passing behaviour is being executed and synchronize it
 		if(attackerAction != null && defenderAction != null &&

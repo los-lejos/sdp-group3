@@ -43,7 +43,8 @@ public abstract class RobotStrategyState {
 		this.robotComms = robotComms;
 	}
 
-	public abstract StrategyAction getBestAction(WorldState state);
+	public abstract StrategyAction getBestMatchAction(WorldState state);
+	public abstract StrategyAction getBestPenaltyAction(WorldState state);
 	
 	public void updateCurrentAction(WorldState state, StrategyAction action) {
 		if(action == null) {

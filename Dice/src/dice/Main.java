@@ -129,6 +129,8 @@ public class Main {
 				Log.logInfo("vision <options> - starts up vision system. Enter 'vision -h' for options formatting");
 				Log.logInfo("pause - pauses execution of strategy and state logic");
 				Log.logInfo("resume - resumes execution of strategy and state logic");
+				Log.logInfo("penalty - turn on penalty mode");
+				Log.logInfo("match - turn on match mode");
 			}
 			else if(cmd[0].equals("vision")) {
 				startVision(cmd);		
@@ -144,6 +146,12 @@ public class Main {
 			}
 			else if (cmd[0].equals("resume")) {
 				this.visionReader.resume();
+			}
+			else if(cmd[0].equals("penalty")) {
+				this.strategy.setIsMatch(false);
+			}
+			else if(cmd[0].equals("match")) {
+				this.strategy.setIsMatch(true);
 			}
 			else if(!cmd[0].equals("quit")) {
 				Log.logError("Unrecognized command");

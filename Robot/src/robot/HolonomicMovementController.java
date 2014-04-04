@@ -21,9 +21,7 @@ public class HolonomicMovementController extends MovementController {
 	private double travelSpeed;
 	private double rotateSpeed;
 
-	public HolonomicMovementController(boolean isAttacker) {
-		super(isAttacker);
-		
+	public HolonomicMovementController() {
 		pilot = new DifferentialPilot(tireDiameterMm, trackWidthMm, leftMotor, rightMotor, false);
     	maxTravelSpeed = pilot.getMaxTravelSpeed();
 		maxRotateSpeed = pilot.getMaxRotateSpeed();
