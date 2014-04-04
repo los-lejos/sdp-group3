@@ -61,7 +61,7 @@ public class DefenderStrategyState extends RobotStrategyState {
 			}
 			
 			return toBall;
-		} else if(this.isKickerOpen()) {
+		} else if(this.isKickerOpen() && state.getObjectWithBall() != state.getOurDefender()) {
 			return closeKicker;
 		}
 		

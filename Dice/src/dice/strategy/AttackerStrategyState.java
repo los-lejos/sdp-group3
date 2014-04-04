@@ -55,7 +55,7 @@ public class AttackerStrategyState extends RobotStrategyState {
 			}
 			
 			return recievePass;
-		} else if(this.isKickerOpen() && !toBallPossible) {
+		} else if(this.isKickerOpen() && !toBallPossible && state.getObjectWithBall() != state.getOurAttacker()) {
 			return closeKicker;
 		}
 		
