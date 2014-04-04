@@ -52,9 +52,19 @@ public class WorldState {
     public static final double PITCH_WIDTH = 580;
     private static final int GOAL_WIDTH = 150;
     
-    private static double FIRST_ADJUSTMENT;
-    private static double SECOND_ADJUSTMENT;
-    private static double THIRD_ADJUSTMENT;
+    /*
+     * 462
+		452
+
+	293
+		289
+
+		129
+		118
+     */
+    private static double FIRST_ADJUSTMENT = -22;
+    private static double SECOND_ADJUSTMENT = 0;
+    private static double THIRD_ADJUSTMENT = 20;
     
     private static double FIRST_CENTER_OFFSET = -20;
     private static double FOURTH_CENTER_OFFSET = 20;
@@ -127,7 +137,7 @@ public class WorldState {
     // these values come in as seen from left to right on the pitch (except ball)
     public void updateState(Vector2 a, double aAngle, Vector2 b, double bAngle,
     		Vector2 c, double cAngle, Vector2 d, double dAngle, Vector2 ball) {
-        farLeftRobot.setPos(convertYValue(a));
+        farLeftRobot.setPos(convertYValue(a)); 
         farLeftRobot.setRotation(aAngle);
         this.updateObjectZone(farLeftRobot);
         
@@ -144,6 +154,13 @@ public class WorldState {
         this.updateObjectZone(farRightRobot);
 
         this.ball.setPos(convertYValue(ball));
+        if(this.ball.getPos() != null) {
+        	System.out.println(this.ball.getPos());
+        }
+        
+        if(this.ball.getCurrentZone() != null) {
+        	System.out.println(this.ball.getCurrentZone());
+        }
 
         updateBallOwnership();
         this.updateObjectZone(this.ball);
@@ -224,9 +241,9 @@ public class WorldState {
         	SECOND_ADJUSTMENT = 7;
         	THIRD_ADJUSTMENT = 25;
         } else {
-        	FIRST_ADJUSTMENT = -18;
+        	FIRST_ADJUSTMENT = -22;
             SECOND_ADJUSTMENT = 0;
-            THIRD_ADJUSTMENT = 15;
+            THIRD_ADJUSTMENT = 20;
         }
         
         Log.logInfo("Pitch calibrated for " + pitch);

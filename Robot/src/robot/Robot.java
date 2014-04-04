@@ -85,13 +85,11 @@ public class Robot {
 			
 			// If we tried to catch the ball but didn't, restore kicker
 			if(this.kicker.getHasBall() && !this.ballSensor.isDetectingBallInKicker() && !this.kicker.isMoving()) {
-				System.out.println("Fakeout");
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 			}
 			// If the ball is in front of the kicker + kicker is open, try to grab
 			else if(this.ballSensor.isBallNearby() && !this.kicker.getHasBall() && !this.kicker.isMoving()) {
-				System.out.println("Grab");
 				this.kicker.grab();
 				this.sendCaughtBallMessage();
 				
@@ -196,12 +194,10 @@ public class Robot {
 				this.movementController.setRotateSpeed(instructionParams[0]);
 				break;
 			case RobotInstructions.OPEN_KICKER:
-				System.out.println("Open");
 				this.kicker.open();
 				this.sendReleasedBallMessage();
 				break;
 			case RobotInstructions.CLOSE_KICKER:
-				System.out.println("Close");
 				this.kicker.kick();
 				this.sendReleasedBallMessage();
 				break;
