@@ -11,7 +11,7 @@ export NXJ_HOME=~/lejos
 export PATH=$PATH:$NXJ_HOME/bin
 ```
 
-Follow [this guide](http://www.lejos.org/nxt/nxj/tutorial/Preliminaries/UsingEclipse.htm) to set the leJOS NXJ plugin up in Eclipse, importing the projects contained in this repository to your workspace using File > Import, selecting General > Existing Projects Into Workspace, then choosing the directory you cloned this repository to as the Root Diectory.
+Follow [this guide](http://www.lejos.org/nxt/nxj/tutorial/Preliminaries/UsingEclipse.htm) to set the leJOS NXJ plugin up in Eclipse, importing the projects contained in this repository to your workspace using File > Import, selecting General > Existing Projects Into Workspace, then choosing the directory you cloned this repository to as the Root Directory.
 
 
 ### USB
